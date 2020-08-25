@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:v-bind="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title>奖金列表</title>
+    <link rel="stylesheet" href="../css/bootstrap.min.css">
+    <link rel="stylesheet" href="../css/dialog.css">
+    <script src="../js/jquery1.11.3.min.js"></script>
+    <script src="../js/bootstrap.min.js"></script>
+    <script src="../js/vue.js"></script>
+    <script src="../js/vue-resource1.3.4.js"></script>
+    <script src="../js/config.js"></script>
+    <script src="../plugins/My97DatePicker/WdatePicker.js"></script>
+
+</head>
+<body>
+<div id="rewardIndex">
+    <div class="form-inline">
+
+        <div class="form-group">
+            <label class="sr-only">线索编号</label>
+            <input id="txtClueId" v-model="search.serialNumber" style="width:180px" class="form-control" type="text"
+                   placeholder="请输入线索编号"/>
+        </div>
+
+        <div class="form-group">
+            <label class="sr-only">用户名</label>
+            <input id="txtUserName" v-model="search.userName" style="width:120px" class="form-control" type="text"
+                   placeholder="请输入用户名"/>
+        </div>
+
+        <div class="form-group">
+            奖金金额：
+            <label class="sr-only">金额下限</label>
+            <input id="txtMinAmount" v-model="search.minAmount" class="form-control" type="text" placeholder="请输入金额下限"/>
+            ---
+            <label class="sr-only">金额上限</label>
+            <input id="txtMaxAmount" v-model="search.maxAmount" class="form-control" type="text" placeholder="请输入金额上限"/>
+        </div>
+
+        <div class="form-group">
+            <label class="sr-only">创建开始时间</label>
+            <input id="txtBeginDate" class="form-control" type="text" placeholder="请输入创建开始时间"/>
+            ---
+            <label class="sr-only">创建结束时间</label>
+            <input id="txtEndDate" class="form-control" type="text" placeholder="请输入创建结束时间"/>
+        </div>
+
+        <div class="form-group">
+            <div class="col-sm-6">
+                <select id="selClueVerify" v-model="search.validate" class="form-control">
+                    <option value="-1" selected="selected">验证情况</option>
+                    <option value="0">未验证</option>
+                    <option value="1">已验证</option>
+                    <option value="2">验证不通过</option>
+                </select>
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-sm-6">
+                <select v-model="search.type" class="form-control">
+                    <option value="-1" selected="selected">调查员类别</option>
+                    <option value="1">个人调查员</option>
+                    <option value="2">调查企业</option>
+                </select>
+            </div>
+        </div>
+
+        <button id="btnSearch" type="button" @click="getRewards" class="btn btn-primary">搜索</button>
+
+        <a class="btn btn-primary" :href="exportUrl">导出</a>
+
+        <input id="txtSearch" type="hidden" @click="getRewards('msg')"/>
+        <input id="hidClueId" type="hidden"/>
+        <input id="hidRewardId" type="hidden"/>
+    </div>
+
+    <div class="table-responsive">
+        <table class="table table-striped" id="main">
+            <thead>
+            <tr>
+                <th style="text-align:center;vertical-align:middle;">序号</th>
+                <th style="text-align:center;vertical-align:middle;">编号</th>
+                <th style="text-align:center;vertical-align:middle;">奖金</th>
+                <th style="text-align:center;vertical-align:middle;">平台奖励</th>
+                <th style="text-align:center;vertical-align:middle;">小计金额</th>
+                <th style="text-align:center;vertical-align:middle;">阶段</th>
+                <th style="text-align:center;vertical-align:middle;">备注</th>
+                <th style="text-align:center;vertical-align:middle;">
+                    类别
+                </th>
+                <th style="text-align:center;vertical-align:middle;">收款人</th>
+                <th style="text-align:center;vertical-align:middle;">收款人身份证号</th>
+                <th style="text-align:center;vertical-align:middle;">创建时间</th>
+                <th style="text-align:center;vertical-align:middle;">验证情况</th>
+                <th style="text-align:center;vertical-align:middle;">操作</th>
+            </tr>
+            </thead>
+            <tbody>
+
+            <template>
+                <tr v-for="(reward,index) in rewards">
+                    <td style="text-align:center;vertical-align:middle;">{{beginIndex + 1 + index}}</td>
+                    <td style="text-align:center;vertical-align:middle;">{{reward.serialNumber}}</td>
+                    <td style="text-align:center;vertical-align:middle;">{{reward.tipster}}</td>
+                    <td style="text-align:center;vertical-align:middle;">{{reward.platform}}</td>
+                    <td style="text-align:center;vertical-align:middle;">{{reward.spending}}</td>
+
+                    <td style="text-align:center;vertical-align:middle;">
+                        <span v-if="reward.clueValidate == 5">专人跟进</span>
+                        <span v-else-if="reward.clueValidate == 6">方案制定</span>
+                        <span v-else-if="reward.clueValidate == 7">方案实施</span>
+                        <span v-else-if="reward.clueValidate == 8">完结</span>
+                    </td>
+                    <td style="text-align:center;vertical-align:middle;">{{reward.remark}}</td>
+                    <td style="text-align:center;vertical-align:middle;">
+                        <span v-if="reward.type == 1" style="color:green;">个人调查员</span>
+                        <span v-else-if="reward.type == 2"  style="color:red">调查企业</span>
+                    </td>
+                    <td style="text-align:center;vertical-align:middle;">{{reward.clueAuthor}}</td>
+                    <td style="text-align:center;vertical-align:middle;">{{reward.idCard}}</td>
+                    <td style="text-align:center;vertical-align:middle;">{{reward.createTimeDisplay}}</td>
+                    <td style="text-align:center;vertical-align:middle;">{{reward.validateDisplay}}</td>
+                    <td style="text-align:center;vertical-align:middle;">
+                        <div>
+                            <!--<a class="btn btn-xs btn-success" href="edit.html" data-target="#dialog"
+                               data-toggle="modal" onclick="setClueId(this.id);" :id="reward.clueId">{{(reward.validate == 0 && (authority == 2 || authority == 3) )? "审核":"查看"}}</a>-->
+                            <a class="btn btn-xs btn-success" href="edit.html" data-target="#dialog"
+                               data-toggle="modal" onclick="setRewardId(this.id);" :id="reward.rewardId">{{(reward.validate == 0 && (authority == 2 || authority == 3) )? "审核":"查看"}}</a>
+                            <a class="btn btn-xs btn-info" href="check.html" data-target="#dialog"
+                               data-toggle="modal" onclick="setClueId(this.id);" :id="reward.clueId">线索详情</a>
+                           <!-- <a v-if="reward.validate == 1 && reward.taxState == 0 && authority == 5" class="btn btn-xs btn-info"  onclick="tax(this.id);" :id="reward.rewardId" >缴税</a>-->
+                        </div>
+
+                        <!--<button class="btn btn-xs btn-info" onclick="setUserId(this.id);" :id="user.userId">编辑</button>-->
+
+                    </td>
+                </tr>
+            </template>
+
+            </tbody>
+        </table>
+    </div>
+
+    <div id="baseDialog">
+        <script>getDialog('baseDialog', '../basedialog.html');</script>
+    </div>
+
+
+</div>
+<div id="secondDialog">
+    <script>getDialog('secondDialog', '../seconddialog.html');</script>
+</div>
+<div id="page">
+    <script>getPaging();</script>
+</div>
+<script src="../js/reward/index.js"></script>
+
+</body>
+</html>

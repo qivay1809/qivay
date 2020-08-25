@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8"/>
+    <title>企卫网后台管理系统</title>
+</head>
+<style>
+    html, body {
+        height: 100%;
+        padding: 0;
+        margin: 0;
+        font-family: '微软雅黑';
+    }
+
+    * {
+        margin: 0;
+        padding: 0;
+    }
+
+    input::-webkit-input-placeholder {
+        color: #587cbd;
+    }
+
+    input::-moz-input-placeholder {
+        color: #587cbd;
+    }
+
+    input::-ms-input-placeholder {
+        color: #587cbd;
+    }
+
+    .qivayadmin {
+        background: url(image/qivayadmin.png) no-repeat center center;
+        height: 100%;
+        background-size: 100% 100%;
+    }
+
+    .qivayadminlogin {
+        width: 504px;
+        height: 468px;
+        background: rgb(77, 154, 255);
+        background: rgba(77, 154, 255, 0.4);
+        border-radius: 10px;
+        position: fixed;
+        top: 50%;
+        right: 18%;
+        transform: translate(0%, -50%);
+        text-align: center;
+    }
+
+    .qivayadminlogin .adminlogin-logo {
+        padding: 30px 0 15px;
+    }
+
+    .qivayadminlogin .adminlogin-title {
+        font-size: 28px;
+        color: #fff;
+        padding-bottom: 15px;
+    }
+
+    .qivayadminlogin .login-text {
+        width: 398px;
+        margin: auto;
+        text-align: left;
+    }
+
+    .qivayadminlogin .login-text .list {
+        overflow: hidden;
+        margin-top: 30px;
+    }
+
+    .qivayadminlogin .login-text .code {
+        float: right;
+        width: 144px;
+        margin-left: 19px;
+    }
+
+    .qivayadminlogin .login-text .input {
+        overflow: hidden;
+    }
+
+    .qivayadminlogin .login-text .inputtext, .qivayadminlogin .login-text .inputbutton {
+        height: 55px;
+        background: rgba(1, 24, 65, 0.4);
+        border-radius: 28px;
+        border: none;
+        width: 100%;
+        padding: 0 30px;;
+        font-family: '微软雅黑';
+        font-size: 18px;
+        color: #fff;
+        box-sizing: border-box;
+        -webkit-box-sizing: border-box;
+        outline: none
+    }
+
+    .qivayadminlogin .login-text .inputbutton {
+        width: 100%;
+        padding: 0;
+        cursor: pointer;
+        color: #fff;
+        font-size: 28px;
+    }
+
+    .qivayadminlogin .login-text .code .inputbutton {
+        font-size: 18px;
+    }
+
+    .qivayadminlogin .login-text .listp {
+        overflow: hidden;
+        text-align: right;
+        color: #fff;
+        font-size: 14px;
+        padding: 10px 15px 0;
+    }
+
+    .qivayadminlogin .login-text .listp span {
+        cursor: pointer;
+    }
+</style>
+<script src="js/vue.min.js"></script>
+<script src="js/cookieHelper.js"></script>
+<script src="js/jquery1.11.3.min.js"></script>
+<script src="js/config.js"></script>
+<script src="js/vue.js"></script>
+<script src="js/vue-resource1.3.4.js"></script>
+<body>
+<div class="qivayadmin" id="qivayadmin">
+    <div class="qivayadminlogin">
+        <div class="adminlogin-logo"><img src="image/adminlogin-logo.png" style="height: 71px;width: auto;"></div>
+        <div class="adminlogin-title">知识产权保护平台</div>
+        <div class="login-text">
+            <!-- 手机登录 -->
+            <div class="listbox" v-if="phonelist">
+                <div class="list">
+                    <input type="text" class="inputtext" value="" placeholder="请输入手机号" v-model="cellphone1"/>
+                </div>
+                <div class="list">
+                    <div class="code">
+                        <input type="button" class="inputbutton" @click="getCode" value="发送验证码"/>
+                    </div>
+                    <div class="input">
+                        <input type="text" class="inputtext" value="" placeholder="请输入验证码" v-model="code"/>
+                    </div>
+                </div>
+            </div>
+            <!-- 账号登录 -->
+            <div class="listbox" v-else>
+                <div class="list">
+                    <input type="text" class="inputtext" value="" placeholder="请输入账号" v-model="cellphone"/>
+                </div>
+                <div class="list">
+                    <input type="password" class="inputtext" value="" placeholder="请输入密码" v-model="password"/>
+                </div>
+            </div>
+            <div class="listp" v-if="phonelist"><span @click="tabaccount">账号登录</span></div>
+            <div class="listp" v-else><span @click="tabcode">验证码登录</span></div>
+            <div class="list" style="margin-top: 20px;">
+                <input type="button" class="inputbutton" @click="login" value="登 录"/>
+            </div>
+        </div>
+    </div>
+    <div style="text-align: right">
+        <a target="_blank" href="http://p.qiao.baidu.com/cps/chat?siteId=14172062&userId=29480838">
+            <img border="0" src="https://sgoutong.baidu.com/embed/1573036979/asset/embed/css/pc/icon/img/seekColorBack0.png" alt="在线咨询" title="在线咨询"/>
+        </a>
+    </div>
+</div>
+
+<script src="js/login.js"></script>
+</body>
+</html>

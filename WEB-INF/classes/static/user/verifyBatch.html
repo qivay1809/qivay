@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:v-bind="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+<!--    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+    <meta http-equiv="Pragma" content="no-cache" />
+    <meta http-equiv="Expires" content="0" />-->
+    <title>用户批量审核</title>
+    <link rel="stylesheet" href="../css/bootstrap.min.css">
+    <link rel="stylesheet" href="../css/dialog.css">
+    <script src="../js/jquery1.11.3.min.js"></script>
+    <script src="../js/bootstrap.min.js"></script>
+    <script src="../js/vue.js"></script>
+    <script src="../js/vue-resource1.3.4.js"></script>
+    <script src="../plugins/My97DatePicker/WdatePicker.js"></script>
+
+    <script src="../js/config.js"></script>
+
+    <link rel="stylesheet" href="../plugins/confirm/jquery-confirm.css">
+    <script src="../plugins/confirm/jquery-confirm.js"></script>
+    <link rel="stylesheet" href="../css/font-awesome.min.css" media="all"/>
+</head>
+<body>
+<div id="userIndexBatch">
+    <div class="form-inline">
+        <input id="txtSearch" type="hidden" @click="getUsers('msg')"/>
+        <input id="hidUserId" type="hidden"/>
+    </div>
+    <div class="table-responsive">
+        <table class="table table-striped" id="main">
+            <thead>
+            <tr>
+                <th style="text-align:center;vertical-align:middle;">编号</th>
+                <th style="text-align:center;vertical-align:middle;">姓名</th>
+                <th style="text-align:center;vertical-align:middle;">性别</th>
+                <th style="text-align:center;vertical-align:middle;">手机号</th>
+                <th style="text-align:center;vertical-align:middle;">身份证号</th>
+                <th style="text-align:center;vertical-align:middle;">正面照</th>
+                <th style="text-align:center;vertical-align:middle;">反面照</th>
+                <th style="text-align:center;vertical-align:middle;">自拍照</th>
+                <th style="text-align:center;vertical-align:middle;">用户类型</th>
+                <th style="text-align:center;vertical-align:middle;">验证情况</th>
+                <th style="text-align:center;vertical-align:middle;">验证说明</th>
+                <th style="text-align:center;vertical-align:middle;">操作</th>
+            </tr>
+            </thead>
+            <tbody>
+
+            <template>
+                <tr v-for="(user, index) in users">
+                    <td style="text-align:center;vertical-align:middle;">{{beginIndex + 1 + index}}</td>
+                    <td style="text-align:center;vertical-align:middle;">{{user.name}}</td>
+                    <td style="text-align:center;vertical-align:middle;">{{user.genderDisplay}}</td>
+                    <td style="text-align:center;vertical-align:middle;">{{user.cellphone}}</td>
+                    <td style="text-align:center;vertical-align:middle;">{{user.idCard}}</td>
+                    <td style="text-align:center;vertical-align:middle;">
+                        <img v-bind:src="[user.idCardFront]" onclick="openImage(this);" width="250px" height="170px"></td>
+                        <!--<img v-bind:src="[user.idCardFront+'?random='+Math.random()]" onclick="openImage(this);" width="250px" height="170px"></td>-->
+                    </td>
+                    <td style="text-align:center;vertical-align:middle;">
+                        <img v-bind:src="[user.idCardBack]" onclick="openImage(this);" width="250px" height="170px"></td>
+                    </td>
+                    <td style="text-align:center;vertical-align:middle;">
+                        <img v-bind:src="[user.holdIdCard]" onclick="openImage(this);" width="250px" height="170px"></td>
+                    </td>
+
+                    <td style="text-align:center;vertical-align:middle;">{{user.userTypeDisplay}}</td>
+                    <td style="text-align:center;vertical-align:middle;">{{user.userStateDisplay}}</td>
+                    <td style="text-align:center;vertical-align:middle;">
+                        <textarea v-model="arrayContent[index]" @change="content_x" cols= "15" rows="5"></textarea>
+                    </td>
+                    <td style="text-align:center;vertical-align:middle;">
+                        <div>
+                            <a type="button" class="btn btn-success" @click="verifyUser($event.currentTarget)"
+                               data-msg="1" :id="user.userId">通过</a>
+                            <a type="button" class="btn btn-warning" @click="verifyUser($event.currentTarget)"
+                               data-msg="2" :id="user.userId">不通过</a>
+                            <a class="btn btn-xs btn-info" href="edit.html" data-target="#dialog"
+                               data-toggle="modal" onclick="setUserId(this.id);" :id="user.userId"><i
+                                    class="icon-edit"></i>编辑</a>
+                            <a class="btn btn-xs btn-info" href="check.html" data-target="#dialog"
+                               data-toggle="modal" onclick="setUserId(this.id);" :id="user.userId"><i
+                                    class="icon-search"></i>查看</a>
+                        </div>
+
+                    </td>
+                </tr>
+            </template>
+
+            </tbody>
+        </table>
+    </div>
+
+    <div id="baseDialog">
+        <script>getDialog('baseDialog', '../basedialog.html');</script>
+    </div>
+
+    <a data-toggle="modal" href="#example2" class="btn-large" id="imageDialog" hidden></a>
+</div>
+<div id="secondDialog">
+    <script>getDialog('secondDialog', '../seconddialog.html');</script>
+</div>
+
+<script src="../js/user/verifyBatch.js"></script>
+
+</body>
+</html>

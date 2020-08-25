@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:v-bind="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title>评论审核</title>
+    <link rel="stylesheet" href="../css/bootstrap.min.css">
+    <link rel="stylesheet" href="../css/bootstrap-theme.min.css"/>
+    <link rel="stylesheet" href="../plugins/fileinput/css/fileinput.css"/>
+    <script src="../js/jquery1.11.3.min.js"></script>
+    <script src="../js/bootstrap.min.js"></script>
+    <script src="../js/vue.js"></script>
+    <script src="../js/vue-resource1.3.4.js"></script>
+    <script src="../js/config.js"></script>
+    <script src="../plugins/fileinput/js/fileinput.js"></script>
+    <script src="../plugins/fileinput/js/locales/zh.js"></script>
+    <link rel="stylesheet" href="../plugins/confirm/jquery-confirm.css">
+    <script src="../plugins/confirm/jquery-confirm.js"></script>
+
+</head>
+<body>
+<div id="editComment">
+<div class="modal-header">
+    <button type="button" class="close editClose" data-dismiss="modal" aria-label="Close"><span
+            aria-hidden="true">&times;</span></button>
+    <h4 class="modal-title">评论审核</h4>
+</div>
+<div class="modal-body">
+    <form class="form-horizontal">
+
+        <div class="form-group">
+            <label class="col-sm-2 control-label">评论类型</label>
+            <div class="col-sm-9">
+                <input type="text" class="form-control" id="txtCommentTypeDisplay" placeholder="评论类型"  v-model="commentTypeDisplay" readonly>
+            </div>
+            <div class="col-sm-1">
+                <h4 style="color: red">*</h4>&nbsp;
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="col-sm-2 control-label">关联id</label>
+            <div class="col-sm-9">
+                <input type="text" class="form-control" id="txtObjectId" placeholder="关联id"  v-model="objectId" readonly>
+            </div>
+            <div class="col-sm-1">
+                <h4 style="color: red">*</h4>&nbsp;
+            </div>
+        </div>
+
+        <div class="form-group" v-if="inputType == 0">
+            <label class="col-sm-2 control-label">评论内容</label>
+            <div class="col-sm-9">
+                <textarea id="txtContent" class="form-control"   v-model="content" rows="3" readonly></textarea>
+            </div>
+            <div class="col-sm-1">
+                <h4 style="color: red">*</h4>&nbsp;
+            </div>
+        </div>
+
+        <a data-toggle="modal" href="#example2" class="btn-large" id="imageDialog" hidden></a>
+
+        <div class="form-group" v-if="inputType == 1">
+            <label class="col-sm-2 control-label">鉴定图片</label>
+            <div class="col-sm-10">
+                <div style="float: left"  v-for="(image,index) in imageCompresses">
+                    <img v-bind:src="image" width="150px" height="150px" data-index="index"
+                         onclick="openDialog(this);" style="cursor:pointer;">
+                    <input v-bind:value="index" hidden/>
+                </div>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="col-sm-2 control-label">是否显示</label>
+            <div class="col-sm-9">
+                <input type="text" class="form-control" id="txtCommentShow" placeholder="是否显示"  v-model="commentShowDisplay" readonly>
+            </div>
+            <div class="col-sm-1">
+                <h4 style="color: red">*</h4>&nbsp;
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="col-sm-2 control-label">评论状态</label>
+            <div class="col-sm-9">
+                <input type="text" class="form-control" id="txtStatus" placeholder="评论状态"  v-model="statusDisplay" readonly>
+            </div>
+            <div class="col-sm-1">
+                <h4 style="color: red">*</h4>&nbsp;
+            </div>
+        </div>
+
+
+
+    </form>
+</div>
+<div class="modal-footer">
+    <div v-if="status == 0">
+        <button type="button" class="btn btn-default" @click="verifyComment(1)">通过</button>
+        <button type="button" class="btn btn-primary" @click="verifyComment(2)">不通过</button>
+    </div>
+    <div v-else>
+        <button id="btnClose" type="button" class="btn btn-default editClose" data-dismiss="modal">关闭</button>
+    </div>
+</div>
+</div>
+
+<script src="../js/comment/edit.js"></script>
+<script src="../js/uploadImage.js"></script>
+
+</body>
+</html>

@@ -1,0 +1,428 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.qivay.mapper.StatisticalMapper">
+
+
+    <!--线索统计-->
+    <select id="clueStatistical" resultType="com.qivay.domain.statistical.ClueStatistical">
+    SELECT c.serial_number serialNumber,c.region_id regionId,x.province_key provinceKey,x.province_name provinceName,x.city_key cityKey,x.city_name cityName,x.region_name area,x.longitude, x.latitude FROM clue c LEFT JOIN
+    (SELECT x.province_key, x.province_name,x.city_key,x.city_name,r.region_id,r.region_name,r.longitude,r.latitude FROM (SELECT x.province_key, x.province_name, r.region_id city_key, r.region_name city_name FROM (SELECT region_id province_key, region_name province_name FROM `region` where parent_id is null) x LEFT JOIN region r ON x.province_key = r.parent_id) x
+    LEFT JOIN region r ON x.city_key = r.parent_id) x ON c.region_id = x.region_id
+    ORDER BY c.serial_number DESC
+  </select>
+
+    <!--获取线索分布-->
+    <select id="clueSize" resultType="com.qivay.domain.statistical.Point">
+    SELECT c.region_id regionId, x.longitude, x.latitude FROM clue c LEFT JOIN
+    (SELECT x.province_key, x.province_name,x.city_key,x.city_name,r.region_id,r.region_name,r.longitude,r.latitude FROM (SELECT x.province_key, x.province_name, r.region_id city_key, r.region_name city_name FROM (SELECT region_id province_key, region_name province_name FROM `region` where parent_id is null) x LEFT JOIN region r ON x.province_key = r.parent_id) x
+    LEFT JOIN region r ON x.city_key = r.parent_id) x ON c.region_id = x.region_id
+  </select>
+
+    <!--获取所有用户身份证号-->
+    <select id="getIdCard" resultType="string">
+        SELECT DISTINCT id_card FROM `user` where id_card is not null and id_card != '' and lat_long is null;
+    </select>
+
+    <select id="getUserPosition" resultType="string">
+  select `lat_long` from `user` where `lat_long` is not null
+  </select>
+
+
+    <!--首页概览之用户-->
+    <select id="findYesterdayAddUserCount" resultType="int">
+    -- 昨日新增用户
+    SELECT count(user_id) count FROM `user` WHERE TO_DAYS(NOW()) - TO_DAYS(create_time) &lt;= 1;
+  </select>
+    <select id="findYesterdayAddUserTrueName" resultType="int">
+    -- 昨日实名用户
+    SELECT count(user_id) count FROM `user` WHERE TO_DAYS(NOW()) - TO_DAYS(create_time) &lt;= 1 AND id_card is not null;
+</select>
+    <select id="findUserCount" resultType="int">
+    -- 累计用户
+    SELECT count(user_id) count FROM `user`;
+</select>
+    <select id="findUserTrueNameCount" resultType="int">
+    -- 累计实名用户
+    SELECT count(user_id) count FROM `user` WHERE id_card is not null;
+  </select>
+
+    <select id="findAbnormalCount" resultType="int">
+    -- 异常用户数量
+    SELECT count(user_id) FROM `user` where abnormal != 0;
+   </select>
+
+    <select id="findBlackCount" resultType="int">
+    -- 黑名单用户数量
+    SELECT count(user_id) FROM `user` where user_state = 3;
+  </select>
+
+    <select id="findDeleteUserCount" resultType="int">
+    -- 注销用户数量
+    SELECT count(user_id) FROM `user` where user_state = -1;
+    </select>
+
+    <!--首页概览之线索-->
+    <select id="findYesterdayAddClue" resultType="int">
+    -- 昨日新增线索
+    SELECT count(clue_id) count FROM `clue` WHERE TO_DAYS(NOW()) - TO_DAYS(create_time) &lt;= 1;
+  </select>
+    <select id="findClueCount" resultType="int">
+    -- 累计线索
+    SELECT count(clue_id) count FROM `clue`;
+  </select>
+    <select id="findDoClue" resultType="int">
+    -- 进行中的线索
+    SELECT count(clue_id) count FROM `clue` WHERE 1 = 1 and (validate = 1 or validate = 3 or validate = 5 or validate = 6 or validate = 7);
+</select>
+    <select id="findSuccessClue" resultType="int">
+    -- 正常完结的线索
+    SELECT count(clue_id) count FROM `clue` WHERE validate = 8
+  </select>
+
+
+    <!--首页概览之奖金-->
+    <select id="findYesterdayAmount" resultType="double">
+        -- 昨日提现总额
+        SELECT IFNULL(SUM(CAST(amount AS DECIMAL(18, 2))), 0) amount FROM `money_apply` WHERE TO_DAYS(NOW()) - TO_DAYS(create_time) &lt;= 1 AND validate = 1;
+    </select>
+
+    <select id="findAmountUser" resultType="int">
+        -- 昨日提现人数
+        SELECT count(DISTINCT user_id) count FROM `money_apply` WHERE TO_DAYS(NOW()) - TO_DAYS(create_time) &lt;= 1 AND validate =1;
+    </select>
+
+    <select id="findAmount" resultType="double">
+        -- 累计提现金额
+        -- SELECT IFNULL(SUM(amount), 0) amount FROM `money_apply` where validate = 1;
+        select IFNULL(SUM(tr.transfer_amount), 0) amount
+        from transfer_record tr
+        left join user u on tr.user_id = u.user_id
+        left join enterprise e on e.enterprise_id = tr.user_id
+        where tr.transfer_type = 3 and e.enterprise_id is null
+    </select>
+    <select id="findYesterdayClueAmount" resultType="double">
+        -- 昨日发放奖金总额
+        -- SELECT IFNULL(SUM(spending), 0) amount FROM reward WHERE TO_DAYS(NOW()) - TO_DAYS(create_time) &lt;= 1 AND validate = 1;
+        select convert(IFNULL(SUM(transfer_amount), 0)/2,decimal(15,2)) amount from transfer_record WHERE TO_DAYS(NOW()) - TO_DAYS(transfer_time) &lt;= 1 AND transfer_type = 1;
+</select>
+    <select id="findLastMonthAmount" resultType="double">
+        -- 上月发放奖金总额
+        -- select IFNULL(SUM(spending), 0) amount from reward where date_format(create_time,'%Y-%m') = date_format(date_sub(curdate(), interval 1 month),'%Y-%m') AND validate = 1;
+    select convert(IFNULL(SUM(transfer_amount), 0)/2,decimal(15,2)) amount from transfer_record where date_format(transfer_time,'%Y-%m') = date_format(date_sub(curdate(), interval 1 month),'%Y-%m') AND transfer_type = 1;
+    </select>
+    <select id="findClueAmount" resultType="double">
+        -- 累计发放奖金总额
+        select convert(IFNULL(SUM(transfer_amount), 0)/2,decimal(15,2)) as amount from transfer_record where transfer_type = 1
+    </select>
+    <select id="findAllTax" resultType="double">
+        SELECT convert(IFNULL(SUM(tax), 0),decimal(15,2)) FROM `money_transfer`
+    </select>
+    <!-- 奖金管理 -->
+    <select id="findClueAmountX" resultType="map">
+        -- flag == 1 线索奖金收入排名; flag == 0 调查费收入排名
+        SELECT * FROM (
+        SELECT
+        SUM(tr.transfer_amount) amount, IFNULL(u.`name`, u.cellphone) `name`
+        FROM
+        `transfer_record` tr
+        INNER JOIN `user` u ON tr.user_id = u.user_id
+        WHERE
+        tr.transfer_type = 1
+        <choose>
+            <when test="flag == 1">
+                AND tr.transfer_amount = 18.8
+            </when>
+            <otherwise>
+                AND tr.transfer_amount != 18.8
+            </otherwise>
+        </choose>
+        AND tr.user_id != 'qivms'
+        GROUP BY tr.user_id
+        ) x
+        ORDER BY x.amount DESC
+        limit 0, 10
+    </select>
+
+    <!-- 假货举报品牌排行 -->
+    <select id="findBrand" resultType="map">
+        SELECT x.count, x.brandName FROM (
+            SELECT
+                COUNT(c.clue_id) count,
+                b.brand_name brandName
+            FROM
+                `clue` c
+            LEFT JOIN brand b ON c.brand_id = b.brand_id
+            GROUP BY
+                c.brand_id
+        ) x ORDER BY x.count desc
+        limit 0, 10
+    </select>
+
+    <!-- 提交线索数量最多的用户排行 -->
+    <select id="findUserByClue" resultType="map">
+        SELECT x.count, x.name FROM (
+        SELECT
+            COUNT(c.clue_id) count,
+            IFNULL(u. NAME, u.cellphone) `name`
+        FROM
+            clue c
+        LEFT JOIN `user` u ON c.creator = u.user_id
+        GROUP BY c.creator ) x
+        ORDER BY x.count desc
+        limit 0, 10
+    </select>
+
+
+    <!-- 邀请好友最多的排行 -->
+    <select id="findInviteUserCount" resultType="map">
+        SELECT
+            `count`,
+            inviteCode
+        FROM
+            (
+                SELECT
+                    count(user_id) count,
+                    invite_code inviteCode
+                FROM
+                    `user`
+                WHERE
+                    invite_code IS NOT NULL
+                AND invite_code != ''
+                GROUP BY
+                    invite_code
+            ) x
+        ORDER BY x.count DESC
+        limit 0, 10
+    </select>
+
+    <!--用户增势-->
+    <select id="userGrowth" parameterType="Integer" resultType="com.qivay.domain.statistical.UserGrowth">
+        SELECT a.count count, b.count realNameCount, a.time FROM
+            (
+            SELECT
+            count(user_id) count,
+            DATE_FORMAT(create_time, '%Y-%m-%d') time
+            FROM `user`
+            GROUP BY DATE_FORMAT(create_time, '%Y-%m-%d')
+            ) a
+        LEFT JOIN
+            (
+            SELECT
+            count(user_id) count,
+            DATE_FORMAT(create_time, '%Y-%m-%d') time
+            FROM `user`
+            WHERE user_state = 1
+            GROUP BY DATE_FORMAT(create_time, '%Y-%m-%d')
+            ) b
+        ON a.time = b.time
+        WHERE 1 = 1
+        <if test="val == 7">
+            AND DATE_SUB(CURDATE(), INTERVAL 7 DAY) &lt;= a.time
+        </if>
+        <if test="val == 30">
+            AND DATE_SUB(CURDATE(), INTERVAL 30 DAY) &lt;= a.time
+        </if>
+        <if test="val == 90">
+            AND DATE_SUB(CURDATE(), INTERVAL 90 DAY) &lt;= a.time
+        </if>
+        <if test="val == 365">
+            AND year(date_sub(now(),interval 1 year)) = year(a.time)
+        </if>
+        <if test="val == 366">
+            AND YEAR(NOW()) = YEAR(a.time)
+        </if>
+        ORDER BY a.time ASC
+
+
+
+
+
+
+    </select>
+
+
+    <!--用户分析下-->
+    <select id="countUserState" resultType="map">
+        -- SELECT count(user_id) count, user_state FROM `user` GROUP BY user_state
+        SELECT
+            count(user_id) `value`,
+            CASE
+                WHEN user_state = 0 THEN '未验证'
+                WHEN user_state = 1 THEN '已验证'
+                WHEN user_state = 2 THEN '未通过'
+                WHEN user_state = 3 THEN '黑名单'
+                WHEN user_state = 4 THEN '审核中'
+                WHEN user_state = -1 THEN '注销'
+                ELSE '未知'
+            END AS `name`
+        FROM `user`
+        GROUP BY user_state
+    </select>
+    <!--查询用户年龄群体-->
+    <select id="count00" resultType="int">
+        select COUNT(user_id) from `user` where birthday >= '2000' and birthday &lt;'2010';
+    </select>
+    <select id="count90" resultType="int">
+        select COUNT(user_id) from `user` where birthday >= '1990' and birthday &lt;'2000';
+    </select>
+    <select id="count80" resultType="int">
+        select COUNT(user_id) from `user` where birthday >= '1980' and birthday &lt;'1990';
+    </select>
+    <select id="count70" resultType="int">
+        select COUNT(user_id) from `user` where birthday >= '1970' and birthday &lt;'1980';
+    </select>
+    <select id="count60" resultType="int">
+        select COUNT(user_id) from `user` where birthday >= '1960' and birthday &lt;'1970';
+    </select>
+    <!--end-->
+
+    <select id="countGender" resultType="map">
+       -- SELECT count(user_id) count, gender FROM `user` where gender is not null GROUP BY gender
+        SELECT
+            count(user_id) `value`,
+            CASE
+                WHEN gender = 0 THEN '男'
+                WHEN gender = 1 THEN '女'
+                ELSE '未知'
+            END AS `name`
+        FROM `user`
+        WHERE gender IS NOT NULL
+        GROUP BY gender
+    </select>
+
+
+    <!-- 邀请码奖励统计 -->
+    <select id="findYesterdayInviteCount" resultType="int">
+        -- 24时邀请数量
+        SELECT count(user_id) count FROM `user` WHERE user_state = 1 AND TO_DAYS(NOW()) - TO_DAYS(create_time) &lt;= 1 AND invite_code is not NULL AND invite_code != ''
+    </select>
+    <!--累计邀请人次-->
+    <select id="findInviteCount" resultType="int">
+        SELECT count(user_id) count FROM `user` WHERE user_state = 1 AND invite_code is not NULL AND invite_code != ''
+    </select>
+
+
+    <!--邀请码邀请的已实名的用户-->
+    <select id="findInviteNameAmount" parameterType="int" resultType="map">
+        SELECT
+            count(user_id)*2.88 amount,
+            DATE_FORMAT(create_time, '%Y-%m-%d') time
+        FROM
+          `user`
+        WHERE user_state = 1
+        AND invite_code is not null
+        AND invite_code != ''
+        <if test="val == 7">
+            AND DATE_SUB(CURDATE(), INTERVAL 7 DAY) &lt;= date(create_time)
+        </if>
+        <if test="val == 30">
+            AND DATE_SUB(CURDATE(), INTERVAL 30 DAY) &lt;= date(create_time)
+        </if>
+        <if test="val == 90">
+            AND DATE_SUB(CURDATE(), INTERVAL 90 DAY) &lt;= date(create_time)
+        </if>
+        <if test="val == 365">
+            AND year(DATE_SUB(now(), INTERVAL 1 year)) = year(create_time)
+        </if>
+        <if test="val == 366">
+            AND YEAR(NOW()) = YEAR(create_time)
+        </if>
+        GROUP BY time
+        ORDER BY time ASC
+    </select>
+
+
+    <!-- 个人用户邀请详细统计-->
+    <select id="InviteUser" resultType="map">
+        SELECT x.count, x.inviteCode FROM (SELECT count(user_id) count, invite_code inviteCode FROM `user` where invite_code is not null AND invite_code != '' AND create_time >= '2019-08-16 00:00:00' GROUP BY invite_code) x
+        ORDER BY x.count desc  limit 0, 50
+    </select>
+    <select id="findByInviteCode" parameterType="String" resultType="double">
+        SELECT COUNT(user_id) FROM `user` WHERE user_state = 1 AND invite_code = #{inviteCode}
+    </select>
+    <select id="findByInviteCodeAndUserId" parameterType="String" resultType="int">
+        SELECT COUNT(user_id) FROM `user`
+        WHERE 1 = 1
+        AND invite_code = #{inviteCode}
+        <if test="userState == 1">
+            and user_state = #{userState}
+        </if>
+    </select>
+    <select id="findAllActive" parameterType="int" resultType="map">
+        SELECT
+        count(DISTINCT user_id) count,
+        DATE_FORMAT(create_time, '%Y-%m-%d') time
+        FROM ${tableName}
+        where 1 = 1
+        <if test="val == 7">
+            AND DATE_SUB(CURDATE(), INTERVAL 7 DAY) &lt;= date(create_time)
+        </if>
+        <if test="val == 30">
+            AND DATE_SUB(CURDATE(), INTERVAL 30 DAY) &lt;= date(create_time)
+        </if>
+        <if test="val == 90">
+            AND DATE_SUB(CURDATE(), INTERVAL 90 DAY) &lt;= date(create_time)
+        </if>
+        <if test="val == 365">
+            AND year(DATE_SUB(now(), INTERVAL 1 year)) = year(create_time)
+        </if>
+        <if test="val == 366">
+            AND YEAR(NOW()) = YEAR(create_time)
+        </if>
+        GROUP BY time
+        ORDER BY time ASC
+    </select>
+
+
+
+    <!-- 用户管理中，个人用户的统计分析 -->
+    <select id="findAmountGrowth" parameterType="String" resultType="map">
+        SELECT
+            SUM(transfer_amount) amount,
+            DATE_FORMAT(transfer_time, '%Y-%m-%d') time
+        FROM
+            `transfer_record`
+        WHERE
+            transfer_type = 1
+        AND user_id = #{userId}
+        GROUP BY time
+        ORDER BY time ASC
+    </select>
+
+    <!--个人用户分析，用户活跃度统计-->
+    <select id="findActive" parameterType="String" resultType="map">
+        SELECT
+            COUNT(request_uri) count,
+            DATE_FORMAT(create_time, '%Y-%m-%d') time
+        FROM
+            log
+        WHERE
+            user_id = #{userId}
+        GROUP BY time
+        ORDER BY time ASC
+    </select>
+    <select id="findReward" resultType="double">
+        SELECT
+        convert(IFNULL(SUM(transfer_amount), 0), decimal(15,2)) reward
+        FROM transfer_record WHERE transfer_type = #{type} AND user_id = #{userId}
+    </select>
+    <select id="findUserBalance" parameterType="String" resultType="double">
+      select balance from `user`   where user_id = #{userId}
+    </select>
+    <select id="findClue" resultType="int">
+        SELECT
+        count(clue_id) count
+        FROM
+        `clue`
+        WHERE creator = #{userId}
+        <if test="val == 1">
+            AND TO_DAYS(NOW()) - TO_DAYS(create_time) &lt;= 1
+        </if>
+        <if test="val == 2">
+            AND (validate = 1 or validate = 3 or validate = 5 or validate = 6 or validate = 7)
+        </if>
+        <if test="val == 3">
+            AND validate = 8
+        </if>
+    </select>
+</mapper>

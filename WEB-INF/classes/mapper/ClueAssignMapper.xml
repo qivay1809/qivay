@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.qivay.mapper.ClueAssignMapper">
+
+    <resultMap id="clueAssignMap" type="com.qivay.domain.ClueAssign">
+        <id column="clue_assign_id" property="clueAssignId"/>
+        <result column="clue_id" property="clueId"/>
+        <result column="user_id" property="userId"/>
+        <result column="enterprise_id" property="enterpriseId"/>
+        <result column="assign_type" property="assignType"/>
+        <result column="creator" property="creator"/>
+        <result column="create_time" property="createTime"/>
+    </resultMap>
+
+    <insert id="addClueAssign">
+        insert into clue_assign (clue_assign_id, clue_id, user_id,enterprise_id, assign_type,creator, create_time)
+        values (#{clueAssignId}, #{clueId}, #{userId},#{enterpriseId},#{assignType}, #{creator},#{createTime})
+    </insert>
+
+    <insert id="addClueAssignImage">
+        insert into clue_assign_image (clue_assign_image_id, clue_id, url,image_order)
+        values (#{clueAssignImageId}, #{clueId}, #{url},#{imageOrder})
+    </insert>
+    <!--根据住建查询唯一的数据-->
+    <select id="findByAssignImageId" resultType="String">
+        SELECT url FROM `clue_assign_image` where clue_id = #{clueId}
+    </select>
+    <update id="updateClueAssign">
+        update clue_assign
+        set `authorization` = #{authorization},
+        result = #{result}
+        where clue_id = #{clueId}
+    </update>
+
+    <!--根据住建查询唯一的数据-->
+    <select id="findById" resultMap="clueAssignMap">
+        SELECT * FROM `clue_assign` where clue_assign_id=#{clueAssignId}
+    </select>
+    <!--根据线索ID查询唯一的数据-->
+    <select id="findByClueId" resultMap="clueAssignMap">
+        SELECT * FROM `clue_assign` where clue_id=#{clueId}
+    </select>
+
+    <select id="findEnterpriseNameAndUserName" resultType="map">
+       SELECT
+            e.enterprise_name,
+            u.name
+        FROM
+            clue_assign ca
+        JOIN enterprise e ON ca.enterprise_id = e.enterprise_id
+        JOIN `user` u ON ca.user_id = u.user_id
+        where ca.clue_id =#{clueId}
+    </select>
+</mapper>

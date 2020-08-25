@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:v-bind="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title>品牌列表</title>
+    <link rel="stylesheet" href="../css/bootstrap.min.css">
+    <link rel="stylesheet" href="../css/dialog.css">
+    <script src="../js/jquery1.11.3.min.js"></script>
+    <script src="../js/bootstrap.min.js"></script>
+    <script src="../js/vue.js"></script>
+    <script src="../js/vue-resource1.3.4.js"></script>
+    <script src="../js/config.js"></script>
+    <script src="../plugins/My97DatePicker/WdatePicker.js"></script>
+    <link rel="stylesheet" href="../css/font-awesome.min.css" media="all"/>
+
+</head>
+<body>
+<div id="brandIndex">
+    <div class="form-inline">
+        <div class="form-group">
+            <label class="sr-only">品牌名</label>
+            <input id="txtBrandTitle" v-model="search.brandName" style="width:135px" class="form-control" type="text"
+                   placeholder="请输入品牌名"/>
+        </div>
+        <div class="form-group">
+            <label class="sr-only">企业名</label>
+            <input id="txtBrandContent" v-model="search.enterpriseName" class="form-control" type="text" placeholder="请输入企业名" style="width:135px"/>
+        </div>
+
+        <div class="form-group">
+            创建时间：
+            <label class="sr-only">创建开始时间</label>
+            <input id="txtBeginDate" class="form-control" type="text" placeholder="请输入创建开始时间"/>
+            ---
+            <label class="sr-only">创建结束时间</label>
+            <input id="txtEndDate" class="form-control" type="text" placeholder="请输入创建结束时间"/>
+        </div>
+
+        <div class="form-group">
+            <div class="col-sm-6">
+                <select id="selBrandVerify" v-model="search.brandVerify" class="form-control">
+                    <option value="-1" selected="selected">验证情况</option>
+                    <option value="0">未验证</option>
+                    <option value="1">已验证</option>
+                    <option value="2">未通过</option>
+                </select>
+            </div>
+        </div>
+
+        <button id="btnSearch" type="button" @click="getBrands" class="btn btn-primary">搜索</button>
+
+        <a class="btn btn-primary" :href="exportUrl">导出</a>
+
+        <a class="btn btn-primary" href="edit.html" onclick="setBrandId('');" data-target="#dialog" data-toggle="modal">添加品牌</a>
+
+        <input id="txtSearch" type="hidden" @click="getBrands('msg')"/>
+        <input id="hidBrandId" type="hidden"/>
+        <input id="hidBrandVerify" type="hidden"/>
+        <input id="hidEdit" type="hidden"/>
+    </div>
+
+    <div class="table-responsive">
+        <table class="table table-striped" id="main">
+            <thead>
+            <tr>
+                <th style="text-align:center;vertical-align:middle;">编号</th>
+                <th style="text-align:center;vertical-align:middle;">品牌名</th>
+                <th style="text-align:center;vertical-align:middle;">品牌英文名</th>
+                <th style="text-align:center;vertical-align:middle;">图标</th>
+                <th style="text-align:center;vertical-align:middle;">所属企业</th>
+                <th style="text-align:center;vertical-align:middle;">创建人</th>
+                <th style="text-align:center;vertical-align:middle;">创建时间</th>
+                <th style="text-align:center;vertical-align:middle;">更新人</th>
+                <th style="text-align:center;vertical-align:middle;">更新时间</th>
+                <th style="text-align:center;vertical-align:middle;">验证情况</th>
+                <th style="text-align:center;vertical-align:middle;">操作</th>
+            </tr>
+            </thead>
+            <tbody>
+
+            <template>
+                <tr v-for="(brand,index) in brands">
+                    <td style="text-align:center;vertical-align:middle;">{{beginIndex + 1 + index}}</td>
+                    <td style="text-align:center;vertical-align:middle;">{{brand.brandName}}</td>
+                    <td style="text-align:center;vertical-align:middle;">{{brand.brandEnname}}</td>
+                    <td style="text-align:center;vertical-align:middle;"><img v-bind:src="brand.logoCompress ? brand.logoCompress:brand.logo"
+                                                                              class="img-circle" width="60px" height="60px"></td>
+                    <td style="text-align:center;vertical-align:middle;">{{brand.enterpriseId}}</td>
+                    <td style="text-align:center;vertical-align:middle;">{{brand.creator}}</td>
+                    <td style="text-align:center;vertical-align:middle;">{{brand.createTimeDisplay}}</td>
+                    <td style="text-align:center;vertical-align:middle;">{{brand.updateUser}}</td>
+                    <td style="text-align:center;vertical-align:middle;">{{brand.updateTimeDisplay}}</td>
+                    <td style="text-align:center;vertical-align:middle;">{{brand.brandVerifyDisplay}}</td>
+                    <td style="text-align:center;vertical-align:middle;">
+                        <div v-if="brand.brandVerify == 0 || brand.brandVerify == 3">
+                            <a class="btn btn-xs btn-info" href="edit.html" data-target="#dialog"
+                               data-toggle="modal" onclick="setBrandId(this.id);" :id="brand.brandId"><i class="icon-edit"></i>编辑</a>
+                            <a class="btn btn-xs btn-success" href="edit.html" data-target="#dialog"
+                               data-toggle="modal" onclick="setBrandAndVerify(this.id,'verify');" :id="brand.brandId"><i class="icon-check"></i>验证</a>
+                            <a class="btn btn-xs btn-danger"
+                               data-toggle="modal" onclick="del(this.id);" :id="brand.brandId"><i class="icon-trash"></i>删除</a>
+                        </div>
+                        <div v-else-if="brand.brandVerify == 1">
+                            <a class="btn btn-xs btn-info" href="check.html" data-target="#dialog"
+                               data-toggle="modal" onclick="setBrandAndVerify(this.id);" :id="brand.brandId"><i class="icon-search"></i>查看</a>
+                        </div>
+                        <div v-else>
+                            <a class="btn btn-xs btn-info" href="edit.html" data-target="#dialog"
+                               data-toggle="modal" onclick="setBrandId(this.id);" :id="brand.brandId"><i class="icon-edit"></i>编辑</a>
+                        </div>
+                        <!--<button class="btn  btn-mini  btn-danger" onclick="del(this.id);" :id="brand.brandId"><i class="icon-trash"></i>删除</button>-->
+
+                    </td>
+                </tr>
+            </template>
+
+            </tbody>
+        </table>
+    </div>
+
+    <div id="baseDialog">
+        <script>getDialog('baseDialog', '../basedialog.html');</script>
+    </div>
+
+
+</div>
+<div id="secondDialog">
+    <script>getDialog('secondDialog', '../seconddialog.html');</script>
+</div>
+<div id="page">
+    <script>getPaging();</script>
+</div>
+<script src="../js/brand/index.js"></script>
+
+</body>
+</html>

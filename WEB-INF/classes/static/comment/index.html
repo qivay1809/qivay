@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:v-bind="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title>评论列表</title>
+    <link rel="stylesheet" href="../css/bootstrap.min.css">
+    <link rel="stylesheet" href="../css/dialog.css">
+    <script src="../js/jquery1.11.3.min.js"></script>
+    <script src="../js/bootstrap.min.js"></script>
+    <script src="../js/vue.js"></script>
+    <script src="../js/vue-resource1.3.4.js"></script>
+    <script src="../js/config.js"></script>
+    <script src="../plugins/My97DatePicker/WdatePicker.js"></script>
+    <link rel="stylesheet" href="../plugins/confirm/jquery-confirm.css">
+    <script src="../plugins/confirm/jquery-confirm.js"></script>
+
+</head>
+<body>
+<div id="commentIndex">
+    <div class="form-inline">
+        <div class="form-group">
+            <label class="sr-only">内容</label>
+            <input id="txtContent" v-model="search.content" style="width:135px" class="form-control" type="text"
+                   placeholder="请输入内容"/>
+        </div>
+
+        <div class="form-group">
+            创建时间：
+            <label class="sr-only">创建开始时间</label>
+            <input id="txtBeginDate" class="form-control" type="text" placeholder="请输入创建开始时间"/>
+            ---
+            <label class="sr-only">创建结束时间</label>
+            <input id="txtEndDate" class="form-control" type="text" placeholder="请输入创建结束时间"/>
+        </div>
+
+        <div class="form-group">
+            <div class="col-sm-6">
+                <select id="selStatus" v-model="search.status" class="form-control">
+                    <option value="-1" selected="selected">评论状态</option>
+                    <option value="0">未审核</option>
+                    <option value="1">待鉴定</option>
+                    <option value="2">审核未通过</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <div class="col-sm-6">
+                <select id="selCommentShow" v-model="search.commentShow" class="form-control">
+                    <option value="-1" selected="selected">是否显示</option>
+                    <option value="0">不显示</option>
+                    <option value="1">显示</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <div class="col-sm-6">
+                <select id="selCommentType" v-model="search.commentType" class="form-control">
+                    <option value="-1" selected="selected">评论类型</option>
+                    <option value="0">鉴定评论</option>
+                    <option value="1">任务评论</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <div class="col-sm-6">
+                <select id="selInputType" v-model="search.inputType" class="form-control">
+                    <option value="-1" selected="selected">内容类型</option>
+                    <option value="0">文本</option>
+                    <option value="1">图片</option>
+                </select>
+            </div>
+        </div>
+
+        <button id="btnSearch" type="button" @click="getComments" class="btn btn-primary">搜索</button>
+
+        <input id="txtSearch" type="hidden" @click="getComments('msg')"/>
+        <input id="hidCommentId" type="hidden"/>
+    </div>
+
+    <div class="table-responsive">
+        <table class="table table-striped" id="main">
+            <thead>
+            <tr>
+                <th style="text-align:center;vertical-align:middle;">编号</th>
+                <th style="text-align:center;vertical-align:middle;">内容</th>
+                <th style="text-align:center;vertical-align:middle;">关联id</th>
+                <th style="text-align:center;vertical-align:middle;">评论类型</th>
+                <th style="text-align:center;vertical-align:middle;">文本类型</th>
+                <th style="text-align:center;vertical-align:middle;">创建人</th>
+                <th style="text-align:center;vertical-align:middle;">创建时间</th>
+                <th style="text-align:center;vertical-align:middle;">鉴定状态</th>
+                <th style="text-align:center;vertical-align:middle;">是否显示</th>
+                <th style="text-align:center;vertical-align:middle;">操作</th>
+            </tr>
+            </thead>
+            <tbody>
+
+            <template>
+                <tr v-for="(comment,index) in comments">
+                    <td style="text-align:center;vertical-align:middle;">{{beginIndex + 1 + index}}</td>
+                    <td style="text-align:center;vertical-align:middle;" v-if="comment.inputType == 0">{{comment.content}}</td>
+                    <td style="text-align:center;vertical-align:middle;" v-if="comment.inputType == 1"><img v-bind:src="comment.content" class="img-circle" width="80px" height="80px"></td>
+                    <td style="text-align:center;vertical-align:middle;">{{comment.objectId}}</td>
+                    <td style="text-align:center;vertical-align:middle;">{{comment.commentTypeDisplay}}</td>
+                    <td style="text-align:center;vertical-align:middle;">{{comment.inputTypeDisplay}}</td>
+                    <td style="text-align:center;vertical-align:middle;">{{comment.creator}}</td>
+                    <td style="text-align:center;vertical-align:middle;">{{comment.createTimeDisplay}}</td>
+                    <td style="text-align:center;vertical-align:middle;">{{comment.statusDisplay}}</td>
+                    <td style="text-align:center;vertical-align:middle;">{{comment.commentShowDisplay}}</td>
+                    <td style="text-align:center;vertical-align:middle;">
+                        <div v-if="comment.status == 0">
+                            <a class="btn btn-xs btn-info" href="edit.html" data-target="#dialog"
+                               data-toggle="modal" onclick="setCommentId(this.id);" :id="comment.commentId">审核</a>
+                        </div>
+                        <div v-else-if="comment.status == 1">
+                            <a class="btn btn-xs btn-info" href="edit.html" data-target="#dialog"
+                               data-toggle="modal" onclick="setCommentId(this.id);" :id="comment.commentId">查看</a>
+                            <a class="btn btn-xs btn-info" href="javascript:void (0);"  v-if="comment.commentShow == 0"
+                               onclick="setCommentShow(this.id,1);" :id="comment.commentId">显示</a>
+                            <a class="btn btn-xs btn-info" href="javascript:void (0);" v-if="comment.commentShow == 1"
+                               onclick="setCommentShow(this.id,0);" :id="comment.commentId">不显示</a>
+                        </div>
+                        <div v-else>
+                            <a class="btn btn-xs btn-info" href="edit.html" data-target="#dialog"
+                               data-toggle="modal" onclick="setCommentId(this.id);" :id="comment.commentId">查看</a>
+                        </div>
+                    </td>
+                </tr>
+            </template>
+
+            </tbody>
+        </table>
+    </div>
+
+    <div id="baseDialog"><script>getDialog('baseDialog','../basedialog.html');</script></div>
+
+</div>
+<div id="secondDialog">
+    <script>getDialog('secondDialog', '../seconddialog.html');</script>
+</div>
+<div id="page"><script>getPaging();</script></div>
+<script src="../js/comment/index.js"></script>
+
+</body>
+</html>

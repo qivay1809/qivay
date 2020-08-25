@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:v-bind="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title>查看企业</title>
+    <link rel="stylesheet" href="../css/bootstrap.min.css">
+    <script src="../js/jquery1.11.3.min.js"></script>
+    <script src="../js/bootstrap.min.js"></script>
+    <script src="../js/vue.js"></script>
+    <script src="../js/vue-resource1.3.4.js"></script>
+    <script src="../js/config.js"></script>
+
+</head>
+<body>
+<div id="editEnterprise">
+    <div class="modal-header">
+        <button type="button" class="close editClose" data-dismiss="modal" aria-label="Close"><span
+                aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title">查看企业</h4>
+    </div>
+    <div class="modal-body">
+        <form class="form-horizontal" id="enterpriseForm">
+
+            <div class="form-group">
+                <label class="col-sm-2 control-label">企&ensp;业&ensp;名</label>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" id="txtEnterpriseName" placeholder="企业名" v-model="enterpriseName" readonly>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="col-sm-2 control-label">信&ensp;用&ensp;码</label>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" id="txtCertificateId" placeholder="社会信用码" v-model="certificateId" readonly>
+                </div>
+            </div>
+
+            <div class="form-group" v-if="certificateDisplay != null">
+                <label class="col-sm-2 control-label" style="margin-top: 12px">营业执照</label>
+                <div class="col-sm-10">
+                    <img v-for="image in certificateDisplay" v-bind:src="image" width="210px" height="160px" onclick="openImage(this);" style="cursor:pointer;">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="col-sm-2 control-label">企业介绍</label>
+                <div class="col-sm-10">
+                    <textarea class="form-control" rows="3" id="txtIntroduction" v-model="introduction" readonly></textarea>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="col-sm-2 control-label">地&emsp;&emsp;址</label>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" id="txtAddress" placeholder="企业地址" v-model="address" readonly>
+                </div>
+            </div>
+
+
+            <div class="form-group">
+                <label class="col-sm-2 control-label">联&ensp;系&ensp;人</label>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" id="txtUserName" v-model="name" readonly>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-2 control-label">性&emsp;&emsp;别</label>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" id="txtGender" v-model="genderDisplay" readonly>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-2 control-label">电&emsp;&emsp;话</label>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" id="txtCellphone" v-model="cellphone" readonly>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-2 control-label">职&emsp;&emsp;位</label>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" id="txtPosition" v-model="position" readonly>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="col-sm-2 control-label">验证情况</label>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" id="txtEnterpriseVerify" v-model="enterpriseVerifyDisplay" readonly>
+                </div>
+            </div>
+
+            <a data-toggle="modal" href="#example2" class="btn-large" id="imageDialog" hidden></a>
+
+            <div class="form-group" v-if="content != null && content != ''">
+                <label class="col-sm-2 control-label">验证说明</label>
+                <div class="col-sm-10">
+                    <textarea class="form-control" rows="3" id="txtContent" v-model="content"></textarea>
+                </div>
+            </div>
+
+        </form>
+    </div>
+</div>
+
+<script src="../js/enterprise/check.js"></script>
+
+</body>
+</html>

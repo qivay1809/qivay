@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:v-bind="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title>APP广告图</title>
+    <link rel="stylesheet" href="../css/bootstrap.min.css">
+    <link rel="stylesheet" href="../css/dialog.css">
+    <script src="../js/jquery1.11.3.min.js"></script>
+    <script src="../js/bootstrap.min.js"></script>
+    <script src="../js/vue.js"></script>
+    <script src="../js/vue-resource1.3.4.js"></script>
+    <script src="../js/config.js"></script>
+    <link rel="stylesheet" href="../plugins/confirm/jquery-confirm.css">
+    <script src="../plugins/confirm/jquery-confirm.js"></script>
+
+</head>
+<body>
+<div id="imageIndex">
+    <div class="form-inline">
+        <div class="form-group">
+            <label class="sr-only">广告名</label>
+            <input id="txtStreet" v-model="search.imageName" style="width:135px" class="form-control" type="text"
+                   placeholder="请输入广告名"/>
+        </div>
+
+        <div class="form-group">
+            <div class="col-sm-6">
+                <select id="selAddressVerify" v-model="search.adShow" class="form-control">
+                    <option value="-1" selected="selected">是否显示</option>
+                    <option value="0">不显示</option>
+                    <option value="1">显示</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <div class="col-sm-6">
+                <select id="adType" v-model="search.type" class="form-control">
+                    <option value="-1" selected="selected">广告类型</option>
+                    <option value="1">APP滚动广告</option>
+                    <option value="2">APP弹出广告</option>
+
+                    <option value="3">官网弹出广告</option>
+
+                </select>
+            </div>
+        </div>
+
+        <button id="btnSearch" type="button" @click="getImages" class="btn btn-primary">搜索</button>
+
+        <a class="btn btn-primary" href="edit.html" data-target="#dialog" data-toggle="modal">添加广告</a>
+
+        <input id="txtSearch" type="hidden" @click="getImages('msg')"/>
+        <input id="hidImageId" type="hidden"/>
+    </div>
+
+    <div class="table-responsive">
+        <table class="table table-striped" id="main">
+            <thead>
+            <tr>
+                <th style="text-align:center;vertical-align:middle;">编号</th>
+                <th style="text-align:center;vertical-align:middle;">广告名</th>
+                <th style="text-align:center;vertical-align:middle;">广告类型</th>
+                <th style="text-align:center;vertical-align:middle;">广告图</th>
+                <th style="text-align:center;vertical-align:middle;">排序</th>
+                <th style="text-align:center;vertical-align:middle;">是否显示</th>
+                <th style="text-align:center;vertical-align:middle;">操作</th>
+            </tr>
+            </thead>
+            <tbody>
+
+            <template>
+                <tr v-for="(image,index) in images">
+                    <td style="text-align:center;vertical-align:middle;">{{beginIndex + 1 + index}}</td>
+                    <td style="text-align:center;vertical-align:middle;">{{image.imageName}}</td>
+                    <td style="text-align:center;vertical-align:middle;">{{image.typeDisplay}}</td>
+                    <td style="text-align:center;vertical-align:middle;"><img v-bind:src="image.imageCompress" class="img-circle" width="80px" height="80px"></td>
+                    <td style="text-align:center;vertical-align:middle;">{{image.adOrder}}</td>
+                    <td style="text-align:center;vertical-align:middle;">{{image.adShowDisplay}}</td>
+                    <td style="text-align:center;vertical-align:middle;">
+                        <a class="btn btn-xs btn-info" href="edit.html" data-target="#dialog"
+                           data-toggle="modal" onclick="setImageId(this.id);" :id="image.adImageId">编辑</a>
+                        <a class="btn btn-xs btn-danger" href="javascript:void (0);" onclick="deleteImage(this.id);" :id="image.adImageId" style="color: #ffffff">删除</a>
+                    </td>
+                </tr>
+            </template>
+
+            </tbody>
+        </table>
+    </div>
+
+    <div id="baseDialog"><script>getDialog('baseDialog','../basedialog.html');</script></div>
+
+</div>
+<div id="page"><script>getPaging();</script></div>
+<script src="../js/adImage/index.js"></script>
+
+</body>
+</html>

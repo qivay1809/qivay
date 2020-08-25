@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.qivay.mapper.LogMapper">
+
+    <resultMap id="logMap" type="com.qivay.domain.Log">
+        <id column="log_id" property="logId"/>
+        <result column="content" property="content"/>
+        <result column="exception" property="exception"/>
+        <result column="system" property="system"/>
+        <result column="request_uri" property="requestUri"/>
+
+        <result column="remote_addr" property="remoteAddr"/>
+        <result column="operation" property="operation"/>
+        <result column="user_id" property="userId"/>
+        <result column="create_time" property="createTime"/>
+        <result column="method_type" property="methodType"/>
+        <result column="param" property="param"/>
+
+        <result column="name" property="name"/>
+        <result column="cellphone" property="cellphone"/>
+        <result column="device" property="device"/>
+    </resultMap>
+
+    <sql id="base_conditions">
+        <where>
+            <if test="log.content != null and log.content != ''">
+                and l.content like concat('%',#{log.content},'%')
+            </if>
+            <if test="log.param != null and log.param != ''">
+                and l.param like concat('%',#{log.param},'%')
+            </if>
+            <if test="log.requestUri != null and log.requestUri != ''">
+                and l.request_uri like concat('%',#{log.requestUri},'%')
+            </if>
+            <if test="log.name != null and log.name != ''">
+                and u.name  = #{log.name}
+            </if>
+            <if test="log.cellphone != null and log.cellphone != ''">
+                and u.cellphone  = #{log.cellphone}
+            </if>
+            <if test="log.system != -1">
+                and l.system = #{log.system}
+            </if>
+            <if test="log.beginDate != null and log.beginDate != ''">
+                and l.create_time >= #{log.beginDate}
+            </if>
+            <if test="log.endDate != null and log.endDate != ''">
+                and l.create_time &lt;= #{log.endDate}
+            </if>
+        </where>
+    </sql>
+
+    <insert id="addLog" >
+        insert into ${tableName}
+        (log_id, content, `exception`, `system`, request_uri, remote_addr,
+        operation, user_id, create_time,method_type,param,device)
+        values
+        (#{log.logId},#{log.content}, #{log.exception}, #{log.system}, #{log.requestUri}, #{log.remoteAddr},
+        #{log.operation},#{log.userId},#{log.createTime},#{log.methodType},#{log.param},#{log.device})
+    </insert>
+
+    <update id="updLog">
+        update ${tableName}
+         set exception = #{log.exception} where log_id = #{log.logId}
+    </update>
+
+    <select id="getLogs" resultMap="logMap">
+        SELECT l.*, u.name,u.cellphone FROM ${tableName} l LEFT JOIN `user` u ON l.user_id = u.user_id
+        <include refid="base_conditions"/>
+        order by l.create_time desc
+        limit #{log.startIndex},#{log.pageSize}
+    </select>
+
+    <select id="getCount" resultType="int">
+        SELECT count(l.log_id) FROM ${tableName} l LEFT JOIN `user` u ON l.user_id = u.user_id
+        <include refid="base_conditions"/>
+    </select>
+
+    <select id="getLogTables" resultType="String">
+        select table_name from INFORMATION_SCHEMA.TABLES where table_name like 'log_%'
+    </select>
+
+    <select id="getTableByName" resultType="String">
+        select table_name from INFORMATION_SCHEMA.TABLES where table_name like #{tableName}
+    </select>
+</mapper>

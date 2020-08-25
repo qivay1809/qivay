@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.qivay.mapper.SurveyApplyMapper" >
+  <resultMap id="BaseResultMap" type="com.qivay.domain.SurveyApply" >
+    <id column="survey_apply_id" property="surveyApplyId"  />
+    <result column="name" property="name"  />
+    <result column="phone" property="phone"  />
+    <result column="unit" property="unit"  />
+    <result column="address" property="address"  />
+    <result column="price" property="price"  />
+    <result column="price_info" property="priceInfo"  />
+    <result column="plan" property="plan"  />
+    <result column="experience" property="experience"  />
+    <result column="status" property="status"  />
+    <result column="invoice" property="invoice"  />
+    <result column="survey_id" property="surveyId"  />
+    <result column="user_id" property="userId"  />
+    <result column="create_time" property="createTime"  />
+    <result column="icon" property="icon"  />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    sa.survey_apply_id, sa.name, sa.phone, sa.unit, sa.address, sa.price, sa.price_info, sa.plan, sa.experience,
+    sa.status, sa.invoice, sa.survey_id, sa.user_id, sa.create_time,u.icon
+  </sql>
+
+  <sql id="base_conditions">
+    <where>
+      <if test="surveyId != null and surveyId != ''">
+        and sa.survey_id = #{surveyId}
+      </if>
+      <if test="name != null and name != ''">
+        and sa.`name` = #{name}
+      </if>
+      <if test="phone != null and phone != ''">
+        and sa.phone = #{phone}
+      </if>
+    </where>
+  </sql>
+
+
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from survey_apply sa
+    left join `user` u on sa.user_id = u.user_id
+    where sa.survey_apply_id = #{surveyApplyId}
+  </select>
+
+
+  <select id="findBySurveyId" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from survey_apply sa
+    left join `user` u on sa.user_id = u.user_id
+    <include refid="base_conditions"/>
+    order by sa.create_time, sa.status desc
+    LIMIT #{startIndex}, #{pageSize}
+  </select>
+
+  <select id="findCountSurveyId" resultType="int">
+    select
+      count(survey_apply_id)
+    from survey_apply sa
+    left join `user` u on sa.user_id = u.user_id
+    <include refid="base_conditions"/>
+  </select>
+
+</mapper>

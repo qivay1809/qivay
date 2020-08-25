@@ -1,0 +1,25 @@
+
+${AnsiColor.RED}                             iiii
+${AnsiColor.RED}                            i::::i
+${AnsiColor.RED}                             iiii
+
+${AnsiColor.BRIGHT_RED}            qqqqqqqq   qqqqqiiiiiiivvvvvvv           vvvvvvvaaaaaaaaaaaaayyyyyyy           yyyyyyy        mmmmmmm    mmmmmmm       ssssssssss
+${AnsiColor.YELLOW}          q:::::::::qqq::::qi:::::i v:::::v         v:::::v a::::::::::::ay:::::y         y:::::y       mm:::::::m  m:::::::mm   ss::::::::::s
+${AnsiColor.BRIGHT_GREEN}        q:::::::::::::::::q i::::i  v:::::v       v:::::v  aaaaaaaaa:::::ay:::::y       y:::::y       m::::::::::mm::::::::::mss:::::::::::::s
+${AnsiColor.GREEN}       q::::::qqqqq::::::qq i::::i   v:::::v     v:::::v            a::::a y:::::y     y:::::y        m::::::::::::::::::::::ms::::::ssss:::::s
+${AnsiColor.BRIGHT_GREEN}       q:::::q     q:::::q  i::::i    v:::::v   v:::::v      aaaaaaa:::::a  y:::::y   y:::::y         m:::::mmm::::::mmm:::::m s:::::s  ssssss
+${AnsiColor.CYAN}       q:::::q     q:::::q  i::::i     v:::::v v:::::v     aa::::::::::::a   y:::::y y:::::y          m::::m   m::::m   m::::m   s::::::s
+${AnsiColor.BRIGHT_CYAN}       q:::::q     q:::::q  i::::i      v:::::v:::::v     a::::aaaa::::::a    y:::::y:::::y           m::::m   m::::m   m::::m      s::::::s
+${AnsiColor.BLUE}       q::::::q    q:::::q  i::::i       v:::::::::v     a::::a    a:::::a     y:::::::::y            m::::m   m::::m   m::::mssssss   s:::::s
+${AnsiColor.BRIGHT_BLUE}       q:::::::qqqqq:::::q i::::::i       v:::::::v      a::::a    a:::::a      y:::::::y             m::::m   m::::m   m::::ms:::::ssss::::::s
+${AnsiColor.GREEN}        q::::::::::::::::q i::::::i        v:::::v       a:::::aaaa::::::a       y:::::y              m::::m   m::::m   m::::ms::::::::::::::s
+${AnsiColor.BRIGHT_GREEN}        qq::::::::::::::q i::::::i         v:::v         a::::::::::aa:::a     y:::::y               m::::m   m::::m   m::::m s:::::::::::ss
+${AnsiColor.CYAN}          qqqqqqqq::::::q iiiiiiii          vvv           aaaaaaaaaa  aaaa    y:::::y                mmmmmm   mmmmmm   mmmmmm  sssssssssss
+${AnsiColor.CYAN}                   q:::::q                                                    y:::::y
+${AnsiColor.BRIGHT_CYAN}                   q:::::q                                                   y:::::y
+${AnsiColor.BRIGHT_BLUE}                  q:::::::q                                                 y:::::y
+${AnsiColor.BRIGHT_CYAN}                  q:::::::q                                                y:::::y
+${AnsiColor.BRIGHT_MAGENTA}                  q:::::::q                                               yyyyyyy
+${AnsiColor.MAGENTA}                  qqqqqqqqq
+
+${AnsiColor.DEFAULT}

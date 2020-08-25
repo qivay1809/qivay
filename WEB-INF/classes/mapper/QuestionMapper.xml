@@ -1,0 +1,208 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.qivay.mapper.QuestionMapper">
+
+    <resultMap id="questionMap" type="com.qivay.domain.Question">
+        <id property="questionId" column="question_id"/>
+        <result property="questionContent" column="question_content"/>
+        <result property="questionTypeId" column="question_type_id"/>
+        <result property="questionOrder" column="question_order"/>
+        <result property="questionShow" column="question_show"/>
+        <result property="questionWeight" column="question_weight"/>
+        <result property="questionVerify" column="question_verify"/>
+        <result property="creator" column="creator"/>
+        <result property="createTime" column="create_time"/>
+        <result property="anonymous" column="anonymous"/>
+    </resultMap>
+
+    <resultMap id="questionTypeMap" type="com.qivay.domain.QuestionType">
+        <id property="questionTypeId" column="question_type_id"/>
+        <result property="questionTypeName" column="question_type_name"/>
+        <result property="questionTypeOrder" column="question_type_order"/>
+    </resultMap>
+
+    <resultMap id="showQuestionMap" type="com.qivay.domain.ShowQuestion">
+        <id property="questionId" column="question_id"/>
+        <result property="questionContent" column="question_content"/>
+        <result property="anonymous" column="anonymous"/>
+        <result property="createTime" column="create_time"/>
+        <result property="questionOrder" column="question_order"/>
+        <result property="questionShow" column="question_show"/>
+        <result property="questionWeight" column="question_weight"/>
+        <result property="questionVerify" column="question_verify"/>
+        <result property="enterpriseId" column="enterprise_id"/>
+        <result property="enterpriseName" column="enterprise_name"/>
+        <association property="user" javaType="com.qivay.domain.ShowUser">
+            <id property="userId" column="user_id"/>
+            <result property="name" column="name"/>
+            <result property="icon" column="icon"/>
+            <result property="cellphone" column="cellphone"/>
+        </association>
+        <association property="questionType" javaType="com.qivay.domain.QuestionType">
+            <id property="questionTypeId" column="question_type_id"/>
+            <result property="questionTypeName" column="question_type_name"/>
+            <result property="questionTypeOrder" column="question_type_order"/>
+        </association>
+        <association property="answer" javaType="com.qivay.domain.ShowAnswer">
+            <id property="answerId" column="answer_id"/>
+            <result property="answerContent" column="answer_content"/>
+            <result property="answerVerify" column="answer_verify"/>
+            <result property="answerWeight" column="answer_weight"/>
+        </association>
+    </resultMap>
+    <resultMap id="excelQuestionMap" type="com.qivay.vo.ExcelQuestion">
+        <id property="questionId" column="question_id"/>
+        <result property="questionContent" column="question_content"/>
+        <result property="anonymous" column="anonymous"/>
+        <result property="createTime" column="create_time"/>
+        <result property="questionShow" column="question_show"/>
+        <result property="questionVerify" column="question_verify"/>
+        <result property="creatorOfEnterprise" column="enterprise_name"/>
+        <result property="name" column="name"/>
+        <result property="questionTypeName" column="question_type_name"/>
+        <result property="answerContent" column="answer_content"/>
+    </resultMap>
+    <resultMap id="QuestionTypeMap" type="com.qivay.domain.QuestionType">
+        <id property="questionTypeId" column="question_type_id"/>
+        <result property="questionTypeName" column="question_type_name"/>
+        <result property="questionTypeOrder" column="question_type_order"/>
+    </resultMap>
+
+    <sql id="columns">
+        question_id,question_content,question_type_id,question_order,question_show,question_weight,question_verify,creator,create_time,anonymous
+    </sql>
+
+    <sql id="showQuestionColumns">
+        q.question_id,q.question_content,qt.question_type_id,qt.question_type_name,qt.question_type_order,u.user_id,u.name,u.icon,u.cellphone,a.answer_id,a.answer_content,a.answer_verify,a.answer_weight,anonymous,q.create_time,q.question_order,q.question_show,q.question_weight,q.question_verify,e.enterprise_id,e.enterprise_name
+    </sql>
+
+    <sql id="questionTypeColumns">
+        question_type_id,question_type_name,question_type_order
+    </sql>
+
+    <sql id="base_conditions">
+        <where>
+            <if test="userName != null and userName != ''">
+                and (u.name like concat('%',#{userName},'%') or e.enterprise_name like concat('%',#{userName},'%') or u.cellphone like concat('%',#{userName},'%'))
+            </if>
+            <if test="content != null and content !=''">
+                and q.question_content like concat('%',#{content},'%')
+            </if>
+            <if test="questionType != -1">
+                and q.question_type_id = #{questionType}
+            </if>
+            <if test="questionShow != -1">
+                and q.question_show = #{questionShow}
+            </if>
+            <if test="questionVerify != -1">
+                and q.question_verify = #{questionVerify}
+            </if>
+            <if test="answerVerify != -1">
+                and a.answer_verify = #{answerVerify}
+            </if>
+            <if test="beginDate != null">
+                and q.create_time >= #{beginDate}
+            </if>
+            <if test="endDate != null">
+                and q.create_time &lt;= #{endDate}
+            </if>
+        </where>
+
+    </sql>
+
+    <sql id="leftJoin">
+        question q left join question_type qt on q.question_type_id =qt.question_type_id left join user u on q.creator=u.user_id left join answer a on q.question_id=a.question_id left join enterprise e on q.creator = e.enterprise_id
+    </sql>
+
+    <select id="findQuestions" parameterType="map" resultMap="showQuestionMap">
+        SELECT
+        <include refid="showQuestionColumns"/>
+        FROM
+        <include refid="leftJoin"/>
+        <include refid="base_conditions"/>
+        ORDER BY q.question_verify asc,a.answer_verify asc,q.create_time DESC
+        LIMIT #{startIndex}, #{pageSize};
+    </select>
+
+    <select id="getExcelQuestions" parameterType="map" resultMap="excelQuestionMap">
+        SELECT
+        q.question_id,q.question_content,qt.question_type_name,u.name,a.answer_content,anonymous,q.create_time,q.question_show,q.question_verify,e.enterprise_name
+        FROM
+        <include refid="leftJoin"/>
+        <include refid="base_conditions"/>
+        ORDER BY q.question_verify asc,a.answer_verify asc,q.create_time DESC
+    </select>
+
+    <select id="getCount" resultType="int">
+        select count(q.question_id)
+        FROM
+        <include refid="leftJoin"/>
+        <include refid="base_conditions"/>
+    </select>
+
+    <select id="findQuestionByUserId" parameterType="map" resultMap="showQuestionMap">
+        SELECT
+        <include refid="showQuestionColumns"/>
+        FROM
+        <include refid="leftJoin"/>
+        WHERE q.creator = #{userId}
+        ORDER BY q.create_time ASC LIMIT #{offset}, #{pageSize};
+    </select>
+
+    <select id="getQuestion" resultMap="showQuestionMap">
+        SELECT
+        <include refid="showQuestionColumns"/>
+        FROM
+        <include refid="leftJoin"/>
+        WHERE q.question_id = #{questionId}
+    </select>
+
+    <insert id="insertQuestion" parameterType="com.qivay.domain.Question">
+        INSERT INTO
+        question
+        (<include refid="columns"/>)
+        VALUES
+        (#{questionId},#{questionContent}, #{questionTypeId},#{questionOrder},0,#{questionWeight},#{questionVerify},#{creator},
+        #{createTime},#{anonymous})
+    </insert>
+
+    <select id="findQuestionTypes" resultMap="questionTypeMap">
+        SELECT
+        <include refid="questionTypeColumns"/>
+        FROM question_type ORDER BY question_type_order
+    </select>
+
+    <update id="verifyQuestion">
+        update question set question_verify = #{questionVerify}
+        where question_id = #{questionId}
+    </update>
+
+    <update id="updateAnswer">
+        update answer set answer_content = #{answerContent},answer_weight = #{answerWeight},answer_verify = #{answerVerify}
+        where answer_id = #{answerId}
+    </update>
+
+    <update id="updateQuestion">
+        update question set question_content = #{questionContent},question_type_id = #{questionTypeId},question_order = #{questionOrder},question_weight = #{questionWeight},
+        question_verify = #{questionVerify},anonymous = #{anonymous}
+        where question_id = #{questionId}
+    </update>
+
+    <update id="updateWeightAndOrder">
+        update question set question_order = #{questionOrder},question_weight = #{questionWeight}
+        where question_id = #{questionId}
+    </update>
+
+    <update id="setQuestionShow">
+        update question set question_show = #{questionShow}
+        where question_id = #{questionId}
+    </update>
+
+    <select id="getQuestionTypes" resultMap="QuestionTypeMap">
+        select * from question_type order by question_type_order asc
+    </select>
+
+    <delete id="delete">
+      DELETE FROM question WHERE question_id = #{questionId}
+    </delete>
+</mapper>

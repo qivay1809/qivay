@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:v-bind="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title>实名验证</title>
+    <link rel="stylesheet" href="../css/bootstrap.min.css">
+    <script src="../js/jquery1.11.3.min.js"></script>
+    <script src="../js/bootstrap.min.js"></script>
+    <script src="../js/vue.js"></script>
+    <script src="../js/vue-resource1.3.4.js"></script>
+    <script src="../js/config.js"></script>
+
+    <link rel="stylesheet" href="../plugins/confirm/jquery-confirm.css">
+    <script src="../plugins/confirm/jquery-confirm.js"></script>
+
+</head>
+<body>
+<div id="editUser">
+    <div class="modal-header">
+        <button type="button" class="close editClose" data-dismiss="modal" aria-label="Close"><span
+                aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title">实名验证</h4>
+    </div>
+    <div class="modal-body">
+        <form class="form-horizontal" id="userForm">
+
+            <div class="form-group">
+                <label class="col-sm-2 control-label">姓&emsp;&emsp;名</label>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" id="txtName" placeholder="姓名" v-model="name" readonly>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="col-sm-2 control-label">性&emsp;&emsp;别</label>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" id="txtGenderDisplay" placeholder="性别" v-model="genderDisplay" readonly>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="col-sm-2 control-label">身份证号</label>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" id="txtIdCard" placeholder="身份证号" v-model="idCard" readonly>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="col-sm-2 control-label" style="margin-top: 12px">正&ensp;面&ensp;照</label>
+                <div class="col-sm-10">
+                    <div v-if="idCardFront !=''" class="col-sm-2">
+                        <img v-bind:src="idCardFront" width="230px" height="170px" onclick="openImage(this);" style="cursor:pointer;">
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-2 control-label" style="margin-top: 12px">反&ensp;面&ensp;照</label>
+                <div class="col-sm-10">
+                    <div v-if="idCardBack !=''" class="col-sm-2">
+                        <img v-bind:src="idCardBack" width="230px" height="170px" onclick="openImage(this);" style="cursor:pointer;">
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-2 control-label" style="margin-top: 12px">自&ensp;拍&ensp;照</label>
+                <div class="col-sm-10">
+                    <div v-if="idCardBack !=''" class="col-sm-2">
+                        <img v-bind:src="holdIdCard" width="230px" height="170px" onclick="openImage(this);" style="cursor:pointer;">
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="col-sm-2 control-label">用户类型</label>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" id="txtUserTypeDisplay" placeholder="用户类型" v-model="userTypeDisplay" readonly>
+                </div>
+            </div>
+
+            <div v-if="userType == 2">
+                <div class="form-group">
+                    <label class="col-sm-2 control-label">律师证号</label>
+                    <div class="col-sm-10">
+                        <input type="text" class="form-control" id="txtCertificateId" placeholder="律师证号" v-model="certificateId" readonly>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-sm-2 control-label">工作年限</label>
+                    <div class="col-sm-10">
+                        <input type="text" class="form-control" id="txtWorkYear" placeholder="工作年限" v-model="workYear" readonly>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-sm-2 control-label">证&ensp;件&ensp;照</label>
+                    <div class="col-sm-10">
+                        <img v-for="image in certificateDisplay" v-bind:src="image" width="210px" height="160px" onclick="openImage(this);" style="cursor:pointer;">
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="col-sm-2 control-label">验证情况</label>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" id="txtUserStateDisplay" v-model="userStateDisplay" placeholder="验证情况" readonly>
+                </div>
+            </div>
+
+            <a data-toggle="modal" href="#example2" class="btn-large" id="imageDialog" hidden></a>
+
+            <div class="form-group">
+                <label class="col-sm-2 control-label">验证说明</label>
+                <div class="col-sm-10">
+                    <textarea class="form-control" rows="3" id="txtContent" v-model="content"></textarea>
+                </div>
+            </div>
+
+        </form>
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-warning" @click="verifyUser($event.currentTarget)" data-msg="2">验证不通过</button>
+        <button type="button" class="btn btn-success" @click="verifyUser($event.currentTarget)" data-msg="1">验证通过</button>
+    </div>
+</div>
+
+<script src="../js/user/verify.js"></script>
+
+</body>
+</html>

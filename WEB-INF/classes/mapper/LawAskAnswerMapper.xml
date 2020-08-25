@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.qivay.mapper.LawAskAnswerMapper">
+    <resultMap id="askAnswerMap" type="com.qivay.domain.LawAskAnswer">
+        <id property="askAnswerId" column="ask_answer_id"/>
+        <result property="ask" column="ask"/>
+        <result property="askTime" column="ask_time"/>
+        <result property="answer" column="answer"/>
+        <result property="answerTime" column="answer_time"/>
+        <result property="lawAskId" column="law_ask_id"/>
+    </resultMap>
+
+
+    <select id="findByAskId" resultMap="askAnswerMap">
+        select * from law_ask_answer where law_ask_id = #{lawAskId}
+    </select>
+
+    <select id="findById" resultMap="askAnswerMap">
+        select * from law_ask_answer where ask_answer_id = #{askAnswerId}
+    </select>
+
+
+</mapper>

@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:v-bind="http://www.w3.org/1999/xhtml" xmlns:v-binde="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title>进度验证</title>
+    <link rel="stylesheet" href="../css/bootstrap.min.css">
+    <!--<link rel="stylesheet" href="../plugins/fancyBox/jquery.fancybox.css">-->
+    <script src="../js/jquery1.11.3.min.js"></script>
+    <script src="../js/bootstrap.min.js"></script>
+    <script src="../js/vue.js"></script>
+    <script src="../js/vue-resource1.3.4.js"></script>
+    <script src="../js/config.js"></script>
+    <link rel="stylesheet" href="../plugins/confirm/jquery-confirm.css">
+    <script src="../plugins/confirm/jquery-confirm.js"></script>
+    <!--<script src="../plugins/fancyBox/jquery.fancybox.js"></script>-->
+
+</head>
+<body>
+<div id="editClue">
+    <div class="modal-header">
+        <button type="button" class="close editClose" data-dismiss="modal" aria-label="Close"><span
+                aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title">线索进度</h4>
+    </div>
+    <div class="modal-body">
+        <form class="form-horizontal" id="clueForm">
+
+            <div class="form-group">
+                <label class="col-sm-2 control-label">线索进度</label>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" id="txtValidateDisplay" placeholder="线索进度"
+                           v-model="validateDisplay" readonly>
+                </div>
+            </div>
+
+            <div class="form-group" v-if="validate >= 5">
+                <label class="col-sm-2 control-label">专人跟进</label>
+                <div class="col-sm-10">
+                    <textarea class="form-control" rows="3" id="txtFollow" v-model="follow"
+                              :readonly="validate > 5"></textarea>
+                </div>
+            </div>
+
+            <div class="form-group" v-if="validate == 6 || validate > 6 && formulate != ''">
+                <label class="col-sm-2 control-label">方案制定</label>
+                <div class="col-sm-10">
+                    <textarea class="form-control" rows="3" id="txtFormulate" v-model="formulate"
+                              :readonly="validate > 6"></textarea>
+                </div>
+            </div>
+
+            <div class="form-group" v-if="validate == 7 || validate > 7 && actualize != ''">
+                <label class="col-sm-2 control-label">方案实施</label>
+                <div class="col-sm-10">
+                    <textarea class="form-control" rows="3" id="txtActualize" v-model="actualize"
+                              :readonly="validate > 7"></textarea>
+                </div>
+            </div>
+            <div v-if="validate == 1 || validate == 3">
+                <h3 style="text-align: center">立案调查，并跟进</h3>
+
+                <div class="form-group">
+                    <label class="col-sm-2 control-label">案件性质</label>
+                    <div class="col-sm-6">
+                        <select id="nature" v-model="nature" class="form-control">
+                            <option value="1">行政案件</option>
+                            <option value="2">刑事案件</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="col-sm-2 control-label">案件标题</label>
+                    <div class="col-sm-10">
+                        <textarea class="form-control" rows="3" id="txtTitle" v-model="title"
+                                  :readonly="validate > 8"></textarea>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="col-sm-2 control-label">案件描述</label>
+                    <div class="col-sm-10">
+                        <textarea class="form-control" rows="3" id="txtContent" v-model="content"
+                                  :readonly="validate > 8"></textarea>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+    <div class="modal-footer">
+        <div v-if="validate < 8 && validate > 1">
+            <button type="button" class="btn btn-warning" @click="verifyClue($event.currentTarget)" data-msg="2">非正常完结
+            </button>
+            <button type="button" class="btn btn-success" @click="verifyClue($event.currentTarget)" data-msg="1">通过
+            </button>
+        </div>
+        <div v-if="validate == 1 || validate == 3">
+            <button type="button" class="btn btn-warning" @click="insertCase($event.currentTarget)" data-msg="3">立案调查
+            </button>
+            <button type="button" class="btn btn-warning" @click="insertCase($event.currentTarget)" data-msg="4">立案调查并让举报者跟进
+            </button>
+        </div>
+    </div>
+</div>
+
+<script src="../js/pclue/edit.js"></script>
+
+</body>
+</html>

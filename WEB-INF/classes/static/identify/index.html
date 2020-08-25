@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:v-bind="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title>微信文章列表</title>
+    <link rel="stylesheet" href="../css/bootstrap.min.css">
+    <link rel="stylesheet" href="../css/dialog.css">
+    <script src="../js/jquery1.11.3.min.js"></script>
+    <script src="../js/bootstrap.min.js"></script>
+    <script src="../js/vue.js"></script>
+    <script src="../js/vue-resource1.3.4.js"></script>
+    <script src="../js/config.js"></script>
+    <script src="../plugins/My97DatePicker/WdatePicker.js"></script>
+
+</head>
+<body>
+<div id="identifyIndex">
+    <div class="form-inline">
+        <div class="form-group">
+            <label class="sr-only">文章标题</label>
+            <input id="txtTitle" v-model="search.title" style="width:135px" class="form-control" type="text"
+                   placeholder="请输入文章标题"/>
+        </div>
+        <div class="form-group">
+            <label class="sr-only">文章简介</label>
+            <input id="txtDescription" v-model="search.description" style="width:135px" class="form-control" type="text"
+                   placeholder="请输入文章简介"/>
+        </div>
+        <div class="form-group">
+            <label class="sr-only">文章创建者</label>
+            <input id="txtCreator" v-model="search.creator" style="width:135px" class="form-control" type="text"
+                   placeholder="请输入创建人"/>
+        </div>
+        <div class="form-group">
+            创建时间：
+            <label class="sr-only">创建开始时间</label>
+            <input id="txtBeginDate" class="form-control" type="text" placeholder="请输入创建开始时间"/>
+            ---
+            <label class="sr-only">创建结束时间</label>
+            <input id="txtEndDate" class="form-control" type="text" placeholder="请输入创建结束时间"/>
+        </div>
+
+        <div class="form-group">
+            <div class="col-sm-6">
+                <select id="selIdentifyShow" v-model="search.identifyShow" class="form-control">
+                    <option value="-1" selected="selected">显示情况</option>
+                    <option value="1">显示</option>
+                    <option value="0">不显示</option>
+                </select>
+            </div>
+        </div>
+
+        <button id="btnSearch" type="button" @click="getIdentifies" class="btn btn-primary">搜索</button>
+        <a class="btn btn-primary" href="edit.html" data-target="#dialog" data-toggle="modal">添加文章</a>
+
+        <input id="txtSearch" type="hidden" @click="getIdentifies('msg')"/>
+        <input id="hidIdentifyId" type="hidden" />
+    </div>
+
+    <div class="table-responsive">
+        <table class="table table-striped" id="main">
+            <thead>
+            <tr>
+                <th style="text-align:center;vertical-align:middle;">文章标题</th>
+                <th style="text-align:center;vertical-align:middle;">文章简介</th>
+                <th style="text-align:center;vertical-align:middle;">创建人</th>
+                <th style="text-align:center;vertical-align:middle;">创建时间</th>
+                <th style="text-align:center;vertical-align:middle;">文章排序</th>
+                <th style="text-align:center;vertical-align:middle;">是否显示</th>
+                <th style="text-align:center;vertical-align:middle;">操作</th>
+            </tr>
+            </thead>
+            <tbody>
+
+            <template>
+                <tr v-for="identify in identifies">
+                    <td style="text-align:center;vertical-align:middle;">{{identify.title}}</td>
+                    <td style="text-align:center;vertical-align:middle;width: 42%">{{identify.description}}</td>
+                    <td style="text-align:center;vertical-align:middle;">{{identify.creator}}</td>
+                    <td style="text-align:center;vertical-align:middle;">{{identify.createTimeDisplay}}</td>
+                    <td style="text-align:center;vertical-align:middle;">{{identify.identifyOrder}}</td>
+                    <td style="text-align:center;vertical-align:middle;">{{identify.identifyShowDisplay}}</td>
+                    <td style="text-align:center;vertical-align:middle;">
+                        <a class="btn btn-xs btn-info" href="edit.html" data-target="#dialog"
+                           data-toggle="modal" onclick="setIdentifyId(this.id);" :id="identify.identifyId">编辑</a>
+                    </td>
+                </tr>
+            </template>
+
+            </tbody>
+        </table>
+    </div>
+
+
+    <div class="modal fade" id="dialog" role="basic" aria-hidden="true">
+        <div class="modal-dialog" style="width:1024px;height:500px;">
+            <div class="modal-content">
+
+            </div>
+        </div>
+    </div>
+
+
+</div>
+
+<div id="page"><script>getPaging();</script></div>
+<script src="../js/identify/index.js"></script>
+
+</body>
+</html>

@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.qivay.mapper.LawyerMapper">
+  <resultMap id="BaseResultMap" type="com.qivay.domain.Lawyer">
+    <id column="user_id" jdbcType="VARCHAR" property="userId" />
+    <result column="certificate_id" jdbcType="VARCHAR" property="certificateId" />
+    <result column="work_year" jdbcType="TINYINT" property="workYear" />
+    <result column="lawyer_type"  property="lawyerType" />
+    <result column="certificate" jdbcType="VARCHAR" property="certificate" />
+  </resultMap>
+
+  <insert id="insert">
+    insert into lawyer (user_id, certificate_id, work_year, 
+      lawyer_type, certificate
+      )
+    values (#{userId,jdbcType=VARCHAR}, #{certificateId,jdbcType=VARCHAR}, #{workYear,jdbcType=TINYINT}, 
+      #{lawyerType}, #{certificate,jdbcType=VARCHAR}
+      )
+  </insert>
+  <update id="updateLawyer">
+    update lawyer
+    set certificate_id = #{certificateId,jdbcType=VARCHAR},
+      work_year = #{workYear,jdbcType=TINYINT},
+      lawyer_type = #{lawyerType},
+      certificate = #{certificate,jdbcType=VARCHAR}
+    where user_id = #{userId,jdbcType=VARCHAR}
+  </update>
+
+  <select id="getByUserId"  resultMap="BaseResultMap">
+    select user_id, certificate_id, work_year, lawyer_type, certificate
+    from lawyer
+    where user_id = #{userId,jdbcType=VARCHAR}
+  </select>
+
+
+
+
+</mapper>

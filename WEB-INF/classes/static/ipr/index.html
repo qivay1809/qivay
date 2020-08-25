@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:v-bind="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title>知产服务</title>
+    <link rel="stylesheet" href="../css/bootstrap.min.css">
+    <link rel="stylesheet" href="../css/dialog.css">
+    <script src="../js/jquery1.11.3.min.js"></script>
+    <script src="../js/bootstrap.min.js"></script>
+    <script src="../js/vue.js"></script>
+    <script src="../js/vue-resource1.3.4.js"></script>
+    <script src="../js/config.js"></script>
+    <script src="../plugins/My97DatePicker/WdatePicker.js"></script>
+
+</head>
+<body>
+<div id="iprIndex">
+    <div class="form-inline">
+        <div class="form-group">
+            <label class="sr-only">姓名</label>
+            <input v-model="search.name" class="form-control" type="text" placeholder="姓名" style="width: 135px"/>
+        </div>
+        <div class="form-group">
+            <label class="sr-only">手机号</label>
+            <input v-model="search.phone" style="width:135px" class="form-control" type="text"
+                   placeholder="手机号"/>
+        </div>
+
+        <div class="form-group">
+            <div class="col-sm-6">
+                <select v-model="search.status" class="form-control">
+                    <option value="-1" selected="selected">处理情况</option>
+                    <option value="0">待处理</option>
+                    <option value="1">已处理</option>
+                </select>
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-sm-6">
+                <select v-model="search.pay" class="form-control">
+                    <option value="-1" selected="selected">支付状态</option>
+                    <option value="0">未支付</option>
+                    <option value="1">已支付</option>
+                    <option value="2">已取消</option>
+                    <option value="3">已退款</option>
+                    <option value="5">已完成</option>
+                </select>
+            </div>
+        </div>
+        <button id="btnSearch" type="button" @click="getIprDeals" class="btn btn-primary">搜索</button>
+        <input id="txtSearch" type="hidden" @click="getIprDeals('msg')"/>
+        <input id="hidIprDealId" type="hidden" />
+    </div>
+
+    <div class="table-responsive">
+        <table class="table table-striped" id="main">
+            <thead>
+            <tr>
+                <th style="text-align:center;vertical-align:middle;">序号</th>
+                <th style="text-align:center;vertical-align:middle;">姓名</th>
+                <th style="text-align:center;vertical-align:middle;">电话</th>
+                <th style="text-align:center;vertical-align:middle;">服务</th>
+                <th style="text-align:center;vertical-align:middle;">项目</th>
+                <th style="text-align:center;vertical-align:middle;">价格</th>
+                <th style="text-align:center;vertical-align:middle;">支付状态</th>
+                <th style="text-align:center;vertical-align:middle;">状态</th>
+                <th style="text-align:center;vertical-align:middle;">跟进者</th>
+                <th style="text-align:center;vertical-align:middle;">创建时间</th>
+                <th style="text-align:center;vertical-align:middle;">操作</th>
+            </tr>
+            </thead>
+            <tbody>
+
+            <template>
+                <tr v-for="(ipr,index) in iprDeals">
+                    <td style="text-align:center;vertical-align:middle;">{{beginIndex + 1 + index}}</td>
+                    <td style="text-align:center;vertical-align:middle;">{{ipr.name}}</td>
+                    <td style="text-align:center;vertical-align:middle;">{{ipr.phone}}</td>
+                    <td style="text-align:center;vertical-align:middle;">{{ipr.iprService}}</td>
+                    <td style="text-align:center;vertical-align:middle;">{{ipr.item}}</td>
+                    <td style="text-align:center;vertical-align:middle;">{{ipr.price}}</td>
+                    <td style="text-align:center;vertical-align:middle;">{{ipr.payDisplay}}</td>
+                    <td style="text-align:center;vertical-align:middle;">
+                        <span v-if="ipr.status == 0" style="color:red;">{{ipr.statusDisplay}}</span>
+                        <span v-if="ipr.status == 1" style="color:green;">{{ipr.statusDisplay}}</span>
+                    </td>
+                    <td style="text-align:center;vertical-align:middle;">{{ipr.updateUser}}</td>
+                    <td style="text-align:center;vertical-align:middle;">{{ipr.createTime}}</td>
+                    <td style="text-align:center;vertical-align:middle;">
+                        <a v-if="ipr.status == 0 && ipr.payDisplay=='已支付'" class="btn btn-xs btn-info" data-toggle="modal" onclick="updState(this.id);" :id="ipr.iprDealId">处理</a>
+                    </td>
+                </tr>
+            </template>
+
+            </tbody>
+        </table>
+    </div>
+
+    <div id="baseDialog"><script>getDialog('baseDialog','../basedialog.html');</script></div>
+
+</div>
+
+<div id="page"><script>getPaging();</script></div>
+<script src="../js/ipr/index.js"></script>
+
+</body>
+</html>

@@ -1,0 +1,196 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.qivay.mapper.TransferRecordMapper" >
+
+  <resultMap id="BaseResultMap" type="com.qivay.domain.TransferRecord" >
+    <id column="transfer_record_id" property="transferRecordId"/>
+    <result column="transfer_amount" property="transferAmount" />
+    <result column="transfer_type" property="transferType"/>
+    <result column="name" property="user"/>
+    <result column="enterprise_name" property="enterprise"/>
+    <result column="transfer_time" property="transferTime"/>
+    <result column="object_id" property="objectId"/>
+    <result column="transfer_remark" property="transferRemark"/>
+    <result column="cellphone" property="cellphone"/>
+    <result column="account_type" property="accountType"/>
+  </resultMap>
+
+  <resultMap id="ExcelResultMap" type="com.qivay.vo.ExcelTransferRecord" >
+    <id column="transfer_record_id" property="transferRecordId"/>
+    <result column="transfer_amount" property="transferAmount" />
+    <result column="transfer_type" property="transferType"/>
+    <result column="name" property="userId"/>
+    <result column="enterprise_name" property="enterpriseId"/>
+    <result column="transfer_time" property="transferTime"/>
+    <result column="object_id" property="objectId"/>
+    <result column="transfer_remark" property="transferRemark"/>
+    <result column="cellphone" property="cellphoneId"/>
+    <result column="account_type" property="accountType"/>
+  </resultMap>
+
+  <resultMap id="EnterpriseRecordMap" type="com.qivay.domain.TransferRecord" >
+    <id column="transfer_record_id" property="transferRecordId"/>
+    <result column="transfer_amount" property="transferAmount" />
+    <result column="transfer_type" property="transferType"/>
+    <result column="enterprise_name" property="user"/>
+    <result column="transfer_time" property="transferTime"/>
+    <result column="object_id" property="objectId"/>
+    <result column="transfer_remark" property="transferRemark"/>
+    <result column="account_type" property="accountType"/>
+  </resultMap>
+
+  <sql id="base_columns">
+    transfer_record_id, transfer_amount,
+      transfer_type, u.name, transfer_time,
+      object_id, transfer_remark,e.enterprise_name,u.cellphone,account_type
+  </sql>
+
+  <sql id="enterprise_columns">
+    transfer_record_id, transfer_amount,
+      transfer_type, e.enterprise_name, transfer_time,
+      object_id, transfer_remark,account_type
+  </sql>
+
+  <sql id="base_conditions">
+    <where>
+      <if test="transferRemark != null">
+        transfer_remark like concat('%',#{transferRemark},'%')
+      </if>
+      <if test="userName != null">
+        and (if(u.name is null,u.cellphone like concat('%',#{userName},'%'),u.name like concat('%',#{userName},'%'))
+        or e.enterprise_name like concat('%',#{userName},'%'))
+      </if>
+      <if test="minTransferAmount != 0.00">
+        and transfer_amount >= #{minTransferAmount}
+      </if>
+      <if test="maxTransferAmount != 0.00">
+        and transfer_amount &lt;= #{maxTransferAmount}
+      </if>
+      <if test="transferType != -1">
+        and transfer_type = #{transferType}
+      </if>
+      <if test="userId != null and userId != ''">
+        and tr.user_id = #{userId}
+      </if>
+      <if test="beginDateDisplay != null">
+        and transfer_time >= #{beginDateDisplay}
+      </if>
+      <if test="endDateDisplay != null">
+        and transfer_time &lt;= #{endDateDisplay}
+      </if>
+      <if test="creatorType != -1">
+        <if test="creatorType == 1">
+          and e.enterprise_id is null
+        </if>
+        <if test="creatorType == 2">
+          and u.user_id is null
+        </if>
+      </if>
+      <if test="accountType != -1">
+        and account_type = #{accountType}
+      </if>
+    </where>
+  </sql>
+
+  <sql id="enterprise_conditions">
+    <where>
+      e.enterprise_id = #{enterpriseId}
+      <if test="transferRemark != null">
+        and transfer_remark like concat('%',#{transferRemark},'%')
+      </if>
+      <if test="minTransferAmount != 0.00">
+        and transfer_amount >= #{minTransferAmount}
+      </if>
+      <if test="maxTransferAmount != 0.00">
+        and transfer_amount &lt;= #{maxTransferAmount}
+      </if>
+      <if test="transferType != -1">
+        and transfer_type = #{transferType}
+      </if>
+      <if test="beginDateDisplay != null">
+        and transfer_time >= #{beginDateDisplay}
+      </if>
+      <if test="endDateDisplay != null">
+        and transfer_time &lt;= #{endDateDisplay}
+      </if>
+    </where>
+  </sql>
+
+  <select id="getTransferRecords" resultMap="BaseResultMap">
+    select <include refid="base_columns"/>
+    from transfer_record tr
+    left join user u on tr.user_id = u.user_id
+    left join enterprise e on e.enterprise_id = tr.user_id
+    <include refid="base_conditions"/>
+    order by transfer_time DESC
+    limit #{startIndex},#{pageSize}
+  </select>
+
+  <select id="getExcelTransfers" resultMap="ExcelResultMap">
+    select <include refid="base_columns"/>
+    from transfer_record tr
+    left join user u on tr.user_id = u.user_id
+    left join enterprise e on e.enterprise_id = tr.user_id
+    <include refid="base_conditions"/>
+    order by transfer_time DESC
+  </select>
+
+  <select id="getEnterpriseRecords" resultMap="EnterpriseRecordMap">
+    select <include refid="enterprise_columns"/>
+    from transfer_record tr
+    left join enterprise e on tr.user_id = e.enterprise_id
+    <include refid="enterprise_conditions"/>
+    order by transfer_time DESC
+    limit #{startIndex},#{pageSize}
+  </select>
+
+  <select id="getExcelEnterpriseTransfers" resultMap="ExcelResultMap">
+    select <include refid="enterprise_columns"/>
+    from transfer_record tr
+    left join enterprise e on tr.user_id = e.enterprise_id
+    <include refid="enterprise_conditions"/>
+    order by transfer_time DESC
+  </select>
+
+  <select id="getEnterpriseCount" resultType="int">
+    select count(transfer_record_id)
+    from transfer_record tr
+    left join enterprise e on tr.user_id = e.enterprise_id
+    <include refid="enterprise_conditions"/>
+  </select>
+
+  <select id="getCount" resultType="int">
+    select count(transfer_record_id)
+    from transfer_record tr
+    left join user u on tr.user_id = u.user_id
+    left join enterprise e on e.enterprise_id = tr.user_id
+    <include refid="base_conditions"/>
+  </select>
+
+  <insert id="insert" parameterType="com.qivay.domain.TransferRecord" useGeneratedKeys="true" keyProperty="transferRecordId">
+    insert into transfer_record
+    (transfer_record_id, transfer_amount,transfer_type, user_id, transfer_time,object_id, transfer_remark, account_type)
+    values (#{transferRecordId}, #{transferAmount},
+    #{transferType}, #{user}, #{transferTime},
+    #{objectId}, #{transferRemark},#{accountType})
+  </insert>
+
+  <select id="getTypes" resultType="map">
+    select tr.transfer_record_id,mt.account_type
+    from transfer_record tr
+    join money_transfer mt on (tr.user_id = mt.user_id
+    and tr.transfer_type = (mt.transfer_type + 1)  and DATE_FORMAT(tr.transfer_time,'%Y-%m-%d %H:%i') = DATE_FORMAT(mt.transfer_time,'%Y-%m-%d %H:%i') and (tr.transfer_amount - mt.amount) >= 0 and mt.amount > (tr.transfer_amount - mt.amount))
+    order by tr.transfer_time desc
+  </select>
+
+  <update id="updateAccountType">
+    update transfer_record set account_type = #{account_type}
+    where transfer_record_id = #{transfer_record_id}
+  </update>
+
+  <!--用户判断某天是否已经发放了生日红包-->
+  <select id="checkBirthday" parameterType="String" resultType="int">
+    SELECT count(transfer_record_id) count FROM transfer_record
+    where DATE_FORMAT(transfer_time,'%Y-%m-%d') = #{date} AND transfer_remark like '%生日红包'
+  </select>
+</mapper>

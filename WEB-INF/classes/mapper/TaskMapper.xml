@@ -1,0 +1,304 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.qivay.mapper.TaskMapper">
+
+    <resultMap id="taskMap" type="com.qivay.domain.Task">
+        <id property="taskId" column="task_id"/>
+        <result property="taskTitle" column="task_title"/>
+        <result property="taskContent" column="task_content"/>
+        <result property="reward" column="reward"/>
+        <result property="progress" column="progress"/>
+        <result property="caseId" column="case_id"/>
+        <result property="taskType" column="task_type"/>
+        <result property="taskOrder" column="task_order"/>
+        <result property="taskWeight" column="task_weight"/>
+        <result property="clues" column="clues"/>
+        <result property="createTime" column="create_time"/>
+        <result property="taskVerify" column="task_verify"/>
+        <result property="deadline" column="deadline"/>
+        <result property="creator" column="creator"/>
+        <result property="creatorName" column="name"/>
+        <result property="province" column="province"/>
+        <result property="city" column="city"/>
+        <result property="industry" column="industry"/>
+        <association property="brand" javaType="com.qivay.domain.Brand">
+            <id property="brandId" column="brand_id"/>
+            <result property="brandName" column="brand_name"/>
+        </association>
+    </resultMap>
+    <resultMap id="excelTaskMap" type="com.qivay.vo.ExcelTask">
+        <result property="taskId" column="task_id"/>
+        <result property="taskTitle" column="task_title"/>
+        <result property="taskContent" column="task_content"/>
+        <result property="reward" column="reward"/>
+        <result property="progress" column="progress"/>
+        <result property="taskType" column="task_type"/>
+        <result property="clues" column="clues"/>
+        <result property="createTime" column="create_time"/>
+        <result property="taskVerify" column="task_verify"/>
+        <result property="deadline" column="deadline"/>
+        <result property="creatorName" column="name"/>
+        <result property="brandName" column="brand_name"/>
+    </resultMap>
+    <resultMap id="baseMap" type="com.qivay.domain.Task">
+        <id property="taskId" column="task_id"/>
+        <result property="taskTitle" column="task_title"/>
+        <result property="reward" column="reward"/>
+        <result property="caseId" column="case_id"/>
+        <result property="creator" column="creator"/>
+        <result property="clues" column="clues"/>
+        <result property="progress" column="progress"/>
+        <result property="taskVerify" column="task_verify"/>
+        <result property="taskType" column="task_type"/>
+    </resultMap>
+
+    <resultMap id="showTaskMap" type="com.qivay.domain.ShowTask">
+        <id property="taskId" column="task_id"/>
+        <result property="taskTitle" column="task_title"/>
+        <result property="taskContent" column="task_content"/>
+        <result property="reward" column="reward"/>
+        <result property="progress" column="progress"/>
+        <result property="logo" column="logo"/>
+        <result property="creator" column="name"/>
+        <result property="createTime" column="create_time"/>
+    </resultMap>
+
+    <resultMap id="taskParticipantMap" type="com.qivay.domain.TaskParticipant">
+        <id property="taskParticipantId" column="task_participant_id"/>
+        <result property="taskId" column="task_id"/>
+        <result property="userId" column="user_id"/>
+        <result property="userRole" column="user_role"/>
+        <result property="verify" column="verify"/>
+        <result property="joinTime" column="join_time"/>
+    </resultMap>
+
+    <resultMap id="showTaskParticipantMap" type="com.qivay.domain.ShowTaskParticipant">
+        <id property="userId" column="task_participant_id"/>
+        <result property="userRole" column="user_role"/>
+        <result property="verify" column="verify"/>
+        <result property="joinTime" column="join_time"/>
+        <association property="showUser" javaType="com.qivay.domain.ShowUser">
+            <id property="userId" column="user_id"/>
+            <result property="name" column="name"/>
+            <result property="icon" column="icon"/>
+        </association>
+    </resultMap>
+
+    <sql id="columns">
+        t.task_id,t.task_title,t.task_content,t.reward,t.progress,t.case_id,t.task_type,t.task_order,t.task_weight,t.create_time,t.task_verify,b.brand_id,b.brand_name,t.creator,u.name,t.clues,t.deadline,t.province,t.city,t.industry
+    </sql>
+
+    <sql id="showTaskColumns">
+        t.task_id,task_title,task_content,reward,progress,t.create_time,u.name,b.logo
+    </sql>
+
+    <sql id="taskParticipantColumns">
+        task_participant_id,task_id,user_id,user_role,verify,join_time
+    </sql>
+
+    <sql id="where">
+        t.creator=u.user_id AND t.brand_id=b.brand_id AND
+    </sql>
+
+
+    <select id="findTasks" parameterType="map" resultMap="showTaskMap">
+        SELECT
+        <include refid="showTaskColumns"/>
+        FROM task t ,user u,brand b
+        WHERE
+        <include refid="where"/>
+        t.task_type=1
+        ORDER BY task_order ASC,task_weight DESC,create_time DESC LIMIT #{offset}, #{pageSize};
+    </select>
+
+    <select id="findTaskById" resultMap="taskMap">
+        SELECT
+        <include refid="columns"/>
+        FROM task t
+        left join user u on t.creator=u.user_id
+        left join brand b on t.brand_id=b.brand_id
+        WHERE t.task_id = #{taskId}
+    </select>
+
+    <select id="findTaskParticipantByTaskId" resultMap="taskParticipantMap">
+        SELECT
+        <include refid="taskParticipantColumns"/>
+        FROM task_participant WHERE task_id = #{taskId}
+    </select>
+
+    <select id="findTaskParticipants" resultMap="showTaskParticipantMap">
+        SELECT
+        tp.user_role,tp.verify,tp.join_time,u.user_id,u.name,u.icon
+        FROM task_participant tp,user u WHERE tp.user_id=u.user_id AND tp.task_id = #{taskId}
+        order by tp.join_time DESC
+    </select>
+
+    <select id="countTaskParticipants" resultType="Integer">
+        SELECT
+        COUNT(user_id)
+        FROM task_participant WHERE task_id = #{taskId}
+    </select>
+
+    <insert id="insertTask" parameterType="com.qivay.domain.Task">
+        INSERT INTO
+        task(task_id,task_title,task_content,reward,progress,case_id,brand_id,task_type,task_order,task_weight,creator,create_time,clues,deadline,province,city,industry)
+        VALUES
+        (#{taskId},#{taskTitle},#{taskContent}, #{reward},#{progress},#{caseId}, #{brand.brandId},#{taskType},#{taskOrder},
+        #{taskWeight},#{creator}, #{createTime},#{clues},#{deadline},#{province},#{city},#{industry})
+    </insert>
+
+
+    <update id="updateTask" parameterType="com.qivay.domain.Task">
+    UPDATE
+    task
+    SET
+    task_title = #{taskTitle},task_content = #{taskContent},reward = #{reward},task_order = #{taskOrder},task_weight = #{taskWeight},task_type = #{taskType},brand_id = #{brand.brandId},clues = #{clues},deadline = #{deadline},
+    province = #{province},city = #{city},industry = #{industry}
+    WHERE
+    task_id = #{taskId}
+    </update>
+
+    <update id="updateTaskProgress" parameterType="map">
+        UPDATE
+        task
+        SET
+        progress = #{progress}
+        WHERE
+        task_id = #{taskId}
+    </update>
+
+    <sql id="base_conditions">
+        <where>
+            <if test="taskTitle != null and taskTitle !=''">
+                and t.task_title like concat('%',#{taskTitle},'%')
+            </if>
+            <if test="taskContent != null and taskContent !=''">
+                and t.task_content like concat('%',#{taskContent},'%')
+            </if>
+            <if test="taskType != -1">
+                and t.task_type = #{taskType}
+            </if>
+            <if test="progress != -1">
+                and t.progress = #{progress}
+            </if>
+            <if test="taskVerify != -1">
+                and t.task_verify = #{taskVerify}
+            </if>
+            <if test="userName != null and userName !=''">
+                and u.name like concat('%',#{userName},'%')
+            </if>
+            <if test="beginDate != null">
+                and t.create_time >= #{beginDate}
+            </if>
+            <if test="endDate != null">
+                and t.create_time &lt;= #{endDate}
+            </if>
+        </where>
+    </sql>
+
+    <select id="getTasks" resultMap="taskMap">
+        select
+        <include refid="columns"/>
+        FROM task t
+        left join user u on t.creator=u.user_id
+        left join brand b on t.brand_id=b.brand_id
+        <include refid="base_conditions"/>
+        ORDER BY t.task_verify asc ,t.create_time desc
+        LIMIT #{startIndex}, #{pageSize}
+    </select>
+
+    <select id="getExcelTasks" resultMap="excelTaskMap">
+        select
+        t.task_id,t.task_title,t.task_content,t.reward,t.progress,t.task_type,t.create_time,t.task_verify,b.brand_name,u.name,t.clues,t.deadline
+        FROM task t
+        left join user u on t.creator=u.user_id
+        left join brand b on t.brand_id=b.brand_id
+        <include refid="base_conditions"/>
+        ORDER BY t.task_verify asc ,t.create_time desc
+    </select>
+
+    <select id="getCount" resultType="int">
+        select count(t.task_id)
+        FROM task t
+        left join user u on t.creator=u.user_id
+        left join brand b on t.brand_id=b.brand_id
+        <include refid="base_conditions"/>
+    </select>
+
+    <update id="startTask">
+        update task set progress = #{progress}
+        where task_id = #{taskId}
+    </update>
+
+    <select id="getTask" resultMap="baseMap">
+        select task_id ,task_title,reward,task_verify ,creator,task_type from task
+        where task_id = #{taskId}
+    </select>
+
+    <update id="verifyTask">
+        update task set task_verify = #{taskVerify}
+        where task_id = #{taskId}
+    </update>
+
+    <update id="updateWeightAndOrder">
+        update task set task_order = #{taskOrder},task_weight = #{taskWeight}
+        where task_id = #{taskId}
+    </update>
+
+    <select id="getDeadlineTasks" resultMap="baseMap">
+        select task_id ,creator,reward,clues
+        from task
+        where deadline >= #{before} and deadline &lt;= #{current} and progress != 2
+    </select>
+
+    <select id="getTasksByProgress" resultMap="baseMap">
+        select task_id ,creator,reward,clues
+        from task
+        where progress = #{progress}
+    </select>
+
+    <select id="getClueCount" resultType="int">
+        select count(clue_id) from clue
+        where task_id = #{taskId} and validate = #{clueEnterpriseAdopt}
+    </select>
+
+    <select id="getTaskById" resultMap="baseMap">
+        select task_id , progress,reward,clues,creator,task_title from task
+        where task_id = #{taskId}
+    </select>
+
+    <select id="getClues" resultType="int">
+        select count(clue_id) from clue
+        where task_id = #{taskId} and (validate = 0 or validate = 1)
+    </select>
+
+    <select id="getTaskIdsByTime" resultType="string">
+        select task_id from task order by create_time
+    </select>
+
+    <select id="getTaskListClues" resultType="int">
+        select count(clue_id) from clue where task_id = #{taskId}
+    </select>
+
+    <delete id="delete">
+      DELETE FROM task WHERE task_id = #{taskId}
+    </delete>
+
+</mapper>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

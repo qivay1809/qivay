@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:v-bind="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title>企业列表</title>
+    <link rel="stylesheet" href="../css/bootstrap.min.css">
+    <link rel="stylesheet" href="../css/dialog.css">
+    <script src="../js/jquery1.11.3.min.js"></script>
+    <script src="../js/bootstrap.min.js"></script>
+    <script src="../js/vue.js"></script>
+    <script src="../js/vue-resource1.3.4.js"></script>
+    <script src="../js/config.js"></script>
+    <script src="../plugins/My97DatePicker/WdatePicker.js"></script>
+
+</head>
+<body>
+<div id="enterpriseIndex">
+    <div class="form-inline">
+        <div class="form-group">
+            <label class="sr-only">企业名</label>
+            <input id="txtEnterpriseName" v-model="search.enterpriseName" style="width:150px" class="form-control" type="text"
+                   placeholder="请输入企业名"/>
+        </div>
+        <div class="form-group">
+            <label class="sr-only">社会信用码</label>
+            <input id="txtBrandName" v-model="search.certificateId" class="form-control" type="text" placeholder="请输入社会信用码" style="width:150px"/>
+        </div>
+        <div class="form-group">
+            <label class="sr-only">企业地址</label>
+            <input id="txtAddress" v-model="search.address" class="form-control" type="text" placeholder="请输入企业地址" style="width:150px"/>
+        </div>
+        <div class="form-group">
+            <label class="sr-only">企业法人</label>
+            <input id="txtUserName" v-model="search.userName" class="form-control" type="text" placeholder="请输入法人姓名" style="width:150px"/>
+        </div>
+        <div class="form-group">
+            <label class="sr-only">电话</label>
+            <input id="txtCellphone" v-model="search.cellphone" class="form-control" type="text" placeholder="请输入法人电话" style="width:150px"/>
+        </div>
+
+        <div class="form-group">
+            <label class="sr-only">创建开始时间</label>
+            <input id="txtBeginDate" class="form-control" type="text" placeholder="请输入创建开始时间"/>
+            ---
+            <label class="sr-only">创建结束时间</label>
+            <input id="txtEndDate" class="form-control" type="text" placeholder="请输入创建结束时间"/>
+        </div>
+
+        <div class="form-group">
+            <div class="col-sm-6">
+                <select id="selProgress" v-model="search.enterpriseVerify" class="form-control">
+                    <option value="-1" selected="selected">验证情况</option>
+                    <option value="0">未验证</option>
+                    <option value="1">已验证</option>
+                    <option value="2">未通过</option>
+                </select>
+            </div>
+        </div>
+
+        <button id="btnSearch" type="button" @click="getEnterprises" class="btn btn-primary">搜索</button>
+
+        <a class="btn btn-primary" href="edit.html" data-target="#dialog" data-toggle="modal">添加企业</a>
+
+        <a class="btn btn-primary" :href="exportUrl">导出</a>
+
+        <input id="txtSearch" type="hidden" @click="getEnterprises('msg')"/>
+        <input id="hidEnterpriseId" type="hidden"/>
+    </div>
+
+    <div class="table-responsive">
+        <table class="table table-striped" id="main">
+            <thead>
+            <tr>
+                <th style="text-align:center;vertical-align:middle;">编号</th>
+                <th style="text-align:center;vertical-align:middle;">企业名</th>
+                <th style="text-align:center;vertical-align:middle;">企业类型</th>
+                <th style="text-align:center;vertical-align:middle;">社会信用码</th>
+                <th style="text-align:center;vertical-align:middle;">企业地址</th>
+                <th style="text-align:center;vertical-align:middle;">企业联系人</th>
+                <th style="text-align:center;vertical-align:middle;">联系人电话</th>
+                <!--<th style="text-align:center;vertical-align:middle;">联系人性别</th>
+                <th style="text-align:center;vertical-align:middle;">联系人职位</th>-->
+                <th style="text-align:center;vertical-align:middle;">创建时间</th>
+                <th style="text-align:center;vertical-align:middle;">验证情况</th>
+                <th style="text-align:center;vertical-align:middle;">操作</th>
+            </tr>
+            </thead>
+            <tbody>
+
+            <template>
+                <tr v-for="(enterprise,index) in enterprises">
+                    <td style="text-align:center;vertical-align:middle;">{{beginIndex + 1 + index}}</td>
+                    <td style="text-align:center;vertical-align:middle;">{{enterprise.enterpriseName}}</td>
+                    <td style="text-align:center;vertical-align:middle;">{{enterprise.enterpriseTypeDisplay}}</td>
+                    <td style="text-align:center;vertical-align:middle;">{{enterprise.certificateId}}</td>
+                    <td style="text-align:center;vertical-align:middle;">{{enterprise.address}}</td>
+                    <td style="text-align:center;vertical-align:middle;">{{enterprise.boss}}</td>
+                    <td style="text-align:center;vertical-align:middle;">{{enterprise.phone}}</td>
+                   <!-- <td style="text-align:center;vertical-align:middle;">{{enterprise.genderDisplay}}</td>
+                    <td style="text-align:center;vertical-align:middle;">{{enterprise.position}}</td>-->
+                    <td style="text-align:center;vertical-align:middle;">{{enterprise.createTime}}</td>
+                    <td style="text-align:center;vertical-align:middle;">{{enterprise.enterpriseVerifyDisplay}}</td>
+                    <td style="text-align:center;vertical-align:middle;">
+                        <div v-if="enterprise.enterpriseVerify == 0 || enterprise.enterpriseVerify == 3">
+                            <a class="btn btn-xs btn-success" href="verify.html" data-target="#dialog"
+                               data-toggle="modal" onclick="setEnterpriseId(this.id);" :id="enterprise.enterpriseId"><i class="icon-check"></i>验证</a>
+                            <a class="btn btn-xs btn-danger"
+                               data-toggle="modal" onclick="del(this.id);" :id="enterprise.enterpriseId"><i class="icon-trash"></i>删除</a>
+                        </div>
+                        <div v-else-if="enterprise.enterpriseVerify == 1">
+                            <a class="btn btn-xs btn-info" href="check.html" data-target="#dialog"
+                               data-toggle="modal" onclick="setEnterpriseId(this.id);" :id="enterprise.enterpriseId"><i class="icon-search"></i>查看</a>
+                        </div>
+                        <div v-else>
+                            <a class="btn btn-xs btn-info" href="check.html" data-target="#dialog"
+                               data-toggle="modal" onclick="setEnterpriseId(this.id);" :id="enterprise.enterpriseId"><i class="icon-search"></i>查看</a>
+                        </div>
+                        <div>
+                            <a class="btn btn-xs btn-info" href="edit.html" data-target="#dialog"
+                               data-toggle="modal" onclick="setEnterpriseId(this.id);" :id="enterprise.enterpriseId"><i class="icon-edit"></i>编辑</a>
+                            <!--<a class="btn btn-xs btn-info" href="user.html" data-target="#dialog"-->
+                               <!--data-toggle="modal" onclick="setEnterpriseId(this.id);" :id="enterprise.enterpriseId">账号管理</a>-->
+                            <a class="btn btn-xs btn-info" href="#"  onclick="parent.openTab(this.id,'/enterprise/user.html?id='+this.id+'&type='+this.type,this.name)"
+                               :id="enterprise.enterpriseId" :name="enterprise.enterpriseName" :type="enterprise.enterpriseType">账号管理</a>
+                        </div>
+
+                    </td>
+                </tr>
+            </template>
+
+            </tbody>
+        </table>
+    </div>
+
+    <div id="baseDialog">
+        <script>getDialog('baseDialog', '../basedialog.html');</script>
+    </div>
+
+
+</div>
+<div id="secondDialog">
+    <script>getDialog('secondDialog', '../seconddialog.html');</script>
+</div>
+<div id="page">
+    <script>getPaging();</script>
+</div>
+<script src="../js/enterprise/index.js"></script>
+
+</body>
+</html>

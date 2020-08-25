@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.qivay.mapper.SuggestionMapper" >
+  <resultMap id="BaseResultMap" type="com.qivay.domain.Suggestion" >
+    <id column="suggestion_id" property="suggestionId"/>
+    <result column="question" property="question"/>
+    <result column="answer" property="answer"/>
+    <result column="suggestion_show" property="show"/>
+    <result column="suggestion_order" property="order"/>
+    <result column="create_time" property="createTime"/>
+    <result column="creator" property="creator"/>
+  </resultMap>
+
+  <insert id="insert">
+    insert into suggestion(suggestion_id, question, answer,suggestion_show, suggestion_order, create_time,creator)
+    values (#{suggestionId}, #{question}, #{answer},#{show}, #{order}, #{createTime},#{creator})
+  </insert>
+  <update id="updateByPrimaryKey">
+    update suggestion
+    set question = #{question},
+      answer = #{answer},
+      suggestion_show = #{show},
+      suggestion_order = #{order}
+    where suggestion_id = #{suggestionId}
+  </update>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap">
+    select suggestion_id, question, answer, suggestion_show, suggestion_order, create_time, creator
+    from suggestion
+    where suggestion_id = #{suggestionId}
+  </select>
+
+  <select id="getSuggestions" resultMap="BaseResultMap" >
+    select suggestion_id, question, answer, suggestion_show, suggestion_order, create_time, creator
+    from suggestion
+    <include refid="base_conditions"/>
+    order by suggestion_order desc ,create_time desc
+    limit #{startIndex},#{pageSize}
+  </select>
+
+  <sql id="base_conditions">
+    <where>
+      <if test="beginDateDisplay != null">
+        create_time >= #{beginDateDisplay}
+      </if>
+      <if test="endDateDisplay != null">
+        and create_time &lt;= #{endDateDisplay}
+      </if>
+      <if test="show != -1">
+        and show = #{show}
+      </if>
+    </where>
+  </sql>
+
+  <select id="getCount" resultType="int">
+    select count(suggestion_id)
+    from suggestion
+    <include refid="base_conditions"/>
+  </select>
+
+</mapper>

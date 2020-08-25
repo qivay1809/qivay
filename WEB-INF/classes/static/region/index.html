@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:v-bind="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title>地址列表</title>
+    <link rel="stylesheet" href="../css/bootstrap.min.css">
+    <link rel="stylesheet" href="../css/dialog.css">
+    <script src="../js/jquery1.11.3.min.js"></script>
+    <script src="../js/bootstrap.min.js"></script>
+    <script src="../js/vue.js"></script>
+    <script src="../js/vue-resource1.3.4.js"></script>
+    <script src="../js/config.js"></script>
+
+</head>
+<body>
+<div id="regionIndex">
+    <div class="form-inline">
+        <div class="form-group">
+            <label class="sr-only">区域名</label>
+            <input id="txtRegionName" v-model="search.regionName" style="width:135px" class="form-control" type="text"
+                   placeholder="请输入区域名"/>
+        </div>
+
+        <div class="form-group">
+            <select id="selProvinceId" v-model="search.provinceId" class="form-control" style="margin-left: 15px"
+                             @change="getSubrange(search.provinceId)">
+            <option value="" selected="selected">全国</option>
+            <option v-for="province in provinces" v-bind:value="province.regionId">
+                {{ province.regionName }}
+            </option>
+        </select>
+            ---
+            <select id="selCityId" v-model="search.cityId" class="form-control" @change="getSubrange(search.cityId)">
+                <option value="" selected="selected">全省</option>
+                <option v-for="city in cities" v-bind:value="city.regionId">
+                    {{ city.regionName }}
+                </option>
+            </select>
+        </div>
+
+        <button id="btnSearch" type="button" @click="getRegions" class="btn btn-primary">搜索</button>
+
+        <a class="btn btn-primary" href="edit.html" data-target="#dialog" data-toggle="modal">添加地区</a>
+
+        <input id="txtSearch" type="hidden" @click="getRegions('msg')"/>
+        <input id="hidRegionId" type="hidden"/>
+    </div>
+
+    <div class="table-responsive">
+        <table class="table table-striped" id="main">
+            <thead>
+            <tr>
+                <th style="text-align:center;vertical-align:middle;">区码</th>
+                <th style="text-align:center;vertical-align:middle;">地区名</th>
+                <th style="text-align:center;vertical-align:middle;">地区拼音</th>
+                <th style="text-align:center;vertical-align:middle;">上级区域</th>
+                <th style="text-align:center;vertical-align:middle;">经度</th>
+                <th style="text-align:center;vertical-align:middle;">纬度</th>
+                <th style="text-align:center;vertical-align:middle;">操作</th>
+            </tr>
+            </thead>
+            <tbody>
+
+            <template>
+                <tr v-for="region in regions">
+                    <td style="text-align:center;vertical-align:middle;">{{region.regionId}}</td>
+                    <td style="text-align:center;vertical-align:middle;">{{region.regionName}}</td>
+                    <td style="text-align:center;vertical-align:middle;">{{region.regionEnname}}</td>
+                    <td style="text-align:center;vertical-align:middle;">{{region.parentName}}</td>
+                    <td style="text-align:center;vertical-align:middle;">{{region.longitude}}</td>
+                    <td style="text-align:center;vertical-align:middle;">{{region.latitude}}</td>
+                    <td style="text-align:center;vertical-align:middle;">
+                            <a class="btn btn-xs btn-info" href="edit.html" data-target="#dialog"
+                               data-toggle="modal" onclick="setRegionId(this.id);" :id="region.regionId">编辑</a>
+                    </td>
+                </tr>
+            </template>
+
+            </tbody>
+        </table>
+    </div>
+
+    <div id="baseDialog"><script>getDialog('baseDialog','../basedialog.html');</script></div>
+
+</div>
+<div id="page"><script>getPaging();</script></div>
+<script src="../js/region/index.js"></script>
+
+</body>
+</html>

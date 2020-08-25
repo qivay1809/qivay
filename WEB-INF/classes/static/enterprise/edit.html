@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:v-bind="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title>编辑企业</title>
+    <link rel="stylesheet" href="../css/bootstrap.min.css">
+    <script src="../js/jquery1.11.3.min.js"></script>
+    <script src="../js/bootstrap.min.js"></script>
+    <script src="../js/vue.js"></script>
+    <script src="../js/vue-resource1.3.4.js"></script>
+    <script src="../js/config.js"></script>
+    <link rel="stylesheet" href="../plugins/fileinput/css/fileinput.css"/>
+    <script src="../plugins/fileinput/js/fileinput.js"></script>
+    <script src="../plugins/fileinput/js/locales/zh.js"></script>
+
+</head>
+<body>
+<div id="editEnterprise">
+    <div class="modal-header">
+        <button type="button" class="close editClose" data-dismiss="modal" aria-label="Close"><span
+                aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title">编辑企业</h4>
+    </div>
+    <div class="modal-body">
+        <form class="form-horizontal" id="enterpriseForm">
+
+            <div class="form-group">
+
+                <label class="col-sm-2 control-label"><span style="color: red">*</span>企业名称</label>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" id="txtEnName" placeholder="企业名名称" v-model="enterpriseName" >
+                    <input type="hidden" id="enterpriseId" v-model="enterpriseId">
+                </div>
+
+            </div>
+
+            <div class="form-group">
+                <label class="col-sm-2 control-label"><span style="color: red">*</span>信用代码</label>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" id="txtCertificateId" placeholder="社会信用代码" v-model="certificateId" >
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="col-sm-2 control-label" style="margin-top: 12px"><span style="color: red">*</span>营业执照</label>
+                <div class="col-sm-10">
+                    <div class="col-sm-2" v-if="compressImage">
+                        <img v-bind:src="compressImage" class="img-circle" width="60px" height="60px"  onclick="openDialog(this);" style="cursor:pointer;">
+                        <a data-toggle="modal" href="#example2" class="btn-large" id="imageDialog" hidden></a>
+                    </div>
+                    <div class="col-sm-8" style="margin-top: 12px">
+                        <input id="fileUpload" type="file" name="file" multiple="multiple" class="file-loading" accept=".png,.jpg">
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="col-sm-2 control-label"><span style="color: red">*</span>企业类型</label>
+                <div class="col-sm-10">
+                    <select id="selEnterpriseType" v-model="enterpriseType" class="form-control" v-bind:disabled="isEdit">
+                        <option value="4" selected="selected">品牌企业</option>
+                        <option value="3">调查公司</option>
+                        <option value="2">律师事务所</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="col-sm-2 control-label"><span style="color: red">*</span>企业介绍</label>
+                <div class="col-sm-10">
+                    <textarea class="form-control" rows="3" id="txtIntroduction" v-model="introduction" ></textarea>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="col-sm-2 control-label"><span style="color: red">*</span>企业地址</label>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" id="txtEnAddress" placeholder="企业地址" v-model="address" >
+                </div>
+            </div>
+
+
+            <div class="form-group">
+                <label class="col-sm-2 control-label"><span style="color: red">*</span>法人</label>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" id="txtContact" placeholder="法人" v-model="boss" >
+                    <!--<input type="hidden" id="userId" v-model="userId">-->
+                </div>
+            </div>
+            <!--<div class="form-group">
+                <label class="col-sm-2 control-label"><span style="color: red">*</span>性别</label>
+                <div class="col-sm-10">
+                    <input type="radio" id="txtMan" value="0" v-model="gender">
+                    <label for="txtMan">男</label>
+                    <input type="radio" id="txtWoman" value="1" v-model="gender">
+                    <label for="txtWoman">女</label>
+                </div>
+            </div>-->
+            <div class="form-group">
+                <label class="col-sm-2 control-label"><span style="color: red">*</span>法人电话</label>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" id="txtContactPhone" placeholder="法人电话" v-model="phone" >
+                </div>
+            </div>
+            <!--<div class="form-group">
+                <label class="col-sm-2 control-label"><span v-if="userId==null || userId==''" style="color: red">*</span>密码</label>
+                <div class="col-sm-10">
+                    <input type="password" class="form-control" id="txtPassword" placeholder="密码" v-model="password" >
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-2 control-label"><span style="color: red">*</span>职位</label>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" id="txtPosition" placeholder="职位" v-model="position" >
+                </div>
+            </div>-->
+
+
+        </form>
+    </div>
+    <div class="modal-footer">
+        <button id="btnClose" type="button" class="btn btn-default editClose" data-dismiss="modal">关闭</button>
+        <button type="button" class="btn btn-primary" @click="editEnterprise">保存</button>
+    </div>
+</div>
+
+<script src="../js/enterprise/edit.js"></script>
+<script src="../js/uploadImage.js"></script>
+
+</body>
+</html>

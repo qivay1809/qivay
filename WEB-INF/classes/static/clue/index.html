@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:v-bind="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title>线索列表</title>
+    <link rel="stylesheet" href="../css/bootstrap.min.css">
+    <link rel="stylesheet" href="../css/dialog.css">
+    <script src="../js/jquery1.11.3.min.js"></script>
+    <script src="../js/bootstrap.min.js"></script>
+    <script src="../js/vue.js"></script>
+    <script src="../js/vue-resource1.3.4.js"></script>
+    <script src="../js/config.js"></script>
+    <script src="../plugins/My97DatePicker/WdatePicker.js"></script>
+    <link rel="stylesheet" href="../css/font-awesome.min.css" media="all"/>
+</head>
+<body>
+<div id="clueIndex">
+    <div class="form-inline">
+
+<!--        <div class="form-group">
+            <label class="sr-only">线索ID</label>
+            <input id="txtClueId" v-model="search.clueId" style="width:180px" class="form-control" type="text"
+                   placeholder="请输入线索ID"/>
+        </div>-->
+        <div class="form-group">
+            <label class="sr-only">用户名</label>
+            <input id="txtUserName" v-model="search.userName" style="width:120px" class="form-control" type="text"
+                   placeholder="请输入用户名"/>
+        </div>
+        <div class="form-group">
+            <label class="sr-only">用户电话</label>
+            <input id="txtCellphone" v-model="search.cellphone" style="width:130px" class="form-control" type="text"
+                   placeholder="请输入用户电话"/>
+        </div>
+
+        <div class="form-group">
+            <label class="sr-only">商品名</label>
+            <input id="txtProductName" v-model="search.productName" style="width:120px" class="form-control" type="text"
+                   placeholder="请输入商品名"/>
+        </div>
+        <div class="form-group">
+            <label class="sr-only">品牌名</label>
+            <input id="txtBrandName" v-model="search.brandName" style="width:120px" class="form-control" type="text"
+                   placeholder="请输入品牌名"/>
+        </div>
+        <div class="form-group">
+            <label class="sr-only">任务标题</label>
+            <input id="txtTaskTitle" v-model="search.taskTitle" style="width:130px" class="form-control" type="text"
+                   placeholder="请输入任务标题"/>
+        </div>
+        <div class="form-group">
+            <label class="sr-only">任务ID</label>
+            <input id="txtTaskId" v-model="search.taskId" style="width:130px" class="form-control" type="text"
+                   placeholder="请输入任务ID"/>
+        </div>
+        <div class="form-group">
+            <label class="sr-only">编号</label>
+            <input id="txtSerialNumber" v-model="search.serialNumber" style="width:130px" class="form-control"
+                   type="text"
+                   placeholder="请输入编号"/>
+        </div>
+
+        <div class="form-group">
+            <label class="sr-only">创建开始时间</label>
+            <input id="txtBeginDate" class="form-control" type="text" placeholder="请输入创建开始时间"/>
+            ---
+            <label class="sr-only">创建结束时间</label>
+            <input id="txtEndDate" class="form-control" type="text" placeholder="请输入创建结束时间"/>
+        </div>
+
+        <div class="form-group">
+            <select id="selProvinceId" v-model="search.provinceId" class="form-control" style="margin-left: 15px"
+                    @change="getSubrange(search.provinceId)">
+                <option value="" selected="selected">全国</option>
+                <option v-for="province in provinces" v-bind:value="province.regionId">
+                    {{ province.regionName }}
+                </option>
+            </select>
+            ---
+            <select id="selCityId" v-model="search.cityId" class="form-control" @change="getSubrange(search.cityId)">
+                <option value="" selected="selected">全省</option>
+                <option v-for="city in cities" v-bind:value="city.regionId">
+                    {{ city.regionName }}
+                </option>
+            </select>
+            ---
+            <select id="selAreaId" v-model="search.areaId" class="form-control">
+                <option value="" selected="selected">全市</option>
+                <option v-for="area in areas" v-bind:value="area.regionId">
+                    {{ area.regionName }}
+                </option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label class="sr-only">街道</label>
+            <input id="txtStreet" v-model="search.street" style="width:130px" class="form-control" type="text"
+                   placeholder="请输入街道信息"/>
+        </div>
+
+        <div class="form-group">
+            <div class="col-sm-6">
+                <select id="selClueVerify" v-model="search.clueVerify" class="form-control">
+                    <option value="-1" selected="selected">验证情况</option>
+                    <option value="0">未验证</option>
+                    <option value="1">平台已验证</option>
+                    <option value="2">平台验证未通过</option>
+                    <option value="3">企业验证通过</option>
+                    <option value="4">企业验证不通过</option>
+                    <option value="5">专人跟进</option>
+                    <option value="6">方案制定</option>
+                    <option value="7">方案实施</option>
+                    <option value="8">完结</option>
+                    <option value="9">非正常完结</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <div class="col-sm-6">
+                <select id="selHasTask" v-model="search.hasTask" class="form-control">
+                    <option value="-1" selected="selected">有无任务</option>
+                    <option value="0">无</option>
+                    <option value="1">有</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <div class="col-sm-6">
+                <select id="selShopType" v-model="search.shopType" class="form-control">
+                    <option value="-1" selected="selected">商店类型</option>
+                    <option value="0">实体商店</option>
+                    <option value="1">仓库</option>
+                    <option value="2">工厂</option>
+                    <option value="3">网店</option>
+                    <option value="4">其他</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <div class="col-sm-6">
+                <select v-model="search.approved" class="form-control">
+                    <option value="-1" selected="selected">是否批准</option>
+                    <option value="1">是</option>
+                    <option value="0">否</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <div class="col-sm-6">
+                <select v-model="search.uploaded" class="form-control">
+                    <option value="-1" selected="selected">合同已上传</option>
+                    <option value="1">是</option>
+                    <option value="0">否</option>
+                </select>
+            </div>
+        </div>
+
+        <!--<div class="form-group">-->
+            <!--<div class="col-sm-6">-->
+                <!--<select v-model="search.published" class="form-control">-->
+                    <!--<option value="-1" selected="selected">已发布</option>-->
+                    <!--<option value="1">是</option>-->
+                    <!--<option value="0">否</option>-->
+
+                <!--</select>-->
+            <!--</div>-->
+        <!--</div>-->
+
+        <button id="btnSearch" type="button" @click="getClues" class="btn btn-primary">搜索</button>
+
+        <a class="btn btn-primary" :href="exportUrl" v-if="authority != 4">导出</a>
+
+        <input id="txtSearch" type="hidden" @click="getClues('msg')"/>
+        <input id="hidClueId" type="hidden"/>
+        <input id="hidTaskId" type="hidden" onclick="setTaskId()"/>
+    </div>
+
+    <div class="table-responsive">
+        <table class="table table-striped" id="main">
+            <thead>
+            <tr>
+                <th style="text-align:center;vertical-align:middle;">序号</th>
+                <th style="text-align:center;vertical-align:middle;">编号</th>
+                <th style="text-align:center;vertical-align:middle;display: none">线索ID</th>
+                <th style="text-align:center;vertical-align:middle;">企业</th>
+                <th style="text-align:center;vertical-align:middle;">品牌</th>
+                <th style="text-align:center;vertical-align:middle;">产品</th>
+                <th style="text-align:center;vertical-align:middle;">数量</th>
+                <!--<th style="text-align:center;vertical-align:middle;">地址</th>-->
+                <th style="text-align:center;vertical-align:middle;">商店名</th>
+                <th style="text-align:center;vertical-align:middle;">商店类型</th>
+                <th style="text-align:center;vertical-align:middle;">任务</th>
+                <!--<th style="text-align:center;vertical-align:middle;">发现时间</th>-->
+                <!--<th style="text-align:center;vertical-align:middle;">创建人</th>-->
+                <!--<th style="text-align:center;vertical-align:middle;">创建人电话</th>-->
+                <th style="text-align:center;vertical-align:middle;">创建时间</th>
+                <th style="text-align:center;vertical-align:middle;">批准</th>
+                <th style="text-align:center;vertical-align:middle;">合同已上传</th>
+                <!--<th style="text-align:center;vertical-align:middle;">已发布</th>-->
+                <!--<th style="text-align:center;vertical-align:middle;">验证情况</th>-->
+                <th style="text-align:center;vertical-align:middle;">操作</th>
+            </tr>
+            </thead>
+            <tbody>
+
+            <template>
+                <tr v-for="(clue,index) in clues">
+                    <td style="text-align:center;vertical-align:middle;">{{beginIndex + 1 + index}}</td>
+                    <td style="text-align:center;vertical-align:middle;">{{clue.serialNumber}}</td>
+                    <td style="text-align:center;vertical-align:middle;">{{clue.enterprise}}</td>
+                    <td style="text-align:center;vertical-align:middle;display: none">{{clue.clueId}}</td>
+                    <td style="text-align:center;vertical-align:middle;">{{clue.brand}}</td>
+                    <td style="text-align:center;vertical-align:middle;">{{clue.product}}</td>
+
+                    <td style="text-align:center;vertical-align:middle;">{{clue.amount}}</td>
+                    <!--<td style="text-align:center;vertical-align:middle;width: 20%">{{clue.address}}</td>-->
+                    <td style="text-align:center;vertical-align:middle;">{{clue.shop}}</td>
+                    <td style="text-align:center;vertical-align:middle;">{{clue.shopTypeDisplay}}</td>
+                    <td style="text-align:center;vertical-align:middle;">{{clue.taskTitle != null ? clue.taskTitle : '无'}}
+                    </td>
+                    <!--<td style="text-align:center;vertical-align:middle;">{{clue.findTime}}</td>-->
+                    <!--<td style="text-align:center;vertical-align:middle;">{{clue.userName}}</td>-->
+                    <!--<td style="text-align:center;vertical-align:middle;">{{clue.cellphone}}</td>-->
+                    <td style="text-align:center;vertical-align:middle;">{{clue.createTime}}</td>
+                    <!--<td style="text-align:center;vertical-align:middle;">{{clue.clueVerifyDisplay}}</td>-->
+                    <td style="text-align:center;vertical-align:middle;">{{clue.validate == 3 ||clue.validate > 4 ? '是'
+                        : '否'}}
+                    <!--<td style="text-align:center;vertical-align:middle;">{{clue.validate == 0 || clue.validate == 2 || clue.validate == 4 ? '否' : '是'}}-->
+                    </td>
+                    <td style="text-align:center;vertical-align:middle;">{{clue.clueAgreementId != null ? '是' : '否'}}
+                    </td>
+                    <!--<td style="text-align:center;vertical-align:middle;">{{clue.caseId !=null ? '是' : '否'}}</td>-->
+                    <td style="text-align:center;vertical-align:middle;">
+                        <div v-if="clue.validate == 0 && authority != 4">
+                            <a class="btn btn-xs btn-success" href="edit.html" data-target="#dialog"
+                               data-toggle="modal" onclick="setClueId(this.id);" :id="clue.clueId"><i class="icon-check"></i>验证</a>
+                            <!--<a class="btn btn-xs btn-danger"
+                               data-toggle="modal" onclick="del(this.id);" :id="clue.clueId"><i class="icon-trash"></i>删除</a>-->
+                        </div>
+                        <!--<div v-else-if="clue.validate == 1">
+                            <a class="btn btn-xs btn-info" href="check.html" data-target="#dialog"
+                               data-toggle="modal" onclick="setClueId(this.id);" :id="clue.clueId">详情</a>
+                            &lt;!&ndash;<a class="btn btn-xs btn-success" href="edit.html" data-target="#dialog"
+                               data-toggle="modal" onclick="setClueId(this.id);" :id="clue.clueId">批准</a>&ndash;&gt;
+
+                        </div>
+                        <div v-else-if="clue.validate == 3">
+                            <a class="btn btn-xs btn-info" href="check.html" data-target="#dialog"
+                               data-toggle="modal" onclick="setClueId(this.id);" :id="clue.clueId">详情</a>
+                        </div>-->
+                        <div v-else>
+                            <a class="btn btn-xs btn-info" href="check.html" data-target="#dialog"
+                               data-toggle="modal" onclick="setClueId(this.id);" :id="clue.clueId"><i class="icon-search"></i>详情</a>
+                        </div>
+
+                        <!--<button class="btn btn-xs btn-info" onclick="setUserId(this.id);" :id="user.userId">编辑</button>-->
+
+                    </td>
+                </tr>
+            </template>
+
+            </tbody>
+        </table>
+    </div>
+
+    <div id="baseDialog">
+        <script>getDialog('baseDialog', '../basedialog.html');</script>
+    </div>
+
+
+</div>
+<div id="secondDialog">
+    <script>getDialog('secondDialog', '../seconddialog.html');</script>
+</div>
+
+<div id="page">
+    <script>getPaging();</script>
+</div>
+<script src="../js/clue/index.js"></script>
+
+</body>
+</html>

@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.qivay.mapper.LegalMapper" >
+  <resultMap id="BaseResultMap" type="com.qivay.domain.Legal" >
+    <id column="legal_id" property="legalId"/>
+    <result column="name" property="name"/>
+    <result column="phone" property="phone"/>
+    <result column="address_id" property="addressId"/>
+    <result column="category" property="category"/>
+    <result column="type" property="type"/>
+    <result column="data" property="data"/>
+    <result column="validate" property="validate"/>
+    <result column="detail" property="detail"/>
+    <result column="status" property="status"/>
+    <result column="pay" property="pay"/>
+    <result column="order_id" property="orderId"/>
+    <result column="creator" property="creator"/>
+    <result column="create_time" property="createTime"/>
+  </resultMap>
+  <sql id="Base_Column_List" >
+    legal_id, name, phone, address_id, category, type, data, validate, detail, status, 
+    pay, order_id, creator, create_time
+  </sql>
+
+
+
+  <sql id="base_conditions">
+    <where>
+      <if test="userId != null and userId != ''">
+        and creator = #{userId}
+      </if>
+      <if test="validate != -1">
+        and validate = #{validate}
+      </if>
+      <if test="category != -1">
+        and s.category = #{category}
+      </if>
+      <if test="type != -1">
+        and s.type = #{type}
+      </if>
+      <if test="provinceId != null and cityId == null and areaId == null">
+        and left(a.region_id,2) = #{provinceId}
+      </if>
+      <if test="cityId != null and areaId == null">
+        and left(a.region_id,4) = #{cityId}
+      </if>
+      <if test="areaId != null">
+        and a.region_id = #{areaId}
+      </if>
+    </where>
+  </sql>
+
+
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from legal
+    where legal_id = #{legalId}
+  </select>
+
+
+  <select id="findLegals" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from legal
+    <include refid="base_conditions"/>
+    order by create_time desc
+    LIMIT #{startIndex}, #{pageSize}
+  </select>
+
+  <select id="getCount" resultType="int">
+    select
+    count(legal_id)
+    from legal
+    <include refid="base_conditions"/>
+  </select>
+
+
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from legal
+    where legal_id = #{legalId}
+  </delete>
+
+
+
+
+  <insert id="insert" parameterType="com.qivay.domain.Legal" >
+    insert into legal (legal_id, name, phone, 
+      address_id, category, type, 
+      data, validate, detail, 
+      status, pay, order_id, 
+      creator, create_time)
+    values (#{legalId}, #{name}, #{phone}, 
+      #{addressId}, #{category}, #{type}, 
+      #{data}, #{validate}, #{detail}, 
+      #{status}, #{pay}, #{orderId}, 
+      #{creator}, #{createTime})
+  </insert>
+  <update id="updateByPrimaryKey" parameterType="com.qivay.domain.Legal" >
+    update legal
+    set name = #{name},
+      phone = #{phone},
+      address_id = #{addressId},
+      category = #{category},
+      type = #{type},
+      data = #{data},
+      validate = #{validate},
+      detail = #{detail},
+      status = #{status},
+      pay = #{pay},
+      order_id = #{orderId},
+      creator = #{creator},
+      create_time = #{createTime}
+    where legal_id = #{legalId}
+  </update>
+
+  <update id="updateValidate">
+    update legal
+    set validate = #{validate}
+    where legal_id = #{legalId}
+  </update>
+
+  <update id="updateStatus">
+    update legal
+    set status = #{status}
+    where legal_id = #{legalId}
+  </update>
+
+  <select id="findCountLegalId" resultType="int">
+    select
+    count(legal_apply_id)
+    from legal_apply
+    where legal_id = #{legalId}
+  </select>
+</mapper>

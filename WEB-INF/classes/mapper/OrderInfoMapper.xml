@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.qivay.mapper.OrderInfoMapper" >
+  <resultMap id="BaseResultMap" type="com.qivay.domain.OrderInfo" >
+    <id column="order_id" property="orderId"/>
+    <result column="amount" property="amount"/>
+    <result column="order_status" property="orderStatus"/>
+    <result column="name" property="creator"/>
+    <result column="create_time" property="createTime"/>
+  </resultMap>
+
+  <sql id="base_conditions">
+    <where>
+      <if test="creator != null">
+        and u.name like concat('%',#{creator},'%')
+      </if>
+      <if test="minAmount != 0.00">
+        and o.amount >= #{minAmount}
+      </if>
+      <if test="maxAmount != 0.00">
+        and o.amount &lt;= #{maxAmount}
+      </if>
+      <if test="orderStatus != -1">
+        and o.order_status = #{orderStatus}
+      </if>
+      <if test="beginDateDisplay != null">
+        and o.create_time >= #{beginDateDisplay}
+      </if>
+      <if test="endDateDisplay != null">
+        and o.create_time &lt;= #{endDateDisplay}
+      </if>
+    </where>
+  </sql>
+
+  <select id="getOrders" resultMap="BaseResultMap">
+    select o.order_id ,o.amount,o.order_status,o.create_time,IFNULL(u.name, u.cellphone) `name`
+    from order_info o
+    left join `user` u on o.creator = u.user_id
+    <include refid="base_conditions"/>
+    order by o.create_time desc
+    limit #{startIndex},#{pageSize}
+  </select>
+
+  <select id="getCount" resultType="int">
+    select count(o.order_id)
+    from order_info o
+    left join `user` u on o.creator = u.user_id
+    <include refid="base_conditions"/>
+  </select>
+
+</mapper>

@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.qivay.mapper.IprDealMapper">
+
+    <resultMap id="iprDealMap" type="com.qivay.domain.IprDeal">
+        <id property="iprDealId" column="ipr_deal_id"/>
+        <result property="name" column="name"/>
+        <result property="phone" column="phone"/>
+        <result property="iprService" column="ipr_service"/>
+        <result property="item" column="item"/>
+        <result property="price" column="price"/>
+        <result property="userId" column="user_id"/>
+        <result property="createTime" column="create_time"/>
+        <result property="status" column="status"/>
+        <result property="pay" column="pay"/>
+        <result property="updateUser" column="updateUser"/>
+    </resultMap>
+
+    <sql id="columns">
+        ipr_deal_id, `name`, phone, ipr_service, item, price,user_id, create_time, status
+    </sql>
+
+    <sql id="base_conditions">
+        <where>
+            <if test="status != -1">
+                and id.status = #{status}
+            </if>
+            <if test="name != null and name != ''">
+                and  id.`name` = #{name}
+            </if>
+            <if test="phone != null and phone != ''">
+                and id.phone = #{phone}
+            </if>
+            <if test="pay != -1">
+                and bo.status = #{pay}
+            </if>
+        </where>
+    </sql>
+    <select id="getIprDeals" resultMap="iprDealMap">
+        select
+          id.*,
+          bo.status pay,
+          u.name updateUser
+        from ipr_deal id
+        left join business_order bo on id.ipr_deal_id = bo.business_id
+        left join `user` u on id.update_user = u.user_id
+        <include refid="base_conditions"/>
+        order by create_time desc
+        limit #{startIndex}, #{pageSize}
+    </select>
+    <select id="getCount" resultType="int">
+        select count(id.ipr_deal_id) from ipr_deal id
+        left join business_order bo on id.ipr_deal_id = bo.business_id
+        left join `user` u on id.update_user = u.user_id
+        <include refid="base_conditions"/>
+    </select>
+    <update id="updState">
+        update ipr_deal
+        set status = 1,
+            update_user = #{userId}
+        where ipr_deal_id = #{id}
+    </update>
+    <update id="updBusinessOrder">
+        update business_order
+        set status = 5
+        where business_id = #{id}
+    </update>
+</mapper>

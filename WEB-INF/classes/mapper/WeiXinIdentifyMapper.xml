@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.qivay.mapper.WeiXinIdentifyMapper" >
+  <resultMap id="BaseResultMap" type="com.qivay.domain.WeiXinIdentify" >
+    <id column="identify_id" property="identifyId"/>
+    <result column="title" property="title"/>
+    <result column="description" property="description"/>
+    <result column="content" property="content"/>
+    <result column="identify_order" property="identifyOrder"/>
+    <result column="identify_show" property="identifyShow"/>
+    <result column="name" property="creator"/>
+    <result column="create_time" property="createTime"/>
+  </resultMap>
+
+  <insert id="insert">
+    insert into weixin_identify (identify_id, title, description, 
+      content, identify_order, identify_show, 
+      creator, create_time)
+    values (#{identifyId}, #{title}, #{description},
+      #{content}, #{identifyOrder}, #{identifyShow},
+      #{creator}, #{createTime})
+  </insert>
+
+  <update id="updateIdentify">
+    update weixin_identify
+    set title = #{title},
+      description = #{description},
+      content = #{content},
+      identify_order = #{identifyOrder},
+      identify_show = #{identifyShow}
+    where identify_id = #{identifyId}
+  </update>
+
+  <select id="getIdentify" resultMap="BaseResultMap">
+    select identify_id, title, description, content, identify_order, identify_show, creator, 
+    create_time
+    from weixin_identify
+    where identify_id = #{identifyId}
+  </select>
+
+  <select id="selectAll" resultMap="BaseResultMap" >
+    select identify_id, title, description, content, identify_order, identify_show, creator, 
+    create_time
+    from weixin_identify
+  </select>
+
+  <sql id="base_conditions">
+    <where>
+      <if test="title != null and title != ''">
+        and i.title like concat('%',#{title},'%')
+      </if>
+      <if test="content != null and content != ''">
+        and i.content like concat('%',#{content},'%')
+      </if>
+      <if test="description != null and description != ''">
+        and i.description like concat('%',#{description},'%')
+      </if>
+      <if test="identifyShow != -1">
+        and i.identify_show = #{identifyShow}
+      </if>
+      <if test="creator != null and creator != ''">
+        and c.name like concat('%',#{creator},'%')
+      </if>
+      <if test="beginDate != null">
+        and i.create_time >= #{beginDate}
+      </if>
+      <if test="endDate != null">
+        and i.create_time &lt;= #{endDate}
+      </if>
+    </where>
+  </sql>
+
+  <select id="getCount" resultType="int">
+    select count(i.identify_id)
+    from weixin_identify i
+    join user c on i.creator = c.user_id
+    <include refid="base_conditions"/>
+  </select>
+
+  <select id="getIdentifies" resultMap="BaseResultMap">
+    select i.identify_id,i.title,i.description,i.content,i.identify_order,i.identify_show,c.name,i.create_time
+    from weixin_identify i
+    join user c on i.creator = c.user_id
+    <include refid="base_conditions"/>
+    order by i.identify_show desc,i.create_time desc
+    limit #{startIndex},#{pageSize}
+  </select>
+</mapper>

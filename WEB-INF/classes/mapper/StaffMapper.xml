@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.qivay.mapper.StaffMapper" >
+  <resultMap id="BaseResultMap" type="com.qivay.domain.Staff" >
+    <id column="staff_id" property="staffId"/>
+    <result column="staff_name" property="staffName"/>
+    <result column="staff_desc" property="staffDesc"/>
+    <result column="staff_show" property="staffShow"/>
+    <result column="staff_order" property="staffOrder"/>
+    <result column="staff_icon" property="staffIcon"/>
+    <result column="staff_type" property="staffType"/>
+    <result column="creator" property="creator"/>
+    <result column="create_time" property="createTime"/>
+  </resultMap>
+  <resultMap id="QueryResultMap" type="com.qivay.domain.Staff" >
+    <id column="staff_id" property="staffId"/>
+    <result column="staff_name" property="staffName"/>
+    <result column="staff_desc" property="staffDesc"/>
+    <result column="staff_show" property="staffShow"/>
+    <result column="staff_order" property="staffOrder"/>
+    <result column="staff_icon" property="staffIcon"/>
+    <result column="staff_type" property="staffType"/>
+    <result column="name" property="creator"/>
+    <result column="create_time" property="createTime"/>
+  </resultMap>
+
+  <delete id="deleteByPrimaryKey">
+    delete from staff
+    where staff_id = #{staffId}
+  </delete>
+  
+  <insert id="insert">
+    insert into staff (staff_id, staff_name, staff_desc, 
+      staff_show, staff_order, staff_icon, 
+      staff_type, creator, create_time
+      )
+    values (#{staffId}, #{staffName}, #{staffDesc}, 
+      #{staffShow}, #{staffOrder}, #{staffIcon}, 
+      #{staffType}, #{creator}, #{createTime})
+  </insert>
+  
+  <update id="updateByPrimaryKey">
+    update staff
+    set staff_name = #{staffName},
+      staff_desc = #{staffDesc},
+      staff_show = #{staffShow},
+      staff_order = #{staffOrder},
+      staff_icon = #{staffIcon},
+      staff_type = #{staffType}
+    where staff_id = #{staffId}
+  </update>
+  
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap">
+    select staff_id, staff_name, staff_desc, staff_show, staff_order, staff_icon, staff_type, 
+    creator, create_time
+    from staff
+    where staff_id = #{staffId}
+  </select>
+  
+  <sql id="base_conditions">
+    <where>
+      <if test="staffName != null and staffName != ''">
+        s.staff_name like concat('%',#{staffName},'%')
+      </if>
+      <if test="staffShow != -1">
+        and s.staff_show = #{staffShow}
+      </if>
+      <if test="staffType != -1">
+        and s.staff_type = #{staffType}
+      </if>
+      <if test="beginDateDisplay != null">
+        and s.create_time >= #{beginDateDisplay}
+      </if>
+      <if test="endDateDisplay != null">
+        and s.create_time &lt;= #{endDateDisplay}
+      </if>
+    </where>
+  </sql>
+  
+  <select id="getStaffs" resultMap="QueryResultMap" >
+    select s.staff_id, s.staff_name, s.staff_desc, s.staff_show, s.staff_order, s.staff_icon, s.staff_type,
+    u.name, s.create_time
+    from staff s
+    left join user u on u.user_id = s.creator
+    <include refid="base_conditions"/>
+    order by s.staff_order desc,s.create_time desc
+    limit #{startIndex},#{pageSize}
+  </select>
+
+  <select id="getCount" resultType="int">
+    select count(s.staff_id) from staff s <include refid="base_conditions"/>
+  </select>
+
+</mapper>

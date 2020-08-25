@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.qivay.mapper.AddressMapper">
+
+    <resultMap id="addressMap" type="com.qivay.domain.Address">
+        <id property="addressId" column="address_id"/>
+        <result property="regionId" column="region_id"/>
+        <result property="street" column="street"/>
+        <result property="streetEn" column="street_en"/>
+        <result property="longitude" column="longitude"/>
+        <result property="latitude" column="latitude"/>
+        <result property="addressVerify" column="address_verify"/>
+        <result property="userId" column="user_id"/>
+    </resultMap>
+
+    <sql id="columns">
+        address_id,region_id,street,street_en,longitude,latitude,address_verify,user_id
+    </sql>
+
+    <select id="findAddressByNameAndRegion" resultType="String">
+        SELECT  address_id  FROM  address  WHERE street = #{addressName} and region_id = #{regionId}
+    </select>
+
+    <insert id="insertAddress" parameterType="com.qivay.domain.Address">
+        INSERT INTO
+        address
+        (<include refid="columns"/>)
+        VALUES
+        (#{addressId},#{regionId},#{street}, #{streetEn},#{longitude},#{latitude}, #{addressVerify})
+    </insert>
+
+    <sql id="base_conditions">
+        <where>
+            <if test="street != null">
+                street like concat('%',#{street},'%')
+            </if>
+            <if test="provinceId != null and cityId == null and areaId == null">
+                and left(region_id,2) = #{provinceId}
+            </if>
+            <if test="cityId != null and areaId == null">
+                and left(region_id,4) = #{cityId}
+            </if>
+            <if test="areaId != null">
+                and region_id = #{areaId}
+            </if>
+            <if test="addressVerify != -1">
+                and address_verify = #{addressVerify}
+            </if>
+        </where>
+    </sql>
+
+    <select id="getAddresses" resultMap="addressMap">
+        select
+        <include refid="columns"/>
+        from address
+        <include refid="base_conditions"/>
+        order by address_verify
+        limit #{startIndex},#{pageSize}
+    </select>
+
+    <select id="getCount" resultType="int">
+        select count(address_id) from address
+        <include refid="base_conditions"/>
+    </select>
+
+    <select id="getAddressById" resultMap="addressMap">
+        select <include refid="columns"/>
+        from address
+        where address_id = #{addressId}
+    </select>
+
+    <update id="verifyAddress">
+        update address set address_verify = #{addressVerify}
+        where address_id = #{addressId}
+    </update>
+
+    <update id="updateAddress">
+        update address set region_id = #{regionId},street = #{street},street_en = #{streetEn},longitude = #{longitude},latitude = #{latitude},address_verify = #{addressVerify}
+        where address_id = #{addressId}
+    </update>
+
+    <delete id="delete">
+      DELETE FROM address WHERE address_id = #{addressId}
+    </delete>
+
+</mapper>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

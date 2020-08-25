@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:v-bind="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title>编辑律师</title>
+    <link rel="stylesheet" href="../css/bootstrap.min.css">
+    <link rel="stylesheet" href="../plugins/fileinput/css/fileinput.css"/>
+    <script src="../js/jquery1.11.3.min.js"></script>
+    <script src="../js/bootstrap.min.js"></script>
+    <script src="../js/vue.js"></script>
+    <script src="../js/vue-resource1.3.4.js"></script>
+    <script src="../js/config.js"></script>
+    <script src="../plugins/fileinput/js/fileinput.js"></script>
+    <script src="../plugins/fileinput/js/locales/zh.js"></script>
+
+</head>
+<body>
+<div id="editLawyer">
+<div class="modal-header">
+    <button type="button" class="close editClose" data-dismiss="modal" aria-label="Close"><span
+            aria-hidden="true">&times;</span></button>
+    <h4 class="modal-title">编辑律师</h4>
+</div>
+<div class="modal-body">
+    <form class="form-horizontal">
+
+        <div class="form-group">
+            <label class="col-sm-2 control-label">律师姓名</label>
+            <div class="col-sm-9">
+                <input type="text" class="form-control" id="txtLawyerName" placeholder="律师姓名"  v-model="lawyerName">
+            </div>
+            <div class="col-sm-1">
+                <h4 style="color: red">*</h4>&nbsp;
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-2 control-label">英&ensp;文&ensp;名</label>
+            <div class="col-sm-9">
+                <input type="text" class="form-control" id="txtEnName" placeholder="英文名"  v-model="enName">
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-2 control-label">律师账号</label>
+            <div class="col-sm-6">
+                <select v-model="userId" class="form-control">
+                    <option v-for="lawyer in lawyers" v-bind:value="lawyer.userId">
+                        {{lawyer.name}}
+                    </option>
+                </select>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-2 control-label">区域律师</label>
+            <div class="col-sm-9">
+                <input type="text" class="form-control" id="txtLawFirm" placeholder="区域律师"  v-model="lawFirm">
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-2 control-label">联系方式</label>
+            <div class="col-sm-9">
+                <input type="text" class="form-control" placeholder="联系方式"  v-model="phone">
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-2 control-label">执业年限</label>
+            <div class="col-sm-9">
+                <input type="text" class="form-control" id="txtWorkYear" placeholder="执业年限"  v-model="workYear">
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="col-sm-2 control-label" style="margin-top: 12px">律师头像</label>
+            <div class="col-sm-9">
+                <div class="col-sm-2" v-if="lawyerIconCompress">
+                    <img v-bind:src="lawyerIconCompress" class="img-rounded" width="60px" height="60px">
+                </div>
+                <div class="col-sm-8" style="margin-top: 12px">
+                    <input id="fileUpload" type="file" name="file" multiple="multiple" class="file-loading" accept=".png,.gif,.jpg">
+                </div>
+            </div>
+            <div class="col-sm-1">
+                <h4 style="color: red">*</h4>&nbsp;
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="col-sm-2 control-label">专&emsp;&emsp;长</label>
+            <div class="col-sm-9">
+                <textarea class="form-control" rows="3" id="txtSpecialty" v-model="specialty" placeholder="字数不能超过150字" maxlength="150"></textarea>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-2 control-label">律师简介</label>
+            <div class="col-sm-9">
+                <textarea class="form-control" rows="5" id="txtLawyerDesc" v-model="lawyerDesc" placeholder="字数不能超过200字" maxlength="300"></textarea>
+            </div>
+            <div class="col-sm-1">
+                <h4 style="color: red">*</h4>&nbsp;
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="col-sm-2 control-label">律师排序</label>
+            <div class="col-sm-9">
+                <input type="text" class="form-control" id="txtLawyerOrder" placeholder="律师排序"  v-model="lawyerOrder">
+            </div>
+            <div class="col-sm-1">
+                <h4 style="color: red">*</h4>&nbsp;
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-2 control-label">是否显示</label>
+            <div class="col-sm-9">
+                <input type="radio" id="txtShow" value="0" v-model="lawyerShow">
+                <label for="txtShow">显示</label>
+                <input type="radio" id="txtHide" value="1" v-model="lawyerShow">
+                <label for="txtHide">不显示</label>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="col-sm-2 control-label">律师类型</label>
+            <div class="col-sm-9">
+                <input type="radio" id="txtChina" value="0" v-model="lawyerType">
+                <label for="txtChina">国内律师</label>
+                <input type="radio" id="txtOther" value="1" v-model="lawyerType">
+                <label for="txtOther">国际律师</label>
+            </div>
+        </div>
+
+
+    </form>
+</div>
+<div class="modal-footer">
+    <button id="btnClose" type="button" class="btn btn-default editClose" data-dismiss="modal">关闭</button>
+    <button type="button" class="btn btn-primary" @click="editLawyer">保存</button>
+</div>
+</div>
+
+<script src="../js/lawyer/edit.js"></script>
+<script src="../js/lawyer/uploadImage.js"></script>
+</body>
+</html>

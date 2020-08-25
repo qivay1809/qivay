@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:v-bind="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title>奖金审核</title>
+    <link rel="stylesheet" href="../css/bootstrap.min.css">
+    <!--<link rel="stylesheet" href="../plugins/fancyBox/jquery.fancybox.css">-->
+    <script src="../js/jquery1.11.3.min.js"></script>
+    <script src="../js/bootstrap.min.js"></script>
+    <script src="../js/vue.js"></script>
+    <script src="../js/vue-resource1.3.4.js"></script>
+    <script src="../js/config.js"></script>
+
+    <script type="text/javascript" charset="utf-8" src="../ueditor/ueditor.config.js"></script>
+    <script type="text/javascript" charset="utf-8" src="../ueditor/ueditor.all.min.js"></script>
+    <script type="text/javascript" charset="utf-8" src="../ueditor/lang/zh-cn/zh-cn.js"></script>
+    <link rel="stylesheet" href="../plugins/fileinput/css/fileinput.css"/>
+    <script src="../plugins/fileinput/js/fileinput.js"></script>
+    <script src="../plugins/fileinput/js/locales/zh.js"></script>
+    <!--<script src="../plugins/fancyBox/jquery.fancybox.js"></script>-->
+
+</head>
+<body>
+<div id="editClue">
+    <div class="modal-header">
+        <button type="button" class="close editClose" data-dismiss="modal" aria-label="Close"><span
+                aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title">奖金审核</h4>
+    </div>
+    <div class="modal-body">
+        <form class="form-horizontal">
+
+            <div class="form-group">
+                <label class="col-sm-2 control-label">案件标题</label>
+                <div class="col-sm-9">
+                    <input type="text" class="form-control" v-model="caseTitle" readonly>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="col-sm-2 control-label">品牌</label>
+                <div class="col-sm-9">
+                    <input type="text" class="form-control" v-model="brandName" readonly/>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="col-sm-2 control-label">产品</label>
+                <div class="col-sm-9">
+                    <input type="text" class="form-control" v-model="product" readonly/>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="col-sm-2 control-label">案件内容</label>
+                <div class="col-sm-9">
+                    <textarea class="form-control" v-model="caseContent" rows="5" readonly></textarea>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="col-sm-2 control-label">调查地区</label>
+                <div class="col-sm-9">
+                    <input type="text" class="form-control" v-model="region" readonly/>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="col-sm-2 control-label">行业</label>
+                <div class="col-sm-9">
+                    <input type="text" class="form-control" v-model="industry" readonly/>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="col-sm-2 control-label">截止日期</label>
+                <div class="col-sm-9">
+                    <input type="text" class="form-control" v-model = "createTime" readonly/>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="col-sm-2 control-label">奖金描述</label>
+                <div class="col-sm-9">
+                    <textarea class="form-control" v-model="reward" rows="5" readonly></textarea>
+                </div>
+            </div>
+
+
+            <div class="form-group">
+                <label class="col-sm-2 control-label">案件图片</label>
+                <div class="col-sm-10">
+                    <div style="float: left" v-for="(image,index) in caseImages">
+                        <img v-bind:src="image" width="150px" height="150px" data-index="index"
+                             onclick="openDialog(this);" style="cursor:pointer;">
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="col-sm-2 control-label">奖&emsp;&emsp;金</label>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" id="txtReward" placeholder="奖金额度" v-model="rewardAmount"
+                           readonly>
+                </div>
+            </div>
+
+
+        </form>
+    </div>
+    <div class="modal-footer">
+        <div v-if="rewardValidate != 1 && (authority == 2 || authority == 3)">
+            <button type="button" value="不通过" class="btn btn-warning" @click="verifyReward($event.currentTarget)" data-msg="2">不通过
+            </button>
+            <button type="button" value="通过" class="btn btn-success" @click="verifyReward($event.currentTarget)" data-msg="1">通过
+            </button>
+        </div>
+    </div>
+</div>
+
+<script src="../js/reward/edit.js"></script>
+
+</body>
+</html>

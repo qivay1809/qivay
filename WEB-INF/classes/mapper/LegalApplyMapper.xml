@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.qivay.mapper.LegalApplyMapper" >
+  <resultMap id="BaseResultMap" type="com.qivay.domain.LegalApply" >
+    <id column="legal_apply_id" property="legalApplyId"/>
+    <result column="name" property="name"/>
+    <result column="phone" property="phone"/>
+    <result column="lawfirm" property="lawfirm"/>
+    <result column="address" property="address"/>
+    <result column="price" property="price"/>
+    <result column="invoice" property="invoice"/>
+    <result column="price_info" property="priceInfo"/>
+    <result column="experience" property="experience"/>
+    <result column="status" property="status"/>
+    <result column="legal_id" property="legalId"/>
+    <result column="user_id" property="userId"/>
+    <result column="create_time" property="createTime"/>
+    <result column="icon" property="icon"/>
+  </resultMap>
+  
+  
+  <sql id="Base_Column_List" >
+    la.legal_apply_id, la.name, la.phone, la.lawfirm, la.address, la.price, la.invoice, la.price_info, la.experience, 
+    la.status, la.legal_id, la.user_id, la.create_time,u.icon
+  </sql>
+
+
+
+  <sql id="base_conditions">
+    <where>
+      <if test="legalId != null and legalId != ''">
+        and la.legal_id = #{legalId}
+      </if>
+      <if test="name != null and name != ''">
+        and la.`name` = #{name}
+      </if>
+      <if test="phone != null and phone != ''">
+        and la.phone = #{phone}
+      </if>
+    </where>
+  </sql>
+
+  
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from legal_apply la
+    left join `user` u on la.user_id = u.user_id
+    where la.legal_apply_id = #{legalApplyId}
+  </select>
+
+
+  <select id="findByLegalId" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from legal_apply la
+    left join `user` u on la.user_id = u.user_id
+    <include refid="base_conditions"/>
+    order by la.create_time, la.status desc
+    LIMIT #{startIndex}, #{pageSize}
+  </select>
+
+  <select id="findCountLegalId" resultType="int">
+    select
+    count(legal_apply_id)
+    from legal_apply la
+    left join `user` u on la.user_id = u.user_id
+    <include refid="base_conditions"/>
+  </select>
+  
+</mapper>

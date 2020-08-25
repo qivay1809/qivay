@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.qivay.mapper.ConfigMapper" >
+
+  <resultMap id="BaseResultMap" type="com.qivay.domain.Config" >
+    <id column="config_id" property="configId"/>
+    <result column="config_key" property="configKey"/>
+    <result column="config_content" property="configContent"/>
+    <result column="remark" property="remark"/>
+    <result column="name" property="creator"/>
+    <result column="create_time" property="createTime"/>
+  </resultMap>
+
+  <insert id="insert">
+    insert into config (config_id, config_key, config_content,remark,
+      creator, create_time)
+    values (#{configId}, #{configKey}, #{configContent}, #{remark},
+      #{creator}, #{createTime})
+  </insert>
+
+  <update id="updateByPrimaryKey">
+    update config
+    set config_key = #{configKey},
+      config_content = #{configContent},
+      remark = #{remark}
+    where config_id = #{configId}
+  </update>
+
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap">
+    select config_id, config_key, config_content,remark,  creator, create_time
+    from config
+    where config_id = #{configId}
+  </select>
+
+  <select id="selectAll" resultMap="BaseResultMap" >
+    select config_id, config_key, config_content,remark,  creator, create_time
+    from config
+  </select>
+
+
+  <select id="getConfigByKey" resultMap="BaseResultMap">
+    select config_id, config_key, config_content,remark,  creator, create_time
+    from config
+    where config_key = #{key}
+  </select>
+
+  <sql id="base_conditions">
+    <where>
+      <if test="key != null">
+        c.config_key like concat('%',#{key},'%')
+      </if>
+      <if test="creator != null">
+        and u.name like concat('%',#{creator},'%')
+      </if>
+      <if test="content != null">
+        and c.config_content like concat('%',#{content},'%')
+      </if>
+      <if test="beginDate != null">
+        and c.create_time >= #{beginDate}
+      </if>
+      <if test="endDate != null">
+        and c.create_time &lt;= #{endDate}
+      </if>
+    </where>
+  </sql>
+
+  <select id="getConfigs" resultMap="BaseResultMap">
+    select c.config_id, c.config_key, c.config_content,c.remark,  u.name, c.create_time
+    from config c
+    left join user u on c.creator = u.user_id
+    <include refid="base_conditions"/>
+    order by c.create_time desc
+    limit #{startIndex},#{pageSize}
+  </select>
+
+  <select id="getCount" resultType="int">
+    select count(c.config_id)
+    from config c
+    left join user u on c.creator = u.user_id
+    <include refid="base_conditions"/>
+  </select>
+
+</mapper>

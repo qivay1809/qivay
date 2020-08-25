@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:v-bind="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title>送检审核</title>
+    <link rel="stylesheet" href="../css/bootstrap.min.css">
+    <script src="../js/jquery1.11.3.min.js"></script>
+    <script src="../js/bootstrap.min.js"></script>
+    <script src="../js/vue.js"></script>
+    <script src="../js/vue-resource1.3.4.js"></script>
+    <script src="../js/config.js"></script>
+    <link rel="stylesheet" href="../plugins/confirm/jquery-confirm.css">
+    <script src="../plugins/confirm/jquery-confirm.js"></script>
+    <link rel="stylesheet" href="../plugins/fileinput/css/fileinput.css"/>
+    <script src="../plugins/fileinput/js/fileinput.js"></script>
+    <script src="../plugins/fileinput/js/locales/zh.js"></script>
+
+</head>
+<body>
+<div id="editExamination">
+    <div class="modal-header">
+        <button type="button" class="close editClose" data-dismiss="modal" aria-label="Close"><span
+                aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title">送检审核</h4>
+    </div>
+    <div class="modal-body">
+        <form class="form-horizontal">
+            <div class="form-group">
+                <label class="col-sm-2 control-label">产&ensp;品&ensp;名</label>
+                <div class="col-sm-9">
+                    <input type="text" class="form-control" id="txtProductName" placeholder="产品名" v-model="product"
+                           readonly>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-2 control-label">品&ensp;牌&ensp;名</label>
+                <div class="col-sm-9">
+                    <input type="text" class="form-control" id="txtBrandName" v-model="brand" readonly>
+                </div>
+                <div class="col-sm-1">
+                    <h4 style="color: red">*</h4>&nbsp;
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-2 control-label">审核状态</label>
+                <div class="col-sm-9">
+                    <input type="text" class="form-control" id="txtStatusDisplay" v-model="statusString" readonly>
+                </div>
+                <div class="col-sm-1">
+                    <h4 style="color: red">*</h4>&nbsp;
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-2 control-label">创建时间</label>
+                <div class="col-sm-9">
+                    <input type="text" class="form-control" id="txtCreateTimeDisplay" v-model="createTime" readonly>
+                </div>
+                <div class="col-sm-1">
+                    <h4 style="color: red">*</h4>&nbsp;
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-2 control-label">相关图片</label>
+                <div class="col-sm-10">
+                    <div style="float: left"  v-for="(image,index) in images">
+                        <img v-bind:src="image" width="150px" height="150px" data-index="index"
+                             onclick="openDialog(this);" style="cursor:pointer;">
+                        <input v-bind:value="index" hidden/>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group" v-if="status == 0">
+                <label class="col-sm-2 control-label">描述</label>
+                <div class="col-sm-9">
+                    <textarea type="text" class="form-control" rows="3" id="txtDescription" placeholder="验证不通过时，请填写描述！"
+                              v-model="description"></textarea>
+                </div>
+                <div class="col-sm-1">
+                    <h4 style="color: red">*</h4>&nbsp;
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-2 control-label">上传鉴定图片</label>
+                <div class="col-sm-10">
+                    <div class="col-sm-5">
+                        <input id="fileUpload" type="file" name="file" multiple="multiple"
+                               class="file-loading"
+                               accept=".png,.jpg">
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+    <div class="modal-footer">
+        <div v-if="status == 0">
+            <button type="button" class="btn btn-default" @click="verifyExamination(1)">通过</button>
+            <button type="button" class="btn btn-primary" @click="verifyExamination(2)">不通过</button>
+        </div>
+        <div v-else-if="status == 5">
+            <button type="button" class="btn btn-default" @click="verifyExamination(6)">开始检测</button>
+        </div>
+        <div v-else-if="status == 6">
+            <button type="button" class="btn btn-default" @click="verifyExaminationMs(33)">假货</button>
+            <button type="button" class="btn btn-primary" @click="verifyExaminationMs(66)">正品</button>
+        </div>
+        <div v-else>
+            <button id="btnClose" type="button" class="btn btn-default editClose" data-dismiss="modal">关闭</button>
+        </div>
+    </div>
+</div>
+
+<script src="../js/examination/edit.js"></script>
+<script src="../js/uploadImages.js"></script>
+</body>
+</html>

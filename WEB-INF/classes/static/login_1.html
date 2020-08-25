@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>企卫登录界面</title>
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+    <link rel="stylesheet" href="css/login.css">
+    <link rel="stylesheet" href="css/font-awesome.min.css"/>
+    <script src="js/jquery1.11.3.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/vue.js"></script>
+    <script src="js/vue-resource1.3.4.js"></script>
+    <script src="js/config.js"></script>
+    <script src="js/cookieHelper.js"></script>
+
+
+</head>
+<body background="image/bg.jpg">
+
+<div id="login" class="container">
+
+    <form class="form-signin">
+        <img src="image/logo.png">
+        <br><br>
+        <h2 class="form-signin-heading" style="font-weight: bold;color: white;font-family: 楷体">审慎 &nbsp;高效 &nbsp;创新</h2>
+        <input type="text"  id="txtCellphone" class="form-control" placeholder="请输入手机号" required="" autofocus=""
+               v-model="cellphone">
+        <input type="password" id="txtPassword" class="form-control" placeholder="请输入密码" required=""
+               v-model="password">
+        <!--<div class="form-group" >
+            <input type="text" id="txtCode" class="col-sm-6 " placeholder="请输入验证码" required=""  v-model="code">
+            <div class="col-sm-4">
+                <input class="btn btn-info btn-sm" style="margin-bottom: 10px;" type="button" @click="getCode" value="获取手机验证码" />
+            </div>
+        </div>-->
+
+        <button class="btn btn-lg btn-primary btn-block" type="button" @click="login">登录</button>
+    </form>
+<div style="text-align: right">
+    <a target="_blank" href="http://p.qiao.baidu.com/cps/chat?siteId=14172062&userId=29480838">
+        <img border="0" src="https://sgoutong.baidu.com/embed/1573036979/asset/embed/css/pc/icon/img/seekColorBack0.png" alt="在线咨询" title="在线咨询"/>
+    </a>
+</div>
+</div>
+<script src="js/login.js"></script>
+</body>
+</html>

@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.qivay.mapper.AdImageMapper" >
+  <resultMap id="BaseResultMap" type="com.qivay.domain.AdImage" >
+    <id column="ad_image_id" property="adImageId"/>
+    <result column="image_name" property="imageName"/>
+    <result column="url" property="url"/>
+    <result column="ad_order" property="adOrder"/>
+    <result column="ad_show" property="adShow"/>
+    <result column="type" property="type"/>
+    <result column="html" property="html"/>
+  </resultMap>
+
+  <insert id="insert">
+    insert into ad_image (ad_image_id, image_name, url, 
+      ad_order, ad_show, `type`, html)
+    values (#{adImageId}, #{imageName}, #{url},
+      #{adOrder}, #{adShow}, #{type}, #{html})
+  </insert>
+
+  <update id="updateByPrimaryKey">
+    update ad_image
+    set image_name = #{imageName},
+      url = #{url},
+      ad_order = #{adOrder},
+      ad_show = #{adShow},
+      `type` = #{type},
+      html = #{html}
+    where ad_image_id = #{adImageId}
+  </update>
+
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap">
+    select ad_image_id, image_name, url, ad_order, ad_show, `type`,html
+    from ad_image
+    where ad_image_id = #{adImageId}
+  </select>
+
+  <sql id="base_conditions">
+    <where>
+      <if test="imageName != null and imageName != ''">
+        image_name like concat('%',#{imageName},'%')
+      </if>
+      <if test="adShow != -1">
+        and ad_show = #{adShow}
+      </if>
+    </where>
+  </sql>
+
+  <select id="getImages" resultMap="BaseResultMap">
+    select ad_image_id, image_name, url, ad_order, ad_show, `type`,html
+    from ad_image
+    <include refid="base_conditions"/>
+    order by ad_order desc
+    limit #{startIndex},#{pageSize}
+  </select>
+
+  <select id="getCount" resultType="int">
+    select count(ad_image_id)
+    from ad_image
+    <include refid="base_conditions"/>
+  </select>
+
+  <delete id="deleteImage">
+    delete from ad_image where ad_image_id = #{adImageId}
+  </delete>
+
+</mapper>

@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:v-bind="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title>编辑地址</title>
+    <link rel="stylesheet" href="../css/bootstrap.min.css">
+    <script src="../js/jquery1.11.3.min.js"></script>
+    <script src="../js/bootstrap.min.js"></script>
+    <script src="../js/vue.js"></script>
+    <script src="../js/vue-resource1.3.4.js"></script>
+    <script src="../js/config.js"></script>
+
+</head>
+<body>
+<div id="editAddress">
+    <div class="modal-header">
+        <button type="button" class="close editClose" data-dismiss="modal" aria-label="Close"><span
+                aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title">编辑地址</h4>
+    </div>
+    <div class="modal-body">
+        <form class="form-horizontal" id="addressForm">
+
+            <div class="form-group">
+                <label class="col-sm-2 control-label">地&emsp;&emsp;区</label>
+                <div class="col-sm-3">
+                    <select id="selProvinceId" v-model="provinceId" class="form-control" @change="getAllSubrange(provinceId)" :readonly="verify != ''">
+                        <option v-for="province in provinces" v-bind:value="province.regionId">
+                            {{ province.regionName }}
+                        </option>
+                    </select>
+                </div>
+                <div class="col-sm-3">
+                    <select id="selCityId" v-model="cityId" class="form-control" @change="getAllSubrange(cityId)" :readonly="verify != ''">
+                        <option v-for="city in cities" v-bind:value="city.regionId">
+                            {{ city.regionName }}
+                        </option>
+                    </select>
+                </div>
+                <div class="col-sm-3">
+                    <select id="selAreaId" v-model="areaId" class="form-control" :readonly="verify != ''">
+                        <option v-for="area in areas" v-bind:value="area.regionId">
+                            {{ area.regionName }}
+                        </option>
+                    </select>
+                </div>
+                <div class="col-sm-1">
+                    <h4 style="color: red">*</h4>&nbsp;
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="col-sm-2 control-label">街&emsp;&emsp;道</label>
+                <div class="col-sm-9">
+                    <input type="text" class="form-control" id="txtStreet" placeholder="街道信息" v-model="street" :readonly="verify != ''">
+                </div>
+                <div class="col-sm-1">
+                    <h4 style="color: red">*</h4>&nbsp;
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="col-sm-2 control-label">街道英文</label>
+                <div class="col-sm-9">
+                    <input type="text" class="form-control" id="txtStreetEn" placeholder="街道英文名" v-model="streetEn" :readonly="verify != ''">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="col-sm-2 control-label">经&emsp;&emsp;度</label>
+                <div class="col-sm-9">
+                    <input type="text" class="form-control" id="txtLongitude" placeholder="经度" v-model="longitude" :readonly="verify != ''">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="col-sm-2 control-label">纬&emsp;&emsp;度</label>
+                <div class="col-sm-9">
+                    <input type="text" class="form-control" id="txtLatitude" placeholder="纬度" v-model="latitude" :readonly="verify != ''">
+                </div>
+            </div>
+
+
+            <div class="form-group" v-if="verify != ''">
+                <label class="col-sm-2 control-label">验证情况</label>
+                <div class="col-sm-9">
+                    <input type="text" class="form-control" id="txtAddressVerify" v-model="addressVerifyDisplay" :readonly="verify != ''">
+                </div>
+            </div>
+
+            <div class="form-group" v-if="verify != ''">
+                <label class="col-sm-2 control-label">验证说明</label>
+                <div class="col-sm-9">
+                    <textarea class="form-control" rows="3" id="txtContent" v-model="content"></textarea>
+                </div>
+            </div>
+
+        </form>
+    </div>
+    <div class="modal-footer">
+        <div v-if="verify == ''">
+            <button id="btnClose" type="button" class="btn btn-default editClose" data-dismiss="modal">关闭</button>
+            <button type="button" class="btn btn-primary" @click="editAddress">保存</button>
+        </div>
+        <div v-else>
+            <button type="button" value="验证不通过" class="btn btn-warning" @click="verifyAddress($event.currentTarget)" data-msg="2">验证不通过</button>
+            <button type="button" value="验证通过" class="btn btn-success" @click="verifyAddress($event.currentTarget)" data-msg="1">验证通过</button>
+        </div>
+    </div>
+</div>
+
+<script src="../js/address/edit.js"></script>
+
+</body>
+</html>

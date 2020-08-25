@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.qivay.mapper.MoneyTransferMapper">
+    <resultMap id="moneyTransferMap" type="com.qivay.domain.MoneyTransfer">
+        <id column="money_transfer_id" property="moneyTransferId" />
+        <result column="trade_no" property="tradeNo" />
+        <result column="order_id" property="orderId" />
+        <result column="amount" property="amount" />
+        <result column="balance" property="balance" />
+        <result column="transfer_type" property="transferType" />
+        <result column="account_type" property="accountType" />
+        <result column="user_id" property="userId" />
+        <result column="real_name" property="realName" />
+        <result column="other_user_id" property="otherUserId" />
+        <result column="transfer_time" property="transferTime" />
+        <result column="remark" property="remark" />
+
+        <result column="id_card" property="idCard" />
+    </resultMap>
+    <resultMap id="ExcelMoneyTransferMap" type="com.qivay.vo.ExcelMoneyTransfer">
+        <result column="trade_no" property="tradeNo" />
+        <result column="order_id" property="order" />
+        <result column="amount" property="amount" />
+        <result column="balance" property="balance" />
+        <result column="transfer_type" property="transferType" />
+        <result column="account_type" property="accountType" />
+        <result column="real_name" property="realName" />
+        <result column="other_user_id" property="otherUser" />
+        <result column="transfer_time" property="transferTime" />
+        <result column="remark" property="remark" />
+
+        <result column="id_card" property="idCard" />
+    </resultMap>
+
+    <sql id="columns">
+         mt.money_transfer_id,mt.trade_no,mt.order_id,
+         mt.amount,mt.balance,mt.transfer_type,mt.account_type,
+         mt.user_id,IFNULL(mt.real_name, u.cellphone) real_name,
+         mt.other_user_id,mt.transfer_time,mt.remark,u.id_card
+    </sql>
+
+    <insert id="insertMoneyTransfer" parameterType="com.qivay.domain.MoneyTransfer">
+        INSERT INTO
+        money_transfer
+        (money_transfer_id,trade_no,order_id,amount,balance,transfer_type,account_type,user_id,real_name,other_user_id,transfer_time,remark,sort)
+        VALUES
+        (#{moneyTransferId},#{tradeNo}, #{orderId},#{amount},#{balance}, #{transferType},#{accountType},#{userId},
+        #{realName},#{otherUserId}, #{transferTime}, #{remark},#{sort})
+    </insert>
+
+    <select id="findMoneyTransferByUser" resultMap="moneyTransferMap">
+        SELECT <include refid="columns" />
+        FROM money_transfer mt LEFT JOIN `user`u ON mt.user_id = u.user_id
+        WHERE user_id=#{user} OR real_name=#{user}
+        ORDER BY transfer_time DESC
+    </select>
+
+    <sql id="base_conditions">
+        <where>
+            <if test="realName != null">
+                real_name like concat('%',#{realName},'%')
+            </if>
+            <if test="remark != null">
+                and remark like concat('%',#{remark},'%')
+            </if>
+            <if test="minAmount != 0.00">
+                and amount >= #{minAmount}
+            </if>
+            <if test="maxAmount != 0.00">
+                and amount &lt;= #{maxAmount}
+            </if>
+            <if test="transferType != -1">
+                and transfer_type = #{transferType}
+            </if>
+            <if test="transferAccount != -1">
+                and account_type = #{transferAccount}
+            </if>
+            <if test="beginDateDisplay != null">
+                and transfer_time >= #{beginDateDisplay}
+            </if>
+            <if test="endDateDisplay != null">
+                and transfer_time &lt;= #{endDateDisplay}
+            </if>
+        </where>
+    </sql>
+
+    <select id="getMoneyTransfers" resultMap="moneyTransferMap">
+        select
+        <include refid="columns"/>
+        from money_transfer mt LEFT JOIN `user`u ON mt.user_id = u.user_id
+        <include refid="base_conditions"/>
+        order by transfer_time DESC ,sort DESC
+        limit #{startIndex},#{pageSize}
+    </select>
+
+    <select id="getExcelMoneyTransfers" resultMap="ExcelMoneyTransferMap">
+        select
+        <include refid="columns"/>
+        from money_transfer mt LEFT JOIN `user`u ON mt.user_id = u.user_id
+        <include refid="base_conditions"/>
+        order by transfer_time DESC ,sort DESC
+    </select>
+
+    <select id="getCount" resultType="int">
+        select count(money_transfer_id)
+        from money_transfer mt LEFT JOIN `user`u ON mt.user_id = u.user_id
+        <include refid="base_conditions"/>
+    </select>
+
+
+    <select id="findByDateInterval" resultMap="moneyTransferMap">
+        select
+        <include refid="columns"/>
+        from money_transfer mt LEFT JOIN `user`u ON mt.user_id = u.user_id
+        where mt.transfer_time >= #{beginDate}
+        and mt.transfer_time &lt;= #{endDate}
+    </select>
+
+    <select id="getMaxBalance" resultType="double">
+          SELECT balance FROM money_transfer ORDER BY sort DESC LIMIT 0,1
+    </select>
+</mapper>

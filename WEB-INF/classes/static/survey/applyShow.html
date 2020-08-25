@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:v-bind="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title>详情</title>
+    <link rel="stylesheet" href="../css/bootstrap.min.css">
+    <script src="../js/jquery1.11.3.min.js"></script>
+    <script src="../js/bootstrap.min.js"></script>
+    <script src="../js/vue.js"></script>
+    <script src="../js/vue-resource1.3.4.js"></script>
+    <script src="../js/config.js"></script>
+
+</head>
+<body>
+<div id="showSurveyApply">
+    <div class="modal-header">
+        <button type="button" class="close editClose" data-dismiss="modal" aria-label="Close"><span
+                aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title">详情</h4>
+    </div>
+    <div class="modal-body">
+        <form class="form-horizontal">
+
+            <div class="form-group">
+                <label class="col-sm-2 control-label">姓名</label>
+                <div class="col-sm-9">
+                    <input type="text" class="form-control" readonly placeholder="姓名" v-model="name">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="col-sm-2 control-label">电话</label>
+                <div class="col-sm-9">
+                    <input type="text" class="form-control" readonly placeholder="电话" v-model="phone">
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-2 control-label">工作单位</label>
+                <div class="col-sm-9">
+                    <input type="text" class="form-control" readonly placeholder="工作单位" v-model="unit">
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-2 control-label">联系地址</label>
+                <div class="col-sm-9">
+                    <input type="text" class="form-control" readonly placeholder="联系地址" v-model="address">
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-2 control-label">报价</label>
+                <div class="col-sm-9">
+                    <input type="text" class="form-control" readonly placeholder="报价" v-model="price">
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-2 control-label">方案计划</label>
+                <div class="col-sm-9">
+                    <textarea class="form-control" rows="3" readonly v-model="plan"></textarea>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-2 control-label">相关经验</label>
+                <div class="col-sm-9">
+                    <textarea class="form-control" rows="3" readonly v-model="experience"></textarea>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-2 control-label">状态</label>
+                <div class="col-sm-9">
+                    <input type="text" class="form-control" readonly placeholder="状态" v-model="statusDisplay">
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-2 control-label">时间</label>
+                <div class="col-sm-9">
+                    <input type="text" class="form-control" readonly placeholder="时间" v-model="createTime">
+                </div>
+            </div>
+        </form>
+    </div>
+    <div class="modal-footer">
+        <button id="btnClose" type="button" class="btn btn-default editClose" data-dismiss="modal">关闭</button>
+    </div>
+</div>
+<script src="js/applyShow.js"></script>
+</body>
+</html>

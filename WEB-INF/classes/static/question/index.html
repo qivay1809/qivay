@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:v-bind="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title>问题列表</title>
+    <link rel="stylesheet" href="../css/bootstrap.min.css">
+    <link rel="stylesheet" href="../css/dialog.css">
+    <script src="../js/jquery1.11.3.min.js"></script>
+    <script src="../js/bootstrap.min.js"></script>
+    <script src="../js/vue.js"></script>
+    <script src="../js/vue-resource1.3.4.js"></script>
+    <script src="../js/config.js"></script>
+    <script src="../plugins/My97DatePicker/WdatePicker.js"></script>
+
+</head>
+<body>
+<div id="questionIndex">
+    <div class="form-inline">
+        <div class="form-group">
+            <label class="sr-only">提问对象</label>
+            <input id="txtUserName" v-model="search.userName" style="width:150px" class="form-control" type="text"
+                   placeholder="请输入提问对象"/>
+        </div>
+        <div class="form-group">
+            <label class="sr-only">问题内容</label>
+            <input id="txtContent" v-model="search.content" class="form-control" type="text" placeholder="请输入问题内容" style="width:135px"/>
+        </div>
+
+        <div class="form-group">
+            创建时间：
+            <label class="sr-only">创建开始时间</label>
+            <input id="txtBeginDate" class="form-control" type="text" placeholder="请输入创建开始时间"/>
+            ---
+            <label class="sr-only">创建结束时间</label>
+            <input id="txtEndDate" class="form-control" type="text" placeholder="请输入创建结束时间"/>
+        </div>
+
+        <div class="form-group">
+            <div class="col-sm-6">
+                <select id="selQuestionType" v-model="search.questionType" class="form-control">
+                    <option value="-1" selected="selected">问题类型</option>
+                    <option v-for="questionType in questionTypes" v-bind:value="questionType.questionTypeId">
+                        {{ questionType.questionTypeName }}
+                    </option>
+                </select>
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-sm-6">
+                <select id="selQuestionShow" v-model="search.questionShow" class="form-control">
+                    <option value="-1" selected="selected">显示情况</option>
+                    <option value="0">不显示</option>
+                    <option value="1">显示</option>
+                </select>
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-sm-6">
+                <select id="selQuestionVerify" v-model="search.questionVerify" class="form-control" @change="showAnswerVerify">
+                    <option value="-1" selected="selected">问题验证</option>
+                    <option value="0">未验证</option>
+                    <option value="1">已验证</option>
+                    <option value="2">验证未通过</option>
+                </select>
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-sm-6">
+                <select id="selAnswerVerify" v-model="search.answerVerify" class="form-control">
+                    <option value="-1" selected="selected">回答验证</option>
+                    <option value="0">未验证</option>
+                    <option value="1">已验证</option>
+                    <option value="2">验证未通过</option>
+                </select>
+            </div>
+        </div>
+
+        <button id="btnSearch" type="button" @click="getQuestions" class="btn btn-primary">搜索</button>
+
+        <a class="btn btn-primary" href="edit.html" data-target="#dialog" data-toggle="modal">添加问题</a>
+
+        <a class="btn btn-primary" :href="exportUrl">导出</a>
+
+        <input id="txtSearch" type="hidden" @click="getQuestions('msg')"/>
+        <input id="hidQuestionId" type="hidden"/>
+        <input id="hidQuestionVerify" type="hidden"/>
+        <input id="hidAnswerVerify" type="hidden"/>
+    </div>
+
+    <div class="table-responsive">
+        <table class="table table-striped" id="main">
+            <thead>
+            <tr>
+                <th style="text-align:center;vertical-align:middle;">编号</th>
+                <th style="text-align:center;vertical-align:middle;">问题类型</th>
+                <th style="text-align:center;vertical-align:middle;">问题内容</th>
+                <th style="text-align:center;vertical-align:middle;">提问对象</th>
+                <th style="text-align:center;vertical-align:middle;">创建时间</th>
+                <th style="text-align:center;vertical-align:middle;">是否显示</th>
+                <th style="text-align:center;vertical-align:middle;">问题验证</th>
+                <th style="text-align:center;vertical-align:middle;">是否匿名</th>
+                <th style="text-align:center;vertical-align:middle;">回答</th>
+                <th style="text-align:center;vertical-align:middle;">操作</th>
+            </tr>
+            </thead>
+            <tbody>
+
+            <template>
+                <tr v-for="(question,index) in questions">
+                    <td style="text-align:center;vertical-align:middle;">{{beginIndex + 1 + index}}</td>
+                    <td style="text-align:center;vertical-align:middle;">{{question.questionType != null ? question.questionType.questionTypeName : '其他'}}</td>
+                    <td style="text-align:center;vertical-align:middle;" width="20%">{{question.questionContent}}</td>
+                    <td style="text-align:center;vertical-align:middle;">{{question.showCreator}}</td>
+                    <td style="text-align:center;vertical-align:middle;">{{question.createTime}}</td>
+                    <td style="text-align:center;vertical-align:middle;">{{question.questionShowDisplay}}</td>
+                    <td style="text-align:center;vertical-align:middle;">{{question.questionVerifyDisplay}}</td>
+                    <td style="text-align:center;vertical-align:middle;">{{question.anonymousDisplay}}</td>
+                    <td style="text-align:center;vertical-align:middle;" width="30%">
+                        <div v-if="(question.questionVerify == 0)">
+                            <span style="color: red">问题待验证</span>
+                        </div>
+                        <div v-else-if="(question.questionVerify == 1)">
+                            <div v-if="(question.answer == null)">
+                                <span style="color:#6A6AFF">待回答</span>
+                            </div>
+                            <div v-else>
+                                {{question.answer.answerContent}}
+                            </div>
+                        </div>
+                        <div v-else>
+                            <span style="color: #428bca">无需回答</span>
+                        </div>
+                    </td>
+                    <td style="text-align:center;vertical-align:middle;">
+                        <div v-if="question.questionVerify == 0">
+                            <div v-if="question.user.userId == currentUser">
+                                <a class="btn btn-xs btn-info" href="edit.html" data-target="#dialog"
+                                   data-toggle="modal" onclick="setQuestionId(this.id,'verify');" :id="question.questionId">编辑</a>
+                                <a class="btn btn-xs btn-success" href="edit.html" data-target="#dialog"
+                                   data-toggle="modal" onclick="setQuestionId(this.id);" :id="question.questionId">问题验证</a>
+                                <a class="btn btn-xs btn-danger"
+                                   data-toggle="modal" onclick="del(this.id);" :id="question.questionId"><i class="icon-trash"></i>删除</a>
+                            </div>
+                            <div v-else>
+                                <a class="btn btn-xs btn-info" href="order.html" data-target="#dialog"
+                                   data-toggle="modal" onclick="setQuestionId(this.id);" :id="question.questionId">排序</a>
+                                <a class="btn btn-xs btn-success" href="edit.html" data-target="#dialog"
+                                   data-toggle="modal" onclick="setQuestionId(this.id);" :id="question.questionId">问题验证</a>
+                                <a class="btn btn-xs btn-danger"
+                                   data-toggle="modal" onclick="del(this.id);" :id="question.questionId"><i class="icon-trash"></i>删除</a>
+                            </div>
+                        </div>
+                        <div v-else-if="question.questionVerify == 1">
+                            <div v-if="(question.answer == null)">
+                                <a class="btn btn-xs btn-info" href="order.html" data-target="#dialog"
+                                   data-toggle="modal" onclick="setQuestionId(this.id);" :id="question.questionId">排序</a>
+                                <a class="btn btn-xs btn-info" href="edit.html" data-target="#dialog"
+                                   data-toggle="modal" onclick="setQuestionId(this.id);" :id="question.questionId">回答问题</a>
+                                <a v-if="question.questionShow == 0" class="btn btn-xs btn-info" href="javascript:void(0);" onclick="setQuestionShow(this.id,1);" :id="question.questionId">显示</a>
+                                <a v-else class="btn btn-xs btn-info" href="javascript:void(0);" onclick="setQuestionShow(this.id,0);" :id="question.questionId">不显示</a>
+                            </div>
+                            <div v-else-if="question.answer.answerVerify == 0">
+                                <a class="btn btn-xs btn-info" href="order.html" data-target="#dialog"
+                                   data-toggle="modal" onclick="setQuestionId(this.id);" :id="question.questionId">排序</a>
+                                <a class="btn btn-xs btn-info" href="edit.html" data-target="#dialog"
+                                   data-toggle="modal" onclick="setQuestionId(this.id);" :id="question.questionId">修改回答</a>
+                                <a class="btn btn-xs btn-success" href="edit.html" data-target="#dialog"
+                                   data-toggle="modal" onclick="setAnswerVerify(this.id,'verify');" :id="question.questionId">回答验证</a>
+                            </div>
+                            <div v-else-if="question.answer.answerVerify == 1">
+                                <div v-if="question.questionShow == 0">
+                                    <a class="btn btn-xs btn-info" href="order.html" data-target="#dialog"
+                                       data-toggle="modal" onclick="setQuestionId(this.id);" :id="question.questionId">排序</a>
+                                    <span style="color:palevioletred;">已验证</span>
+                                    <!--<a class="btn btn-xs btn-info" href="javascript:void(0);" onclick="setQuestionShow(this.id,1);" :id="question.questionId">显示</a>-->
+                                </div>
+                                <div v-else>
+                                    <a class="btn btn-xs btn-info" href="order.html" data-target="#dialog"
+                                       data-toggle="modal" onclick="setQuestionId(this.id);" :id="question.questionId">排序</a>
+                                    <span style="color:palevioletred;">已验证</span>
+                                    <!--<a class="btn btn-xs btn-info" href="javascript:void(0);" onclick="setQuestionShow(this.id,0);" :id="question.questionId">不显示</a>-->
+                                </div>
+                            </div>
+                            <div v-else>
+                                <a class="btn btn-xs btn-info" href="order.html" data-target="#dialog"
+                                   data-toggle="modal" onclick="setQuestionId(this.id);" :id="question.questionId">排序</a>
+                                <a class="btn btn-xs btn-info" href="edit.html" data-target="#dialog"
+                                   data-toggle="modal" onclick="setQuestionId(this.id);" :id="question.questionId">修改回答</a>
+                            </div>
+                        </div>
+                        <div v-else>
+                            <span style="color: #428bca">无需回答</span>
+                        </div>
+
+                        <!--<button class="btn btn-xs btn-info" onclick="setUserId(this.id);" :id="user.userId">编辑</button>-->
+
+                    </td>
+                </tr>
+            </template>
+
+            </tbody>
+        </table>
+    </div>
+
+    <div id="baseDialog"><script>getDialog('baseDialog','../basedialog.html');</script></div>
+
+</div>
+<div id="page"><script>getPaging();</script></div>
+<script src="../js/question/index.js"></script>
+
+</body>
+</html>

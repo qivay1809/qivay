@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:v-bind="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title>鉴定列表</title>
+    <link rel="stylesheet" href="../css/bootstrap.min.css">
+    <link rel="stylesheet" href="../css/dialog.css">
+    <script src="../js/jquery1.11.3.min.js"></script>
+    <script src="../js/bootstrap.min.js"></script>
+    <script src="../js/vue.js"></script>
+    <script src="../js/vue-resource1.3.4.js"></script>
+    <script src="../js/config.js"></script>
+    <script src="../plugins/My97DatePicker/WdatePicker.js"></script>
+
+</head>
+<body>
+<div id="evaluationIndex">
+    <div class="form-inline">
+        <div class="form-group">
+            <label class="sr-only">内容</label>
+            <input id="txtContent" v-model="search.content" style="width:135px" class="form-control" type="text"
+                   placeholder="请输入内容"/>
+        </div>
+
+        <div class="form-group">
+            点赞数：
+            <label class="sr-only">最小点赞数</label>
+            <input id="txtMinLikes" class="form-control" type="text" placeholder="请输入最小点赞数" v-model="search.minLikes"/>
+            ---
+            <label class="sr-only">最大点赞数</label>
+            <input id="txtMaxLikes" class="form-control" type="text" placeholder="请输入最大点赞数" v-model="search.maxLikes"/>
+        </div>
+
+        <div class="form-group">
+            创建时间：
+            <label class="sr-only">创建开始时间</label>
+            <input id="txtBeginDate" class="form-control" type="text" placeholder="请输入创建开始时间"/>
+            ---
+            <label class="sr-only">创建结束时间</label>
+            <input id="txtEndDate" class="form-control" type="text" placeholder="请输入创建结束时间"/>
+        </div>
+
+        <div class="form-group">
+            <div class="col-sm-6">
+                <select id="selStatus" v-model="search.status" class="form-control">
+                    <option value="-1" selected="selected">鉴定状态</option>
+                    <option value="0">未审核</option>
+                    <option value="1">待鉴定</option>
+                    <option value="2">审核未通过</option>
+                    <option value="3">正品</option>
+                    <option value="4">伪造</option>
+                    <option value="5">无法鉴定</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <div class="col-sm-6">
+                <select id="selAnonymous" v-model="search.anonymous" class="form-control">
+                    <option value="-1" selected="selected">匿名情况</option>
+                    <option value="0">不匿名</option>
+                    <option value="1">匿名</option>
+                </select>
+            </div>
+        </div>
+
+        <button id="btnSearch" type="button" @click="getEvaluations" class="btn btn-primary">搜索</button>
+
+        <input id="txtSearch" type="hidden" @click="getEvaluations('msg')"/>
+        <input id="hidEvaluationId" type="hidden"/>
+    </div>
+
+    <div class="table-responsive">
+        <table class="table table-striped" id="main">
+            <thead>
+            <tr>
+                <th style="text-align:center;vertical-align:middle;">编号</th>
+                <th style="text-align:center;vertical-align:middle;">内容</th>
+                <th style="text-align:center;vertical-align:middle;">是否匿名</th>
+                <th style="text-align:center;vertical-align:middle;">鉴定状态</th>
+                <th style="text-align:center;vertical-align:middle;">点赞数</th>
+                <th style="text-align:center;vertical-align:middle;">创建人</th>
+                <th style="text-align:center;vertical-align:middle;">创建时间</th>
+                <th style="text-align:center;vertical-align:middle;">操作</th>
+            </tr>
+            </thead>
+            <tbody>
+
+            <template>
+                <tr v-for="(evaluation,index) in evaluations">
+                    <td style="text-align:center;vertical-align:middle;">{{beginIndex + 1 + index}}</td>
+                    <td style="text-align:center;vertical-align:middle;">{{evaluation.content}}</td>
+                    <td style="text-align:center;vertical-align:middle;">{{evaluation.anonymousDisplay}}</td>
+                    <td style="text-align:center;vertical-align:middle;">{{evaluation.statusDisplay}}</td>
+                    <td style="text-align:center;vertical-align:middle;">{{evaluation.likes}}</td>
+                    <td style="text-align:center;vertical-align:middle;">{{evaluation.creator}}</td>
+                    <td style="text-align:center;vertical-align:middle;">{{evaluation.createTimeDisplay}}</td>
+                    <td style="text-align:center;vertical-align:middle;">
+                        <div v-if="evaluation.status == 0">
+                            <a class="btn btn-xs btn-info" href="edit.html" data-target="#dialog"
+                               data-toggle="modal" onclick="setEvaluationId(this.id);" :id="evaluation.evaluationId">审核</a>
+                        </div>
+                        <div v-else-if="evaluation.status == 1">
+                            <a class="btn btn-xs btn-info" href="edit.html" data-target="#dialog"
+                               data-toggle="modal" onclick="setEvaluationId(this.id);" :id="evaluation.evaluationId">鉴定</a>
+                        </div>
+                        <div v-else>
+                            <a class="btn btn-xs btn-info" href="edit.html" data-target="#dialog"
+                               data-toggle="modal" onclick="setEvaluationId(this.id);" :id="evaluation.evaluationId">查看</a>
+                        </div>
+
+                    </td>
+                </tr>
+            </template>
+
+            </tbody>
+        </table>
+    </div>
+
+    <div id="baseDialog"><script>getDialog('baseDialog','../basedialog.html');</script></div>
+
+</div>
+<div id="secondDialog">
+    <script>getDialog('secondDialog', '../seconddialog.html');</script>
+</div>
+<div id="page"><script>getPaging();</script></div>
+<script src="../js/evaluation/index.js"></script>
+
+</body>
+</html>

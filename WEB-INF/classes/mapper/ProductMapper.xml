@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.qivay.mapper.ProductMapper">
+
+    <resultMap id="showProductMap" type="com.qivay.domain.Product">
+        <id property="productId" column="product_id"/>
+        <result property="productName" column="product_name"/>
+        <result property="productEnname" column="product_enname"/>
+        <result property="productImageFront" column="product_image_front"/>
+        <result property="productImageBack" column="product_image_back"/>
+        <result property="productVerify" column="product_verify"/>
+        <result property="brand" column="brand_id"/>
+        <result property="brandName" column="brand_name"/>
+        <result property="creator" column="creator"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateUser" column="updateUser"/>
+        <result property="updateTime" column="update_time"/>
+    </resultMap>
+
+    <resultMap id="excelProductMap" type="com.qivay.vo.ExcelProduct">
+        <id property="productId" column="product_id"/>
+        <result property="productName" column="product_name"/>
+        <result property="productEnname" column="product_enname"/>
+        <result property="productVerify" column="product_verify"/>
+        <result property="brandName" column="brand_name"/>
+        <result property="creator" column="creator"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateUser" column="updateUser"/>
+        <result property="updateTime" column="update_time"/>
+    </resultMap>
+
+
+    <sql id="columns">
+        product_id,brand_id,product_name,product_enname,product_image_front,product_image_back,product_verify
+    </sql>
+    <sql id="showColumns">
+        p.product_id,b.brand_id,b.brand_name,p.product_name,p.product_enname,p.product_image_front,p.product_image_back,p.product_verify,c.name creator,p.create_time,u.name updateUser,p.update_time
+    </sql>
+    <sql id="baseShowColumns">
+        p.product_id,b.brand_id,b.brand_name,p.product_name,p.product_enname,p.product_image_front,p.product_image_back,p.product_verify
+    </sql>
+
+    <select id="findProductByName" resultType="String">
+        SELECT  product_id  FROM  product  WHERE product_name = #{productName}
+    </select>
+
+    <insert id="insertProduct" parameterType="com.qivay.domain.Product">
+        INSERT INTO
+        product
+        (<include refid="columns"/>)
+        VALUES
+        (#{productId},#{brandId},#{productName}, #{productEnname},#{productImageFront},#{productImageBack}, #{productVerify})
+    </insert>
+
+    <sql id="base_conditions">
+        <where>
+            <if test="productName != null and productName !=''">
+                product_name like concat('%',#{productName},'%')
+            </if>
+            <if test="brandName != null and brandName !=''">
+                and brand_name like concat('%',#{brandName},'%')
+            </if>
+            <if test="beginDate != null">
+                and p.create_time >= #{beginDate}
+            </if>
+            <if test="endDate != null">
+                and p.create_time &lt;= #{endDate}
+            </if>
+            <if test="productVerify != -1">
+                and
+                <if test="productVerify == 0">
+                    (product_verify = 0 or product_verify = 3)
+                </if>
+                <if test="productVerify != 0">
+                    product_verify = #{productVerify}
+                </if>
+            </if>
+        </where>
+    </sql>
+
+    <select id="getProducts" resultMap="showProductMap">
+        select
+        <include refid="showColumns"/>
+        FROM product p
+        left join brand b on p.brand_id = b.brand_id
+        left join user c on p.creator = c.user_id
+        left join user u on p.update_user = u.user_id
+        <include refid="base_conditions"/>
+        order by field(p.product_verify,3,0,1,2),p.create_time desc
+        limit #{startIndex},#{pageSize}
+    </select>
+
+    <select id="getExcelProducts" resultMap="excelProductMap">
+        select
+        p.product_id,b.brand_name,p.product_name,p.product_enname,p.product_verify,c.name creator,p.create_time,u.name updateUser,p.update_time
+        FROM product p
+        left join brand b on p.brand_id = b.brand_id
+        left join user c on p.creator = c.user_id
+        left join user u on p.update_user = u.user_id
+        <include refid="base_conditions"/>
+        order by field(p.product_verify,3,0,1,2),p.create_time desc
+    </select>
+
+    <select id="getCount" resultType="int">
+        select count(product_id)
+        FROM product p
+        left join brand b on p.brand_id = b.brand_id
+        <include refid="base_conditions"/>
+    </select>
+
+    <select id="getProductById" resultMap="showProductMap">
+        select
+        <include refid="baseShowColumns"/>
+        from product p
+        left join brand b on p.brand_id = b.brand_id
+        where product_id = #{productId}
+    </select>
+
+    <update id="verifyProduct">
+        update product set product_verify = #{productVerify}
+        where product_id = #{productId}
+    </update>
+
+    <select id="getEnterpriseId" resultType="string">
+        select enterprise_id from brand
+        where brand_id = #{brandId}
+    </select>
+
+
+    <delete id="delete">
+      DELETE FROM product WHERE product_id = #{productId}
+    </delete>
+
+    <delete id="deleteByBrandId">
+      DELETE FROM product WHERE brand_id = #{brandId}
+    </delete>
+</mapper>
+
+
+
+
+
+
+
+

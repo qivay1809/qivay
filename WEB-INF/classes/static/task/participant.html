@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:v-bind="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title>参与人列表</title>
+    <link rel="stylesheet" href="../css/bootstrap.min.css">
+    <link rel="stylesheet" href="../css/pagination.css">
+
+    <script src="../js/jquery1.11.3.min.js"></script>
+    <script src="../js/bootstrap.min.js"></script>
+    <script src="../js/vue.js"></script>
+    <script src="../js/vue-resource1.3.4.js"></script>
+    <script src="../js/config.js"></script>
+
+</head>
+<body>
+<div id="participant">
+    <div class="modal-header">
+        <button type="button" class="close editClose" data-dismiss="modal" aria-label="Close"><span
+                aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title">参与人信息</h4>
+    </div>
+
+    <div class="modal-body">
+        <div class="form-inline">
+
+            <input id="btnSearch" type="hidden" @click="getParticipants" />
+        </div>
+
+        <div class="table-responsive">
+            <table class="table table-striped" id="main">
+                <thead>
+                <tr>
+                    <th style="text-align:center;vertical-align:middle;">姓名</th>
+                    <th style="text-align:center;vertical-align:middle;">头像</th>
+                    <th style="text-align:center;vertical-align:middle;">角色</th>
+                    <th style="text-align:center;vertical-align:middle;">参与时间</th>
+                </tr>
+                </thead>
+                <tbody>
+
+                <template>
+                    <tr v-for="participant in participants">
+                        <td style="text-align:center;vertical-align:middle;">{{participant.showUser.name}}</td>
+                        <td style="text-align:center;vertical-align:middle;"><img v-bind:src="participant.showUser.icon" class="img-circle" width="60px" height="60px"></td>
+                        <td style="text-align:center;vertical-align:middle;">{{participant.userRoleDisplay}}</td>
+                        <td style="text-align:center;vertical-align:middle;">{{participant.joinTime}}</td>
+                    </tr>
+                </template>
+
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div class="modal-footer">
+        <button id="btnClose" type="button" class="btn btn-default editClose" data-dismiss="modal">关闭</button>
+    </div>
+
+</div>
+<script src="../js/task/participant.js"></script>
+
+</body>
+</html>

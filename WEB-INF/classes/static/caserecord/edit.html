@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:v-bind="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title>编辑案件记录</title>
+    <link rel="stylesheet" href="../css/bootstrap.min.css">
+    <link rel="stylesheet" href="../css/bootstrap-theme.min.css"/>
+    <link rel="stylesheet" href="../plugins/fileinput/css/fileinput.css"/>
+    <script src="../js/jquery1.11.3.min.js"></script>
+    <script src="../js/bootstrap.min.js"></script>
+    <script src="../js/vue.js"></script>
+    <script src="../js/vue-resource1.3.4.js"></script>
+    <script src="../js/config.js"></script>
+    <script src="../plugins/fileinput/js/fileinput.js"></script>
+    <script src="../plugins/fileinput/js/locales/zh.js"></script>
+    <link rel="stylesheet" href="../plugins/confirm/jquery-confirm.css">
+    <script src="../plugins/confirm/jquery-confirm.js"></script>
+
+</head>
+<body>
+<div id="editRecord">
+<div class="modal-header">
+    <button type="button" class="close editClose" data-dismiss="modal" aria-label="Close"><span
+            aria-hidden="true">&times;</span></button>
+    <h4 class="modal-title">编辑</h4>
+</div>
+<div class="modal-body">
+    <form class="form-horizontal">
+
+        <div class="form-group">
+            <label class="col-sm-2 control-label">供应商名称</label>
+            <div class="col-sm-9">
+                <input type="text" class="form-control" id="vendorName" placeholder="供应商名称"  v-model="vendorName">
+            </div>
+            <div class="col-sm-1">
+                <h4 style="color: red">*</h4>&nbsp;
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="col-sm-2 control-label">供应商案件编号</label>
+            <div class="col-sm-9">
+                <input type="text" class="form-control" id="vendorCaseId" placeholder="供应商案件编号"  v-model="vendorCaseId">
+            </div>
+            <div class="col-sm-1">
+                <h4 style="color: red">*</h4>&nbsp;
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-2 control-label">品牌方</label>
+            <div class="col-sm-9">
+                <input type="text" class="form-control" id="unileverCaseId" placeholder="品牌方"  v-model="unileverCaseId">
+            </div>
+            <div class="col-sm-1">
+                <h4 style="color: red">*</h4>&nbsp;
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="col-sm-2 control-label">案件类型</label>
+            <div class="col-sm-9">
+                <select v-model="caseType" class="form-control">
+                    <option value="1">刑事案件</option>
+                    <option value="0">民事案件</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="col-sm-2 control-label">目标名字及地址</label>
+            <div class="col-sm-9">
+                <input type="text" class="form-control" id="targetNameAddress" placeholder="目标名字及地址（用“，”分隔）"  v-model="targetNameAddress">
+            </div>
+            <div class="col-sm-1">
+                <h4 style="color: red">*</h4>&nbsp;
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-2 control-label">执法单位</label>
+            <div class="col-sm-9">
+                <input type="text" class="form-control" id="enforcementAuthority" placeholder="执法单位"  v-model="enforcementAuthority">
+            </div>
+            <div class="col-sm-1">
+                <h4 style="color: red">*</h4>&nbsp;
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="col-sm-2 control-label">执法负责人及联系方式</label>
+            <div class="col-sm-9">
+                <input type="text" class="form-control" id="officerInChargeContact" placeholder="执法负责人及联系方式，（用“，”分隔）"  v-model="officerInChargeContact">
+            </div>
+            <div class="col-sm-1">
+                <h4 style="color: red">*</h4>&nbsp;
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="col-sm-2 control-label">行动时间</label>
+            <div class="col-sm-9">
+                <input type="text" class="form-control" id="dateOfRaid" placeholder="行动时间"  v-model="dateOfRaid">
+            </div>
+            <div class="col-sm-1">
+                <h4 style="color: red">*</h4>&nbsp;
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="col-sm-2 control-label">犯罪嫌疑人</label>
+            <div class="col-sm-9">
+                <input type="text" class="form-control" id="suspects" placeholder="犯罪嫌疑人"  v-model="suspects">
+            </div>
+            <div class="col-sm-1">
+                <h4 style="color: red">*</h4>&nbsp;
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="col-sm-2 control-label" style="margin-top: 12px">PDF附件</label>
+            <div class="col-sm-9">
+                <div class="col-sm-8" style="margin-top: 12px">
+                    <input id="fileUpload1" type="file" name="file" multiple="multiple" class="file-loading" accept=".pdf">
+                </div>
+            </div>
+            <div class="col-sm-1">
+                <h4 style="color: red">*</h4>&nbsp;
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-2 control-label" style="margin-top: 12px">WORD附件</label>
+            <div class="col-sm-9">
+                <div class="col-sm-8" style="margin-top: 12px">
+                    <input id="fileUpload2" type="file" name="file" multiple="multiple" class="file-loading" accept=".doc,.docx">
+                </div>
+            </div>
+            <div class="col-sm-1">
+                <h4 style="color: red">*</h4>&nbsp;
+            </div>
+        </div>
+
+    </form>
+</div>
+<div class="modal-footer">
+    <button id="btnClose" type="button" class="btn btn-default editClose" data-dismiss="modal">关闭</button>
+    <button type="button" class="btn btn-primary" @click="editImage">保存</button>
+</div>
+</div>
+
+<script src="../js/caserecord/edit.js"></script>
+<script src="../js/uploadImage.js"></script>
+
+</body>
+</html>

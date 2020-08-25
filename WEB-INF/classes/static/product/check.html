@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:v-bind="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title>查看产品</title>
+    <link rel="stylesheet" href="../css/bootstrap.min.css">
+    <script src="../js/jquery1.11.3.min.js"></script>
+    <script src="../js/bootstrap.min.js"></script>
+    <script src="../js/vue.js"></script>
+    <script src="../js/vue-resource1.3.4.js"></script>
+    <script src="../js/config.js"></script>
+
+</head>
+<body>
+<div id="editProduct">
+    <div class="modal-header">
+        <button type="button" class="close editClose" data-dismiss="modal" aria-label="Close"><span
+                aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title">查看产品</h4>
+    </div>
+    <div class="modal-body">
+        <form class="form-horizontal" id="productForm">
+
+            <div class="form-group">
+                <label class="col-sm-2 control-label">产&ensp;品&ensp;名</label>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" id="txtProductName" placeholder="产品名" v-model="productName" readonly>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="col-sm-2 control-label">英&ensp;文&ensp;名</label>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" id="txtProductEnname" placeholder="产品英文名" v-model="productEnname" readonly>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="col-sm-2 control-label">品&emsp;&emsp;牌</label>
+                <div class="col-sm-10">
+                        <input type="text" class="form-control" id="txtBrand" placeholder="品牌名" v-model="brand" readonly>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="col-sm-2 control-label" style="margin-top: 12px">正&ensp;面&ensp;图</label>
+                <div class="col-sm-10">
+                    <div v-if="productImageFrontDisplay !=''" class="col-sm-2">
+                        <img v-bind:src="productImageFrontDisplay"  width="210px" height="160px" onclick="openImage(this);" style="cursor:pointer;">
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-2 control-label" style="margin-top: 12px">反&ensp;面&ensp;图</label>
+                <div class="col-sm-10">
+                    <div v-if="productImageBackDisplay !=''" class="col-sm-2">
+                        <img v-bind:src="productImageBackDisplay"  width="210px" height="160px" onclick="openImage(this);" style="cursor:pointer;">
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group"  v-if="productVerify != -1">
+                <label class="col-sm-2 control-label">验证情况</label>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" id="txtProductVerify"  v-model="productVerifyDisplay" readonly>
+                </div>
+            </div>
+
+            <a data-toggle="modal" href="#example2" class="btn-large" id="imageDialog" hidden></a>
+
+            <div class="form-group" v-if="content != null && content != ''">
+                <label class="col-sm-2 control-label">验证说明</label>
+                <div class="col-sm-10">
+                    <textarea class="form-control" rows="3" id="txtContent" v-model="content"></textarea>
+                </div>
+            </div>
+
+        </form>
+    </div>
+</div>
+
+<script src="../js/product/check.js"></script>
+
+</body>
+</html>

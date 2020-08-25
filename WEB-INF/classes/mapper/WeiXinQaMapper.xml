@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.qivay.mapper.WeiXinQaMapper" >
+  <resultMap id="BaseResultMap" type="com.qivay.domain.WeiXinQa" >
+    <id column="qa_id" property="qaId"/>
+    <result column="question" property="question"/>
+    <result column="answer" property="answer"/>
+    <result column="qa_order" property="qaOrder"/>
+    <result column="qa_show" property="qaShow"/>
+    <result column="name" property="creator"/>
+    <result column="create_time" property="createTime"/>
+  </resultMap>
+  <resultMap id="ShowResultMap" type="com.qivay.domain.WeiXinQa" >
+    <id column="qa_id" property="qaId"/>
+    <result column="question" property="question"/>
+    <result column="answer" property="answer"/>
+    <result column="qa_order" property="qaOrder"/>
+    <result column="qa_show" property="qaShow"/>
+    <result column="creator" property="creator"/>
+    <result column="create_time" property="createTime"/>
+  </resultMap>
+
+  <insert id="insert">
+    insert into weixin_qa (qa_id, question, answer, 
+      qa_order, qa_show, creator, 
+      create_time)
+    values (#{qaId}, #{question}, #{answer},
+      #{qaOrder}, #{qaShow}, #{creator},
+      #{createTime})
+  </insert>
+
+  <update id="updateWeiXinQa">
+    update weixin_qa
+    set question = #{question},
+      answer = #{answer},
+      qa_order = #{qaOrder},
+      qa_show = #{qaShow}
+    where qa_id = #{qaId}
+  </update>
+
+  <select id="getWeiXinQa" resultMap="ShowResultMap">
+    select qa_id, question, answer, qa_order, qa_show, creator, create_time
+    from weixin_qa
+    where qa_id = #{qaId}
+  </select>
+
+
+  <sql id="base_conditions">
+    <where>
+      <if test="question != null and question != ''">
+        and q.question like concat('%',#{question},'%')
+      </if>
+      <if test="answer != null and answer != ''">
+        and q.answer like concat('%',#{answer},'%')
+      </if>
+      <if test="qaShow != -1">
+        and q.qaShow = #{qaShow}
+      </if>
+      <if test="creator != null and creator != ''">
+        and c.name like concat('%',#{creator},'%')
+      </if>
+      <if test="beginDate != null">
+        and q.create_time >= #{beginDate}
+      </if>
+      <if test="endDate != null">
+        and q.create_time &lt;= #{endDate}
+      </if>
+    </where>
+  </sql>
+
+  <select id="getCount" resultType="int">
+    select count(q.qa_id)
+    from weixin_qa q
+    join user c on q.creator = c.user_id
+    <include refid="base_conditions"/>
+  </select>
+
+  <select id="getWeiXinQas" resultMap="BaseResultMap">
+    select q.qa_id,q.question,q.answer,q.qa_order,q.qa_show,c.name,q.create_time
+    from weixin_qa q
+    join user c on q.creator = c.user_id
+    <include refid="base_conditions"/>
+    order by q.qa_show desc,q.create_time desc
+    limit #{startIndex},#{pageSize}
+  </select>
+</mapper>

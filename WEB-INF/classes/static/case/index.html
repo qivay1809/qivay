@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:v-bind="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title>案件列表</title>
+    <link rel="stylesheet" href="../css/bootstrap.min.css">
+    <link rel="stylesheet" href="../css/dialog.css">
+    <link rel="stylesheet" href="../plugins/confirm/jquery-confirm.css">
+    <script src="../js/jquery1.11.3.min.js"></script>
+    <script src="../js/bootstrap.min.js"></script>
+    <script src="../js/vue.js"></script>
+    <script src="../js/vue-resource1.3.4.js"></script>
+    <script src="../js/config.js"></script>
+    <script src="../plugins/My97DatePicker/WdatePicker.js"></script>
+    <script src="../plugins/confirm/jquery-confirm.js"></script>
+    <link rel="stylesheet" href="../css/font-awesome.min.css" media="all"/>
+</head>
+<body>
+<div id="caseIndex">
+    <div class="form-inline">
+        <div class="form-group">
+            <label class="sr-only">案件标题</label>
+            <input id="txtCaseTitle" v-model="search.caseTitle" style="width:135px" class="form-control" type="text"
+                   placeholder="案件标题"/>
+        </div>
+        <div class="form-group">
+            <label class="sr-only">创建人</label>
+            <input id="txtCreator" v-model="search.creator" class="form-control" type="text" placeholder="请输入创建人"
+                   style="width:135px"/>
+        </div>
+        <div class="form-group">
+            <label class="sr-only">编号</label>
+            <input v-model="search.serialNumber" class="form-control" type="text" placeholder="请输入编号"
+                   style="width:135px"/>
+        </div>
+        <div class="form-group">
+            <label class="sr-only">品牌</label>
+            <input v-model="search.brandName" class="form-control" type="text" placeholder="请输入品牌" style="width:135px"/>
+        </div>
+        <div class="form-group">
+            <label class="sr-only">产品</label>
+            <input v-model="search.product" class="form-control" type="text" placeholder="请输入产品" style="width:135px"/>
+        </div>
+
+        <div class="form-group">
+            创建时间：
+            <label class="sr-only">创建开始时间</label>
+            <input id="txtBeginDate" class="form-control" type="text" placeholder="请输入创建开始时间"/>
+            ---
+            <label class="sr-only">创建结束时间</label>
+            <input id="txtEndDate" class="form-control" type="text" placeholder="请输入创建结束时间"/>
+        </div>
+
+        <div class="form-group">
+            <div class="col-sm-6">
+                <select id="selCaseVerify" v-model="search.status" class="form-control">
+                    <option value="-1" selected="selected">进度</option>
+                    <option value="0">进行中</option>
+                    <option value="1">查处</option>
+                    <option value="12">扣押</option>
+                    <option value="13">强措施</option>
+                    <option value="14">行政处罚决定</option>
+                    <option value="22">立案</option>
+                    <option value="23">拘留/取保候审</option>
+                    <option value="24">诉讼</option>
+                    <option value="25">判决书</option>
+                    <option value="36">销毁物品</option>
+
+                    <option value="33">非正常完结（销案）</option>
+                    <option value="44">非正常完结（失败）</option>
+                </select>
+            </div>
+        </div>
+
+        <!--<div class="form-group">-->
+        <!--<div class="col-sm-6">-->
+        <!--<select  v-model="search.caseType" class="form-control">-->
+        <!--<option value="-1" selected="selected">类型</option>-->
+        <!--<option value="0">无</option>-->
+        <!--<option value="1">行政</option>-->
+        <!--<option value="2">刑事</option>-->
+        <!--</select>-->
+        <!--</div>-->
+        <!--</div>-->
+
+        <button id="btnSearch" type="button" @click="getCases" class="btn btn-primary">搜索</button>
+
+
+        <a class="btn btn-primary" :href="exportUrl">导出</a>
+
+        <a class="btn btn-primary" href="edit.html" data-target="#caseDialog" data-toggle="modal">添加案件</a>
+
+        <input id="txtSearch" type="hidden" @click="getCases('msg')"/>
+        <input id="hidCaseId" type="hidden"/>
+        <input id="hidClueId" type="hidden"/>
+        <input id="hidRewardId" type="hidden">
+    </div>
+
+    <div class="table-responsive">
+        <table class="table table-striped" id="main">
+            <thead>
+            <tr>
+                <th style="text-align:center;vertical-align:middle;">序号</th>
+                <th style="text-align:center;vertical-align:middle;">编号</th>
+                <th style="text-align:center;vertical-align:middle;">线索ID</th>
+                <!--<th style="text-align:center;vertical-align:middle;">案件ID</th>-->
+                <!--<th style="text-align:center;vertical-align:middle;">案件标题</th>-->
+                <th style="text-align:center;vertical-align:middle;">品牌</th>
+                <th style="text-align:center;vertical-align:middle;">产品</th>
+                <th style="text-align:center;vertical-align:middle;">来源</th>
+                <!--<th style="text-align:center;vertical-align:middle;">创建人</th>-->
+                <th style="text-align:center;vertical-align:middle;">创建时间</th>
+                <th style="text-align:center;vertical-align:middle;">进度</th>
+                <th style="text-align:center;vertical-align:middle;">奖金</th>
+                <th style="text-align:center;vertical-align:middle;">奖金发放</th>
+                <!--<th style="text-align:center;vertical-align:middle;">案件类型</th>-->
+                <th style="text-align:center;vertical-align:middle;">操作</th>
+            </tr>
+            </thead>
+            <tbody>
+
+            <template>
+                <tr v-for="(caseInfo,index) in cases">
+                    <td style="text-align:center;vertical-align:middle;">{{beginIndex + 1 + index}}</td>
+                    <td style="text-align:center;vertical-align:middle;">{{caseInfo.serialNumber}}</td>
+                    <td style="text-align:center;vertical-align:middle;">{{caseInfo.clueId}}</td>
+                    <!--<td style="text-align:center;vertical-align:middle;">{{caseInfo.caseId}}</td>-->
+                    <!--<td style="text-align:center;vertical-align:middle;">{{caseInfo.caseTitle}}</td>-->
+                    <td style="text-align:center;vertical-align:middle;">{{caseInfo.brandName}}</td>
+                    <td style="text-align:center;vertical-align:middle;">{{caseInfo.product}}</td>
+                    <td style="text-align:center;vertical-align:middle;">{{caseInfo.source}}</td>
+                    <!--<td style="text-align:center;vertical-align:middle;">{{caseInfo.creator}}</td>-->
+                    <td style="text-align:center;vertical-align:middle;">{{caseInfo.createTimeDisplay}}</td>
+                    <td style="text-align:center;vertical-align:middle;">{{caseInfo.statusDisplay}}</td>
+                    <td style="text-align:center;vertical-align:middle;">{{caseInfo.reward}}</td>
+                    <td style="text-align:center;vertical-align:middle;">{{caseInfo.rewardValidate}}</td>
+                    <!--<td style="text-align:center;vertical-align:middle;">{{caseInfo.caseTypeString}}</td>-->
+                    <td style="text-align:center;vertical-align:middle;">
+                        <!--<div v-if="caseInfo.progress == 0">-->
+                        <!--<a class="btn btn-xs btn-success" href="#" onclick="startCase(this.id);" :id="caseInfo.caseId">开始</a>-->
+                        <!--<a class="btn btn-xs btn-info" href="edit.html" data-target="#caseDialog"-->
+                        <!--data-toggle="modal" onclick="setCaseId(this.id);" :id="caseInfo.caseId">编辑</a>-->
+                        <!--</div>-->
+                        <!--<div v-else-if="caseInfo.progress == 1">-->
+                        <!--<a class="btn btn-xs btn-primary" href="add.html" data-target="#dialog"-->
+                        <!--data-toggle="modal" onclick="setCaseId(this.id);" :id="caseInfo.caseId">添加参与人</a>-->
+                        <!--<a class="btn btn-xs btn-info" href="participant.html" data-target="#participantDialog"-->
+                        <!--data-toggle="modal" onclick="setCaseId(this.id);" :id="caseInfo.caseId">参与人详细</a>-->
+                        <!--<a class="btn btn-xs btn-success" href="#" onclick="endCase(this.id);" :id="caseInfo.caseId">案件完结</a>-->
+                        <!--<a class="btn btn-xs btn-success" href="edit.html" data-target="#caseDialog"-->
+                        <!--data-toggle="modal" onclick="setCaseId(this.id);" :id="caseInfo.caseId">查看</a>-->
+                        <!--</div>-->
+                        <!--<div v-else>-->
+                        <!--<a class="btn btn-xs btn-primary" href="participant.html" data-target="#participantDialog"-->
+                        <!--data-toggle="modal" onclick="setCaseId(this.id);" :id="caseInfo.caseId">参与人详细</a>-->
+                        <!--<a class="btn btn-xs btn-success" href="edit.html" data-target="#caseDialog"-->
+                        <!--data-toggle="modal" onclick="setCaseId(this.id);" :id="caseInfo.caseId">查看</a>-->
+                        <!--</div>-->
+
+                        <div>
+                            <div v-if="caseInfo.progress == 0">
+                                <a class="btn btn-xs btn-primary" href="edit.html" data-target="#dialog"
+                                   data-toggle="modal" onclick="setCaseId(this.id);" :id="caseInfo.caseId">编辑</a>
+                                <a class="btn btn-xs btn-danger"
+                                   data-toggle="modal" onclick="del(this.id);" :id="caseInfo.caseId"><i
+                                        class="icon-trash"></i>删除</a>
+                                <a class="btn btn-xs btn-primary" href="#" @click="publish(caseInfo.caseId)"
+                                   :id="caseInfo.caseId">发布</a>
+                            </div>
+                            <div v-else>
+                                <a class="btn btn-xs btn-primary" href="team.html" data-target="#dialog"
+                                   data-toggle="modal" onclick="setCaseId(this.id);" :id="caseInfo.caseId">选择团队</a>
+
+                                <a class="btn btn-xs btn-primary" href="setStatus.html" data-target="#dialog"
+                                   data-toggle="modal" onclick="setCaseId(this.id);" :id="caseInfo.caseId"><i
+                                        class="icon-check"></i>更新进度</a>
+                                <a v-if="caseInfo.rewardValidate == '' && caseInfo.status != 0" class="btn btn-xs btn-success"
+                                   href="sendReward.html"
+                                   data-target="#dialog"
+                                   data-toggle="modal" onclick="setCaseId(this.id);" :id="caseInfo.caseId">发放奖金</a>
+
+                                <div v-else-if="caseInfo.rewardValidate == '验证不通过'">
+                                    <a class="btn btn-xs btn-success" href="sendReward.html" data-target="#dialog"
+                                       data-toggle="modal" onclick="setRewardId(this.id);" :id="caseInfo.rewardId">修改奖金</a>
+                                </div>
+                            </div>
+
+                            <a v-if="caseInfo.source != '企卫平台' " class="btn btn-xs btn-info" href="/clue/check.html"
+                               data-target="#dialog"
+                               data-toggle="modal" onclick="setClueId(this.id);" :id="caseInfo.clueId">线索</a>
+                            <a class="btn btn-xs btn-primary" href="show.html" data-target="#dialog"
+                               data-toggle="modal" onclick="setCaseId(this.id);" :id="caseInfo.caseId">查看</a>
+                            <!--<a class="btn btn-xs btn-success" href="#" onclick="parent.openTab(this.id,'/case/report.html?id='+this.id,'汇报');" :id="caseInfo.caseId">汇报</a>-->
+                        </div>
+
+                    </td>
+                </tr>
+            </template>
+
+            </tbody>
+        </table>
+    </div>
+    <div class="modal fade" id="caseDialog" aria-hidden="true">
+        <div class="modal-dialog" style="width:1024px;height:500px;">
+            <div class="modal-content">
+
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="participantDialog" role="basic" aria-hidden="true">
+        <div class="modal-dialog" style="width:1360px;height:500px;">
+            <div class="modal-content">
+
+            </div>
+        </div>
+    </div>
+
+    <div id="baseDialog">
+        <script>getDialog('baseDialog', '../basedialog.html');</script>
+    </div>
+</div>
+    <div id="secondDialog">
+        <script>getDialog('secondDialog', '../seconddialog.html');</script>
+    </div>
+
+
+<div id="page">
+    <script>getPaging();</script>
+</div>
+
+<script src="../js/case/index.js"></script>
+
+</body>
+</html>

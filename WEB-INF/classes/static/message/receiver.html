@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:v-bind="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title>参与人列表</title>
+    <link rel="stylesheet" href="../css/bootstrap.min.css">
+    <link rel="stylesheet" href="../css/pagination.css">
+
+    <script src="../js/jquery1.11.3.min.js"></script>
+    <script src="../js/bootstrap.min.js"></script>
+    <script src="../js/vue.js"></script>
+    <script src="../js/vue-resource1.3.4.js"></script>
+    <script src="../js/config.js"></script>
+
+</head>
+<body>
+<div id="receiver">
+    <div class="modal-header">
+        <button type="button" class="close editClose" data-dismiss="modal" aria-label="Close"><span
+                aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title">接收者信息</h4>
+    </div>
+
+    <div class="modal-body">
+        <div class="form-inline">
+
+            <input id="btnSearch" type="hidden" @click="getReceivers"/>
+        </div>
+
+        <div class="table-responsive" v-if="receiverType == 1">
+            <table class="table table-striped" id="main">
+                <thead>
+                <tr>
+                    <th style="text-align:center;vertical-align:middle;">姓名</th>
+                    <th style="text-align:center;vertical-align:middle;">头像</th>
+                    <th style="text-align:center;vertical-align:middle;">电话</th>
+                    <th style="text-align:center;vertical-align:middle;">是否已读</th>
+                </tr>
+                </thead>
+                <tbody>
+                <template>
+                    <tr v-for="receiver in receivers">
+                        <td style="text-align:center;vertical-align:middle;">{{receiver.name}}</td>
+                        <td style="text-align:center;vertical-align:middle;"><img v-bind:src="receiver.icon" class="img-circle" width="60px"
+                                                                                  height="60px"></td>
+                        <td style="text-align:center;vertical-align:middle;">{{receiver.cellphone}}</td>
+                        <td style="text-align:center;vertical-align:middle;">{{receiver.isReadDisplay}}</td>
+                    </tr>
+                </template>
+
+                </tbody>
+            </table>
+        </div>
+        <div class="table-responsive" v-else>
+            <table class="table table-striped">
+                <thead>
+                <tr>
+                    <th style="text-align:center;vertical-align:middle;">企业名</th>
+                    <th style="text-align:center;vertical-align:middle;">联系人</th>
+                    <th style="text-align:center;vertical-align:middle;">联系人电话</th>
+                    <th style="text-align:center;vertical-align:middle;">联系人职位</th>
+                    <th style="text-align:center;vertical-align:middle;">是否已读</th>
+                </tr>
+                </thead>
+                <tbody>
+                <template>
+                    <tr v-for="receiver in receivers">
+                        <td style="text-align:center;vertical-align:middle;">{{receiver.enterpriseName}}</td>
+                        <td style="text-align:center;vertical-align:middle;">{{receiver.userName}}</td>
+                        <td style="text-align:center;vertical-align:middle;">{{receiver.cellphone}}</td>
+                        <td style="text-align:center;vertical-align:middle;">{{receiver.position}}</td>
+                        <td style="text-align:center;vertical-align:middle;">{{receiver.isRead == 0 ? '未读' : '已读'}}</td>
+                    </tr>
+                </template>
+
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div class="modal-footer">
+        <button id="btnClose" type="button" class="btn btn-default editClose" data-dismiss="modal">关闭</button>
+    </div>
+
+</div>
+<script src="../js/message/receiver.js"></script>
+
+</body>
+</html>

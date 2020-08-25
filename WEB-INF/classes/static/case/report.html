@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:v-bind="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title>汇报详情</title>
+    <link rel="stylesheet" href="../css/bootstrap.min.css">
+    <link rel="stylesheet" href="../css/dialog.css">
+    <link rel="stylesheet" href="../plugins/confirm/jquery-confirm.css">
+    <script src="../js/jquery1.11.3.min.js"></script>
+    <script src="../js/bootstrap.min.js"></script>
+    <script src="../js/vue.js"></script>
+    <script src="../js/vue-resource1.3.4.js"></script>
+    <script src="../js/config.js"></script>
+    <script src="../plugins/My97DatePicker/WdatePicker.js"></script>
+    <script src="../plugins/confirm/jquery-confirm.js"></script>
+
+</head>
+<body>
+<div id="caseReportIndex">
+    <div class="form-inline" style="width:1150px;text-align:right;margin-bottom: 20px;">
+
+        <a class="btn btn-primary" href="editReport.html" data-target="#caseDialog" data-toggle="modal">添加汇报</a>
+        <input id="txtSearch" type="hidden" @click="getCaseReports('msg')"/>
+        <a data-toggle="modal" href="#example2" class="btn-large" id="imageDialog" hidden></a>
+    </div>
+
+    <div id="reportIndex">
+
+        <form class="form-horizontal">
+            <div v-for="report in caseReports">
+                <div class="form-group">
+                    <label class="col-sm-2 control-label">确定进度</label>
+                    <div class="col-sm-4">
+                        <select v-if="report.status==0" :id="'sel'+report.caseReportId" v-model="report.progress" class="form-control" >
+                            <option value="-1" selected="selected">进度</option>
+                            <option value="0">进行中</option>
+                            <option value="1">查处</option>
+                            <option value="12">扣押</option>
+                            <option value="13">强措施</option>
+                            <option value="14">行政处罚决定</option>
+                            <option value="22">立案</option>
+                            <option value="23">拘留/取保候审</option>
+                            <option value="24">诉讼</option>
+                            <option value="25">判决书</option>
+                            <option value="36">销毁物品</option>
+                        </select>
+                        <select v-else :id="'sel'+report.caseReportId" v-model="report.progress" class="form-control" disabled="disabled" >
+                            <option value="-1" selected="selected">进度</option>
+                            <option value="0">进行中</option>
+                            <option value="1">查处</option>
+                            <option value="12">扣押</option>
+                            <option value="13">强措施</option>
+                            <option value="14">行政处罚决定</option>
+                            <option value="22">立案</option>
+                            <option value="23">拘留/取保候审</option>
+                            <option value="24">诉讼</option>
+                            <option value="25">判决书</option>
+                            <option value="36">销毁物品</option>
+                        </select>
+                        <input :id="'hid'+report.caseReportId" type="hidden" :value="report.creator"/>
+                    </div>
+                    <div class="col-sm-5" style="margin-top: 6px;">
+                        {{report.userName}}
+                        上传时间：{{report.createTime}}
+                    </div>
+
+                </div>
+
+                <div class="form-group">
+                    <label class="col-sm-2 control-label">内容：</label>
+                    <div class="col-sm-9" style="margin-top: 6px;">
+                        <span v-html="report.content">
+
+                        </span>
+                    </div>
+
+                </div>
+
+                <div class="form-group">
+                    <label class="col-sm-2 control-label">线索图片</label>
+                    <div class="col-sm-9">
+                        <div style="float: left" v-for="(image,index) in report.caseReportImages">
+                            <img v-bind:src="image" width="150px" height="150px" data-index="index"
+                                 onclick="openDialog(this);" style="cursor:pointer;">
+                            <input v-bind:value="index" hidden/>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="col-sm-2 control-label">位置</label>
+                    <div class="col-sm-9" style="margin-top: 6px;">
+                        <span>{{report.location}}</span>
+                    </div>
+
+                </div>
+
+                <div v-if="report.status==0" class="form-group" style="border-bottom: 1px solid #e0e0e0; padding-bottom:10px;  margin-bottom: 10px;">
+                    <label class="col-sm-2 control-label"> </label>
+                    <div class="col-sm-5">
+                        <input type="text" :id="report.caseReportId" class="form-control"/>
+                    </div>
+                    <div class="col-sm-4">
+                        <button type="button" class="btn btn-primary" @click="audit(report.caseReportId,1)">通过</button>
+                        <button type="button" class="btn btn-default" @click="audit(report.caseReportId,2)">不通过</button>
+                    </div>
+                </div>
+
+                <div v-if="report.status==1" class="form-group" style="border-bottom: 1px solid #e0e0e0; padding-bottom:10px; margin-bottom: 10px; background-color:#E3F7EC;">
+                    <label class="col-sm-2 control-label" style="color: #00AD42;">通过</label>
+                    <div class="col-sm-9" style="margin-top: 6px;">
+                    </div>
+
+                </div>
+
+                <div v-if="report.status==2" class="form-group" style="border-bottom: 1px solid #e0e0e0; padding-bottom:10px; margin-bottom: 10px;">
+                    <label class="col-sm-2 control-label">【不通过】:</label>
+                    <div class="col-sm-9" style="margin-top: 6px;">
+                        {{report.message}}
+                    </div>
+
+                </div>
+
+            </div>
+
+
+        </form>
+    </div>
+    <div class="modal fade" id="caseDialog" role="basic" aria-hidden="true">
+        <div class="modal-dialog" style="width:1024px;height:500px;">
+            <div class="modal-content">
+
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="participantDialog" role="basic" aria-hidden="true">
+        <div class="modal-dialog" style="width:1360px;height:500px;">
+            <div class="modal-content">
+
+            </div>
+        </div>
+    </div>
+
+    <div id="baseDialog">
+        <script>getDialog('baseDialog', '../basedialog.html');</script>
+    </div>
+
+</div>
+
+<div id="secondDialog">
+    <script>getDialog('secondDialog', '../seconddialog.html');</script>
+</div>
+
+<div id="page">
+    <script>getPaging();</script>
+</div>
+
+<script src="../js/case/report.js"></script>
+
+</body>
+</html>

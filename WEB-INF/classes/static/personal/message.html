@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>我的消息</title>
+    <link rel="stylesheet" href="../css/bootstrap.min.css">
+
+    <script src="../js/jquery1.11.3.min.js"></script>
+    <script src="../js/bootstrap.min.js"></script>
+
+    <script src="../js/vue.js"></script>
+    <script src="../js/vue-resource1.3.4.js"></script>
+    <script src="../js/config.js"></script>
+    <script src="../plugins/My97DatePicker/WdatePicker.js"></script>
+
+</head>
+<body>
+<div id="messageIndex">
+    <div class="form-inline">
+        <div class="form-group">
+            <label class="sr-only">消息内容</label>
+            <input id="txtMessageContent" v-model="search.messageContent" style="width:150px" class="form-control" type="text"
+                   placeholder="请输入消息内容"/>
+        </div>
+
+        <div class="form-group">
+            <label class="sr-only">创建人</label>
+            <input id="txtCreator" v-model="search.creator" class="form-control" type="text" placeholder="请输入创建人" style="width:150px"/>
+        </div>
+
+        <div class="form-group">
+            创建时间：
+            <label class="sr-only">开始时间</label>
+            <input id="txtBeginDate" class="form-control" type="text" placeholder="请输入开始时间" style="width:150px"/>
+            ---
+            <label class="sr-only">结束时间</label>
+            <input id="txtEndDate" class="form-control" type="text" placeholder="请输入结束时间" style="width:150px"/>
+        </div>
+
+        <div class="form-group">
+            <div class="col-sm-6">
+                <select id="selMessageType" v-model="search.messageType" class="form-control">
+                    <option value="" selected="selected">消息类型</option>
+                    <option value="1">通知消息</option>
+                    <option value="2">互动</option>
+                </select>
+            </div>
+        </div>
+
+        <button id="btnSearch" type="button" @click="getMessages" class="btn btn-primary">搜索</button>
+
+        <input id="txtSearch" type="hidden" @click="getMessages('msg')"/>
+        <input id="hidMessageId" type="hidden" />
+    </div>
+
+    <div class="table-responsive">
+        <table class="table table-striped" id="main">
+            <thead>
+            <tr>
+                <th style="text-align:center;vertical-align:middle;">消息类型</th>
+                <th style="text-align:center;vertical-align:middle;">消息内容</th>
+                <th style="text-align:center;vertical-align:middle;">创建人</th>
+                <th style="text-align:center;vertical-align:middle;">时间</th>
+            </tr>
+            </thead>
+            <tbody>
+
+            <template>
+                <tr v-for="message in messages">
+                    <td style="text-align:center;vertical-align:middle;">{{message.messageTypeDisplay}}</td>
+                    <td style="text-align:center;vertical-align:middle;">{{message.messageContent}}</td>
+                    <td style="text-align:center;vertical-align:middle;">{{message.creator}}</td>
+                    <td style="text-align:center;vertical-align:middle;">{{message.createTimeDisplay}}</td>
+                </tr>
+            </template>
+
+            </tbody>
+        </table>
+    </div>
+
+    <div class="modal fade" id="dialog" role="basic" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+
+            </div>
+        </div>
+    </div>
+
+</div>
+<div id="page"><script>getPaging();</script></div>
+<script src="../js/personal/message.js"></script>
+
+</body>
+</html>

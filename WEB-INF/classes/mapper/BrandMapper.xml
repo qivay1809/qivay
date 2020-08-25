@@ -1,0 +1,174 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.qivay.mapper.BrandMapper">
+
+    <resultMap id="showBrandMap" type="com.qivay.domain.Brand">
+        <id property="brandId" column="brand_id"/>
+        <result property="brandName" column="brand_name"/>
+        <result property="brandEnname" column="brand_enname"/>
+        <result property="logo" column="logo"/>
+        <result property="enterpriseId" column="enterprise_name"/>
+        <result property="brandVerify" column="brand_verify"/>
+        <result property="creator" column="creator"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateUser" column="updateUser"/>
+        <result property="updateTime" column="update_time"/>
+    </resultMap>
+
+    <resultMap id="excelBrandMap" type="com.qivay.vo.ExcelBrand">
+        <id property="brandId" column="brand_id"/>
+        <result property="brandName" column="brand_name"/>
+        <result property="brandEnname" column="brand_enname"/>
+        <result property="enterprise" column="enterprise_name"/>
+        <result property="brandVerify" column="brand_verify"/>
+        <result property="creator" column="creator"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateUser" column="updateUser"/>
+        <result property="updateTime" column="update_time"/>
+    </resultMap>
+    <resultMap id="brandMap" type="com.qivay.domain.Brand">
+        <id property="brandId" column="brand_id"/>
+        <result property="brandName" column="brand_name"/>
+        <result property="brandEnname" column="brand_enname"/>
+        <result property="logo" column="logo"/>
+        <result property="enterpriseId" column="enterprise_id"/>
+        <result property="brandVerify" column="brand_verify"/>
+    </resultMap>
+    <resultMap id="enterpriseMap" type="com.qivay.domain.Enterprise">
+        <id property="enterpriseId" column="enterprise_id"/>
+        <result property="enterpriseName" column="enterprise_name"/>
+    </resultMap>
+
+    <sql id="columns">
+        brand_id,brand_name,brand_enname,logo,enterprise_id,brand_verify,creator,create_time,update_user,update_time
+    </sql>
+
+
+    <insert id="insertBrand" parameterType="com.qivay.domain.Brand">
+        INSERT INTO
+        brand
+        (<include refid="columns"/>)
+        VALUES
+        (#{brandId},#{brandName}, #{brandEnname},#{logo},#{enterpriseId}, #{brandVerify},#{creator},#{createTime},#{updateUser},#{updateTime})
+    </insert>
+
+    <sql id="base_conditions">
+        <where>
+            <if test="brandName != null and brandName !=''">
+                b.brand_name like concat('%',#{brandName},'%')
+            </if>
+            <if test="enterpriseName != null and enterpriseName !=''">
+                and e.enterprise_name like concat('%',#{enterpriseName},'%')
+            </if>
+            <if test="beginDate != null">
+                and b.create_time >= #{beginDate}
+            </if>
+            <if test="endDate != null">
+                and b.create_time &lt;= #{endDate}
+            </if>
+            <if test="brandVerify != -1">
+                and
+                <if test="brandVerify == 0">
+                    (b.brand_verify = 0 or b.brand_verify = 3)
+                </if>
+                <if test="brandVerify != 0">
+                    b.brand_verify = #{brandVerify}
+                </if>
+            </if>
+        </where>
+    </sql>
+
+    <select id="getBrands" resultMap="showBrandMap">
+        select b.brand_id ,b.brand_name,b.brand_enname,b.logo,e.enterprise_name,b.brand_verify,c.name creator,b.create_time,u.name updateUser,b.update_time
+        from brand b
+        left join enterprise e on b.enterprise_id = e.enterprise_id
+        left join user c on b.creator = c.user_id
+        left join user u on b.update_user = u.user_id
+        <include refid="base_conditions"/>
+        order by field(b.brand_verify,3,0,1,2),b.create_time desc
+        limit #{startIndex},#{pageSize}
+    </select>
+
+    <select id="getExcelBrands" resultMap="excelBrandMap">
+        select b.brand_id ,b.brand_name,b.brand_enname,e.enterprise_name,b.brand_verify,c.name creator,b.create_time,u.name updateUser,b.update_time
+        from brand b
+        left join enterprise e on b.enterprise_id = e.enterprise_id
+        left join user c on b.creator = c.user_id
+        left join user u on b.update_user = u.user_id
+        <include refid="base_conditions"/>
+        order by field(b.brand_verify,3,0,1,2),b.create_time desc
+    </select>
+
+    <select id="getCount" resultType="int">
+        select count(brand_id)
+        from brand b
+        left join enterprise e on b.enterprise_id = e.enterprise_id
+        <include refid="base_conditions"/>
+    </select>
+
+    <select id="getBrandById" resultMap="brandMap">
+        select
+        <include refid="columns"/>
+        from brand
+        where brand_id = #{brandId}
+    </select>
+
+    <update id="updateBrand">
+        update brand set enterprise_id = #{enterpriseId},update_user = #{updateUser},update_time = #{updateTime},brand_name = #{brandName},brand_enname = #{brandEnname},logo = #{logo}
+        where brand_id = #{brandId}
+    </update>
+
+    <update id="verifyBrand">
+        update brand set brand_verify = #{brandVerify}
+        where brand_id = #{brandId}
+    </update>
+
+    <select id="getAllBrands" resultMap="brandMap">
+        select <include refid="columns"/>
+        FROM brand
+    </select>
+
+    <select id="getAllEnterprises" resultMap="enterpriseMap">
+        select enterprise_id ,enterprise_name
+        from enterprise
+        order by enterprise_name
+    </select>
+
+    <select id="getBrandsByName" resultMap="brandMap">
+        select brand_id ,brand_name
+        from brand
+        where brand_name like concat('%',#{keyword},'%') and brand_verify = 1
+    </select>
+
+    <select id="findBrandByName" resultType="String">
+        SELECT  brand_id  FROM  brand  WHERE brand_name = #{brandName}
+    </select>
+    <select id="getVerify" resultMap="showBrandMap">
+        select * from  brand where brand_verify = 1
+    </select>
+
+<delete id="delete">
+    DELETE FROM brand WHERE brand_id = #{brandId}
+</delete>
+</mapper>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

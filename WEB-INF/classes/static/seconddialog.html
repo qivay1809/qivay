@@ -1,0 +1,23 @@
+<script src="/js/jqueryui1.12.0.js"></script>
+<div id="example2" class="modal fade" style="overflow: auto" data-backdrop="false">
+    <div class="modal-dialog"  id="dialogBody">
+        <div class="modal-content">
+            <div class="modal-header">
+                <span style="cursor:pointer;" class="glyphicon glyphicon-repeat" @click="rotate()" ></span>
+                <a class="close" data-dismiss="modal" onclick="setCurrent()">×</a>
+            </div>
+            <div class="modal-body" id="mainBody">
+                <image src="" id="imagePath" class="center-block"></image>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function(){
+
+        $("#dialogBody").draggable();//为模态对话框添加拖拽
+
+    })
+</script>
+<script src="/js/secondDialog.js"></script>

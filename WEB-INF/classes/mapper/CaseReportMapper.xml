@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.qivay.mapper.CaseReportMapper">
+
+    <resultMap id="caseReportMap" type="com.qivay.domain.CaseReport">
+        <id property="caseReportId" column="case_report_id"/>
+        <result property="caseId" column="case_id"/>
+        <result property="content" column="content"/>
+        <result property="status" column="status"/>
+        <result property="progress" column="progress"/>
+        <result property="creator" column="creator"/>
+        <result property="createTime" column="create_time"/>
+        <result property="location" column="location"/>
+        <result property="userName" column="name"/>
+    </resultMap>
+
+    <resultMap id="caseReportShowMap" type="com.qivay.domain.CaseReport">
+        <id property="caseReportId" column="case_report_id"/>
+        <result property="content" column="content"/>
+        <result property="status" column="status"/>
+        <result property="progress" column="progress"/>
+        <result property="createTime" column="create_time"/>
+    </resultMap>
+
+    <sql id="columns">
+        case_report_id,case_id,content,status,progress,creator,create_time,location
+    </sql>
+    <sql id="showColumns">
+        case_report_id,content,status,progress,create_time
+    </sql>
+
+    <sql id="imageColumns">
+        case_report_image_id,case_report_id,url,image_order
+    </sql>
+
+    <select id="getCaseReports" resultMap="caseReportMap">
+        SELECT
+        cr.case_report_id,cr.case_id,cr.content,cr.status,cr.progress,cr.creator,cr.create_time,cr.location,u.name
+        FROM case_report cr LEFT JOIN user u ON cr.creator=u.user_id
+        WHERE  cr.case_id = #{caseId}
+        ORDER BY cr.progress, cr.create_time  LIMIT #{startIndex}, #{pageSize};
+    </select>
+
+    <select id="getCaseReportsCount" resultType="int">
+        SELECT
+        count(case_report_id)
+        FROM case_report
+        WHERE  case_id = #{caseId}
+    </select>
+
+    <select id="getCaseReportImages" resultType="String">
+        SELECT url FROM case_report_image
+        WHERE  case_report_id = #{caseReportId}
+        ORDER BY image_order;
+    </select>
+
+    <insert id="addCaseReport" parameterType="com.qivay.domain.CaseReport">
+        INSERT INTO
+        case_report
+        (<include refid="columns"/>)
+        VALUES
+        (#{caseReportId},#{caseId},#{content},#{status},#{progress},#{creator},#{createTime},#{location})
+    </insert>
+
+    <insert id="addCaseReportImage" parameterType="com.qivay.domain.CaseReportImage">
+        INSERT INTO
+        case_report_image
+        (<include refid="imageColumns"/>)
+        VALUES
+        (#{caseReportImageId},#{caseReportId},#{url},#{imageOrder})
+    </insert>
+
+    <update id="updateProgress">
+        update case_report
+        set progress = #{progress}
+        where case_report_id = #{caseReportId}
+    </update>
+
+    <update id="updateStatus">
+        update case_report
+        set status = #{status}
+        where case_report_id = #{caseReportId}
+    </update>
+
+    <update id="updateCaseReport" parameterType="com.qivay.domain.CaseReport">
+        update case_report
+        set status = #{status},progress = #{progress}
+        where case_report_id = #{caseReportId}
+    </update>
+    <select id="getCaseReportProgress" resultType="int">
+        SELECT progress FROM case_report WHERE  case_id = #{caseId} ORDER BY progress DESC LIMIT 0, 2
+    </select>
+
+
+</mapper>

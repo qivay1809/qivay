@@ -1,0 +1,289 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.qivay.mapper.EnterpriseMapper">
+    <resultMap id="enterpriseMap" type="com.qivay.domain.Enterprise">
+        <id column="enterprise_id" property="enterpriseId"/>
+        <result column="enterprise_name" property="enterpriseName"/>
+        <result column="address" property="address"/>
+        <result column="employees" property="employees"/>
+        <result column="introduction" property="introduction"/>
+        <result column="certificate_id" property="certificateId"/>
+        <result column="certificate" property="certificate"/>
+        <result column="credit" property="credit"/>
+    </resultMap>
+
+    <resultMap id="enterpriseVoMap" type="com.qivay.vo.EnterpriseVo">
+        <id column="enterprise_id" property="enterpriseId"/>
+        <result column="enterprise_name" property="enterpriseName"/>
+        <result column="address" property="address"/>
+        <result column="introduction" property="introduction"/>
+        <result column="certificate_id" property="certificateId"/>
+        <!--<result column="certificate" property="certificate"/>
+        <result column="user_id" property="userId"/>
+        <result column="name" property="name"/>
+        <result column="position" property="position"/>
+        <result column="gender" property="gender"/>
+        <result column="cellphone" property="cellphone"/>-->
+        <result column="boss" property="boss"/>
+        <result column="phone" property="phone"/>
+
+        <result column="enterprise_verify" property="enterpriseVerify"/>
+        <result column="create_time" property="createTime"/>
+        <result column="enterprise_type" property="enterpriseType"/>
+    </resultMap>
+
+    <resultMap id="excelEnterpriseMap" type="com.qivay.vo.ExcelEnterprise">
+        <id column="enterprise_id" property="enterpriseId"/>
+        <result column="enterprise_name" property="enterpriseName"/>
+        <result column="address" property="address"/>
+        <result column="certificate_id" property="certificate"/>
+        <!--<result column="user_id" property="userId"/>
+        <result column="name" property="name"/>
+        <result column="position" property="position"/>
+        <result column="gender" property="gender"/>
+        <result column="cellphone" property="cellphone"/>-->
+        <result column="boss" property="boss"/>
+        <result column="phone" property="phone"/>
+
+        <result column="enterprise_verify" property="enterpriseVerify"/>
+        <result column="create_time" property="createTime"/>
+    </resultMap>
+
+    <sql id="columns">
+        enterprise_name,address,employees,introduction,certificate_id,certificate,credit
+    </sql>
+
+    <select id="findEnterpriseByName" resultMap="enterpriseMap">
+        SELECT
+        <include refid="columns"/>
+        FROM enterprise WHERE enterprise_name = #{enterpriseName}
+    </select>
+
+    <select id="findEnterpriseByUserId" resultMap="enterpriseMap">
+        SELECT
+        <include refid="columns"/>
+        FROM enterprise a,enterprise_user b WHERE a.enterprise_id=b.enterprise_id AND user_id = #{userId}
+    </select>
+
+    <insert id="insertEnterpriseUser" parameterType="com.qivay.domain.EnterpriseUser">
+        INSERT INTO
+        enterprise_user
+        (enterprise_user_id,enterprise_id,user_id,contact)
+        VALUES
+        (#{enterpriseUserId},#{enterpriseId},#{userId},#{contact})
+    </insert>
+
+    <insert id="insertEnterprise" parameterType="com.qivay.domain.Enterprise">
+        INSERT INTO
+        enterprise
+        (enterprise_id,enterprise_name,address,employees,introduction,certificate_id,certificate,create_time,enterprise_type,boss,phone)
+        VALUES
+        (#{enterpriseId},#{enterpriseName},#{address}, #{employees},#{introduction},#{certificateId}, #{certificate},#{createTime},#{enterpriseType},#{boss},#{phone})
+    </insert>
+
+    <update id="updateEnterprise" parameterType="com.qivay.domain.Enterprise">
+        UPDATE
+        enterprise
+        SET
+        enterprise_name = #{enterpriseName},
+        address=#{address},
+        introduction=#{introduction},
+        certificate_id=#{certificateId},
+        certificate=#{certificate},
+        boss=#{boss},
+        phone=#{phone}
+        WHERE
+        enterprise_id = #{enterpriseId}
+    </update>
+
+    <select id="checkEnterpriseName" parameterType="String" resultType="String">
+        SELECT  enterprise_id  FROM  enterprise
+        WHERE enterprise_name = #{enterpriseName}
+    </select>
+
+    <select id="getEnterpriseId" resultType="string">
+        select enterprise_id from enterprise_user
+        where user_id = #{creator}
+    </select>
+
+    <update id="updateBalance">
+        update enterprise set balance = (balance - #{reward}),version = version + 1
+        where enterprise_id = #{enterpriseId} and version = #{version}
+    </update>
+
+    <update id="setBalance">
+        update enterprise set balance = #{balance}
+        where enterprise_id = #{enterpriseId}
+    </update>
+
+    <update id="changeFreezeAmount">
+        update enterprise set balance = (balance + #{amount}),freeze_amount = (freeze_amount - #{amount}),version = version + 1
+        where enterprise_id = #{enterpriseId} and version = #{version}
+    </update>
+
+    <sql id="base_condition">
+        <where>
+            <if test="enterpriseName != null">
+                e.enterprise_name like concat('%',#{enterpriseName},'%')
+            </if>
+            <if test="address != null">
+                and e.address like concat('%',#{address},'%')
+            </if>
+            <if test="certificateId != null">
+                and e.certificate_id like concat('%',#{certificateId},'%')
+            </if>
+            <if test="userName != null">
+                and e.boss like concat('%',#{userName},'%')
+            </if>
+            <if test="cellphone != null">
+                and e.phone like concat('%',#{cellphone},'%')
+            </if>
+            <if test="beginDate != null">
+                and e.create_time >= #{beginDate}
+            </if>
+            <if test="endDate != null">
+                and e.create_time &lt;= #{endDate}
+            </if>
+            <if test="enterpriseVerify != -1">
+                and
+                <if test="enterpriseVerify == 0">
+                    (e.enterprise_verify = 0 or e.enterprise_verify = 3)
+                </if>
+                <if test="enterpriseVerify != 0">
+                    e.enterprise_verify = #{enterpriseVerify}
+                </if>
+            </if>
+        </where>
+    </sql>
+
+    <select id="getEnterprises" resultMap="enterpriseVoMap">
+        select
+            e.enterprise_id,
+            e.enterprise_name,
+            e.address,
+            e.certificate_id,
+            e.introduction,
+            e.certificate,
+            e.enterprise_verify,
+            e.boss,
+            e.phone,
+            e.create_time,
+            e.enterprise_type
+        from enterprise e
+        left join enterprise_user eu on e.enterprise_id = eu.enterprise_id and eu.contact=1
+        <include refid="base_condition"/>
+        order by field(e.enterprise_verify,3,0,1,2),e.create_time desc
+        limit #{startIndex},#{pageSize}
+    </select>
+
+    <select id="getExcelEnterprises" resultMap="excelEnterpriseMap">
+        select
+            e.enterprise_id,
+            e.enterprise_name,
+            e.address,
+            e.certificate_id,
+            e.introduction,
+            e.enterprise_verify,
+            e.boss,
+            e.phone,
+            e.create_time,
+            e.enterprise_type
+        from enterprise e
+        left join enterprise_user eu on e.enterprise_id = eu.enterprise_id and eu.contact=1
+        <include refid="base_condition"/>
+        order by field(e.enterprise_verify,3,0,1,2),e.create_time desc
+    </select>
+
+    <select id="getCount" resultType="int">
+        select count(e.enterprise_id)
+        from enterprise e
+        left join enterprise_user eu on e.enterprise_id = eu.enterprise_id
+        <include refid="base_condition"/>
+    </select>
+
+    <update id="auditEnterprise">
+        update enterprise set enterprise_verify = #{enterpriseAudit}
+        where enterprise_id = #{enterpriseId}
+    </update>
+
+    <select id="getEnterpriseVerifyById" resultType="int">
+        select enterprise_verify from enterprise
+        where enterprise_id = #{enterpriseId}
+    </select>
+
+    <select id="getEnterpriseById" resultMap="enterpriseVoMap">
+        select e.enterprise_id,e.enterprise_name,e.address,e.introduction,e.certificate_id,e.certificate,e.enterprise_verify,e.enterprise_type,
+                e.boss,e.phone
+        from enterprise e
+        left join enterprise_user eu on e.enterprise_id = eu.enterprise_id and eu.contact=1
+        where e.enterprise_id = #{enterpriseId}
+    </select>
+
+    <update id="reduceFreezeAmount">
+        update enterprise set freeze_amount = (freeze_amount - #{reward}),version = version +1
+        where enterprise_id = #{enterpriseId} and version = #{version}
+    </update>
+
+    <select id="getBalance" resultType="double">
+        select balance from enterprise where enterprise_id = #{enterpriseId}
+    </select>
+
+    <select id="getEnterpriseByName" resultType="map">
+        select enterprise_id enterpriseId,enterprise_name enterpriseName from enterprise where enterprise_name like concat('%',#{keyword},'%')
+    </select>
+
+    <select id="getAllEnterpriseId" resultType="string">
+        select enterprise_id from enterprise
+    </select>
+
+    <select id="getEnterpriseIdByVerify" resultType="string">
+        select enterprise_id from enterprise where enterprise_verify = #{enterpriseVerify}
+    </select>
+
+    <select id="getVersion" resultType="int">
+        select version from enterprise where enterprise_id = #{enterpriseId}
+    </select>
+
+    <resultMap id="memberMap" type="com.qivay.domain.Member">
+        <id column="user_id" property="userId"/>
+        <result column="enterprise_name" property="enterpriseName"/>
+        <result column="name" property="userName"/>
+
+    </resultMap>
+
+    <select id="getEnterpriseUser" resultMap="memberMap">
+        select e.enterprise_name,u.name,u.user_id from enterprise e,user u,enterprise_user eu
+        where e.enterprise_id=eu.enterprise_id and u.user_id=eu.user_id and (e.enterprise_name like concat('%',#{keyword},'%') or u.name like concat('%',#{keyword},'%'))
+        and  e.enterprise_type >= 2 and e.enterprise_type &lt;= 3
+        order by e.enterprise_name,u.name
+    </select>
+
+    <select id="getEnterpriseUserByCaseId" resultMap="memberMap">
+        select e.enterprise_name,u.name,u.user_id from enterprise e,user u,enterprise_user eu,case_participant cp
+        where e.enterprise_id=eu.enterprise_id and u.user_id=eu.user_id and u.user_id=cp.user_id and cp.case_id = #{caseId}
+        order by e.enterprise_name,u.name
+    </select>
+
+    <delete id="delete">
+      DELETE FROM enterprise WHERE enterprise_id = #{enterpriseId}
+    </delete>
+
+
+    <!--查询所有调查公司-->
+    <select id="findSurveyEnterprise" resultType="map">
+        select enterprise_id enterpriseId,enterprise_name enterpriseName from enterprise
+         where enterprise_type = 3
+        <if test="keywards != '' and keywards != null">
+         and enterprise_name like concat('%',#{keyword},'%')
+        </if>
+    </select>
+
+    <!--查询某调查公司下的调查员-->
+    <select id="findSurvey" resultType="map">
+        SELECT u.user_id value,CONCAT(u.`name`,u.email) name  FROM enterprise_user eu LEFT JOIN `user` u ON eu.user_id = u.user_id
+        where enterprise_id = #{enterpriseId}
+        <if test="keywards != '' and keywards != null">
+         and (u.`name` like concat('%',#{keywards},'%') or u.email like concat('%',#{keywards},'%'))
+        </if>
+    </select>
+</mapper>

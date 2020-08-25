@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.qivay.mapper.AnswerMapper">
+
+    <resultMap id="answerMap" type="com.qivay.domain.Answer">
+        <id property="answerId" column="answer_id"/>
+        <result property="answerContent" column="answer_content"/>
+        <result property="questionId" column="question_id"/>
+        <result property="answerWeight" column="answer_weight"/>
+        <result property="answerVerify" column="answer_verify"/>
+        <result property="creator" column="creator"/>
+        <result property="createTime" column="create_time"/>
+
+    </resultMap>
+
+    <sql id="columns">
+        answer_id,answer_content,question_id,answer_weight,answer_verify,creator,create_time
+    </sql>
+
+    <select id="findAnswerByQuestionId" parameterType="map" resultMap="answerMap">
+        SELECT <include refid="columns"/>
+        FROM  answer
+        WHERE question_id = #{questionId}
+        ORDER BY create_time ASC LIMIT #{offset}, #{pageSize};
+    </select>
+
+    <select id="findAnswerById" resultMap="answerMap">
+        SELECT
+        <include refid="columns"/>
+        FROM answer
+        WHERE answer_id = #{answerId}
+    </select>
+
+    <insert id="insertAnswer" parameterType="com.qivay.domain.Answer">
+        INSERT INTO
+        answer
+        (<include refid="columns"/>)
+        VALUES
+        (#{answerId},#{answerContent}, #{questionId},#{answerWeight},#{answerVerify},#{creator}, #{createTime})
+    </insert>
+
+    <update id="verifyAnswer">
+        UPDATE
+        answer
+        SET
+        answer_verify = #{answerVerify}
+        WHERE
+        answer_id = #{answerId}
+    </update>
+
+</mapper>

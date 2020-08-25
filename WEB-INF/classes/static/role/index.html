@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:v-bind="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title>角色权限</title>
+    <link rel="stylesheet" href="../css/bootstrap.min.css">
+    <link rel="stylesheet" href="../css/dialog.css">
+    <script src="../js/jquery1.11.3.min.js"></script>
+    <script src="../js/bootstrap.min.js"></script>
+    <script src="../js/vue.js"></script>
+    <script src="../js/vue-resource1.3.4.js"></script>
+    <script src="../js/config.js"></script>
+
+</head>
+<body>
+<div id="roleIndex">
+    <div class="form-inline">
+
+        <div class="form-group">
+            <label class="sr-only">角色ID</label>
+            <input id="txtRoleId" v-model="search.roleId" style="width:180px" class="form-control" type="text"
+                   placeholder="请输入角色ID"/>
+        </div>
+        <div class="form-group">
+            <label class="sr-only">角色名</label>
+            <input id="txtRoleName" v-model="search.roleName" style="width:120px" class="form-control" type="text"
+                   placeholder="请输入角色名"/>
+        </div>
+        <div class="form-group">
+            <label class="sr-only">角色描述</label>
+            <input id="txtDescription" v-model="search.description" style="width:130px" class="form-control" type="text"
+                   placeholder="请输入角色描述"/>
+        </div>
+
+
+        <button id="btnSearch" type="button" @click="getRoles" class="btn btn-primary">搜索</button>
+
+        <a class="btn btn-primary" href="edit.html" data-target="#dialog" data-toggle="modal">添加角色</a>
+
+        <input id="txtSearch" type="hidden" @click="getRoles('msg')"/>
+        <input id="hidRoleId" type="hidden"/>
+        <input id="dataType" type="hidden"/>
+    </div>
+
+    <div class="table-responsive">
+        <table class="table table-striped" id="main">
+            <thead>
+            <tr>
+                <th style="text-align:center;vertical-align:middle;">编号</th>
+                <th style="text-align:center;vertical-align:middle;">角色ID</th>
+                <th style="text-align:center;vertical-align:middle;">角色名</th>
+                <th style="text-align:center;vertical-align:middle;">角色描述</th>
+                <th style="text-align:center;vertical-align:middle;">操作</th>
+            </tr>
+            </thead>
+            <tbody>
+
+            <template>
+                <tr v-for="(role,index) in roles">
+                    <td style="text-align:center;vertical-align:middle;">{{beginIndex + 1 + index}}</td>
+                    <td style="text-align:center;vertical-align:middle;">{{role.roleId}}</td>
+                    <td style="text-align:center;vertical-align:middle;">{{role.roleName}}</td>
+                    <td style="text-align:center;vertical-align:middle;">{{role.description}}</td>
+                    <td style="text-align:center;vertical-align:middle;">
+                            <a class="btn btn-xs btn-success" href="edit.html" data-target="#dialog"
+                               data-toggle="modal" onclick="setRoleId(this.id);" :id="role.roleId">修改角色</a>
+                            <a class="btn btn-xs btn-primary" href="dataType.html" data-target="#dialog"
+                               data-toggle="modal" onclick="setRoleId(this.id);" :id="role.roleId">添加权限</a>
+                            <a class="btn btn-xs btn-info" href="permission.html" data-target="#dialog"
+                               data-toggle="modal" onclick="setRoleId(this.id);" :id="role.roleId">查看权限</a>
+                            <a class="btn btn-xs btn-primary" href="user.html" data-target="#dialog"
+                               data-toggle="modal" onclick="setRoleId(this.id);" :id="role.roleId">添加用户</a>
+                            <a class="btn btn-xs btn-info" href="participant.html" data-target="#dialog"
+                               data-toggle="modal" onclick="setRoleId(this.id);" :id="role.roleId">查看用户</a>
+
+                    </td>
+                </tr>
+            </template>
+
+            </tbody>
+        </table>
+    </div>
+    <a class="addPermission" href="" data-target="#dialog"
+       data-toggle="modal"></a>
+    <div id="baseDialog">
+        <script>getDialog('baseDialog', '../basedialog.html');</script>
+    </div>
+
+
+</div>
+
+<div id="secondDialog">
+    <script>getDialog('secondDialog', '../seconddialog.html');</script>
+</div>
+
+<div id="page">
+    <script>getPaging();</script>
+</div>
+<script src="../js/role/index.js"></script>
+
+</body>
+</html>

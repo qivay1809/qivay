@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.qivay.mapper.CommentMapper" >
+  <resultMap id="BaseResultMap" type="com.qivay.domain.Comment" >
+    <id column="comment_id" property="commentId"/>
+    <result column="object_id" property="objectId"/>
+    <result column="content" property="content"/>
+    <result column="status" property="status"/>
+    <result column="comment_show" property="commentShow"/>
+    <result column="name" property="creator"/>
+    <result column="create_time" property="createTime"/>
+    <result column="comment_type" property="commentType"/>
+    <result column="input_type" property="inputType"/>
+  </resultMap>
+
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap">
+    select c.comment_id,c.object_id,c.content,c.status,c.comment_show,c.comment_type,c.input_type,c.create_time,u.name
+    from comment c
+    join user u on u.user_id = c.creator
+    where c.comment_id = #{commentId}
+  </select>
+
+  <sql id="base_conditions">
+    <where>
+      <if test="content != null and content != ''">
+        c.content like concat('%',#{content},'%')
+      </if>
+      <if test="status != -1">
+        and c.status = #{status}
+      </if>
+      <if test="commentShow != -1">
+        and c.comment_show = #{commentShow}
+      </if>
+      <if test="commentType != -1">
+        and c.comment_type = #{commentType}
+      </if>
+      <if test="inputType != -1">
+        and c.input_type = #{inputType}
+      </if>
+      <if test="beginDateDisplay != null">
+        and c.create_time >= #{beginDateDisplay}
+      </if>
+      <if test="endDateDisplay != null">
+        and c.create_time &lt;= #{endDateDisplay}
+      </if>
+    </where>
+  </sql>
+
+  <select id="getCount" resultType="int">
+    select count(c.comment_id) from comment c
+    <include refid="base_conditions"/>
+  </select>
+
+  <select id="getComments" resultMap="BaseResultMap">
+    select c.comment_id,c.object_id,c.content,c.status,c.comment_show,c.comment_type,c.input_type,c.create_time,u.name
+    from comment c
+    join user u on u.user_id = c.creator
+    <include refid="base_conditions"/>
+    order by c.status asc,c.create_time desc
+    limit #{startIndex},#{pageSize}
+  </select>
+
+  <update id="verifyComment">
+    update comment
+    set status = #{status},comment_show = #{commentShow}
+    where comment_id = #{commentId}
+  </update>
+
+  <update id="setCommentShow">
+    update comment
+    set comment_show = #{commentShow}
+    where comment_id = #{commentId}
+  </update>
+
+  <select id="getStatus" resultType="int">
+    select status from comment where comment_id = #{commentId}
+  </select>
+
+</mapper>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

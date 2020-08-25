@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:v-bind="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title>编辑案件</title>
+    <link rel="stylesheet" href="../css/bootstrap.min.css">
+    <link rel="stylesheet" href="../css/bootstrap-theme.min.css"/>
+    <script src="../js/jquery1.11.3.min.js"></script>
+    <script src="../js/bootstrap.min.js"></script>
+    <script src="../js/vue.js"></script>
+    <script src="../js/vue-resource1.3.4.js"></script>
+    <script src="../js/config.js"></script>
+    <script src="../plugins/confirm/jquery-confirm.js"></script>
+    <script type="text/javascript" charset="utf-8" src="../ueditor/ueditor.config.js"></script>
+    <script type="text/javascript" charset="utf-8" src="../ueditor/ueditor.all.min.js"></script>
+    <script type="text/javascript" charset="utf-8" src="../ueditor/lang/zh-cn/zh-cn.js"></script>
+    <link rel="stylesheet" href="../plugins/fileinput/css/fileinput.css"/>
+    <script src="../plugins/fileinput/js/fileinput.js"></script>
+    <script src="../plugins/fileinput/js/locales/zh.js"></script>
+
+</head>
+<body>
+<div id="editCaseReport">
+    <div class="modal-header">
+        <button type="button" class="close editClose" data-dismiss="modal" aria-label="Close"><span
+                aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title">添加汇报</h4>
+    </div>
+    <div class="modal-body">
+        <form class="form-horizontal">
+            <div>
+                <div class="form-group">
+                    <label class="col-sm-2 control-label">进度</label>
+                    <div class="col-sm-9">
+                        <select  v-model="progress" class="form-control">
+                            <option value="-1" selected="selected">进度</option>
+                            <option value="0">进行中</option>
+                            <option value="1">查处</option>
+                            <option value="12">扣押</option>
+                            <option value="13">强措施</option>
+                            <option value="14">行政处罚决定</option>
+                            <option value="22">立案</option>
+                            <option value="23">拘留/取保候审</option>
+                            <option value="24">诉讼</option>
+                            <option value="25">判决书</option>
+                            <option value="36">销毁物品</option>
+                        </select>
+                    </div>
+                    <div class="col-sm-1">
+                        <h4 style="color: red">*</h4>&nbsp;
+                    </div>
+                </div>
+
+
+
+                <div class="form-group">
+                    <label class="col-sm-2 control-label">内容</label>
+                    <div class="col-sm-9">
+                        <script id="editor" type="text/plain" style="width:735px;height:300px;"></script>
+                    </div>
+                    <div class="col-sm-1">
+                        <h4 style="color: red">*</h4>&nbsp;
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="col-sm-2 control-label" style="margin-top: 12px">上传图片</label>
+                    <div class="col-sm-10">
+                        <div class="col-sm-8" style="margin-top: 12px">
+                            <input id="fileUpload" type="file" name="file" multiple="multiple" class="file-loading"
+                                   accept=".png,.jpg">
+                        </div>
+                    </div>
+                </div>
+
+
+
+            </div>
+        </form>
+    </div>
+    <div class="modal-footer">
+        <button id="btnClose" type="button" class="btn btn-default editClose" data-dismiss="modal">关闭</button>
+        <button type="button" class="btn btn-primary" @click="editReport">保存</button>
+    </div>
+</div>
+
+<script src="../js/case/editReport.js"></script>
+<script src="../js/uploadImages.js"></script>
+
+</body>
+</html>

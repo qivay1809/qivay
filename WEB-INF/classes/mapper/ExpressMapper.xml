@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.qivay.mapper.ExpressMapper">
+
+    <resultMap id="expressMap" type="com.qivay.domain.OrderStatus">
+        <id property="sendorder" column="send_order"/>
+        <result property="hzorder" column="hz_order"/>
+        <result property="sendName" column="send_name"/>
+        <result property="sendMobile" column="send_mobile"/>
+        <result property="sendAddress" column="send_address"/>
+        <result property="sendDetailAddress" column="send_detail_address"/>
+        <result property="receiveName" column="receive_name"/>
+        <result property="receiveMobile" column="receive_mobile"/>
+        <result property="receiveAdress" column="receive_address"/>
+        <result property="receiveDetailAdress" column="receive_detail_address"/>
+        <result property="sendtype" column="send_type"/>
+        <result property="producttype" column="product_type"/>
+        <result property="relationtype" column="relation_type"/>
+        <result property="cometime" column="come_time"/>
+        <result property="remark" column="remark"/>
+        <result property="carriage" column="carriage"/>
+        <result property="type" column="type"/>
+        <result property="examinationId" column="examination_id"/>
+        <result property="sort" column="sort"/>
+        <result property="createTime" column="create_time"/>
+    </resultMap>
+
+    <sql id="columns">
+        send_order,
+        hz_order,
+        send_name,
+        send_mobile,
+        send_address,
+        send_detail_address,
+        receive_name,
+        receive_mobile,
+        receive_address,
+        receive_detail_address,
+        send_type,
+        product_type,
+        relation_type,
+        come_time,
+        remark,
+        carriage,
+        `type`,
+        examination_id,
+        create_time,
+        sort
+    </sql>
+
+
+    <select id="getExpress" resultMap="expressMap">
+        select
+        <include refid="columns"/>
+        from  express
+        where examination_id = #{examinationId}
+    </select>
+
+    <select id="findById" resultMap="expressMap">
+        select * from express where send_order = #{sendorder}
+    </select>
+</mapper>

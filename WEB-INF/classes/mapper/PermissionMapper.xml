@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.qivay.mapper.PermissionMapper" >
+  <resultMap id="BaseResultMap" type="com.qivay.domain.Permission" >
+    <id column="permission_id" property="permissionId"/>
+    <result column="uri" property="uri"/>
+    <result column="menu_code" property="menuCode"/>
+    <result column="role" property="role"/>
+    <result column="remark" property="remark"/>
+  </resultMap>
+
+    <!--根据role权限-->
+   <select id="getPermissionByRole" parameterType="int" resultMap="BaseResultMap">
+      select * from permission where role = #{role}
+   </select>
+
+    <select id="getRemarks" resultMap="BaseResultMap">
+        select role, remark from permission where role >= 0
+    </select>
+</mapper>

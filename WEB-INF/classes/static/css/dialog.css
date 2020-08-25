@@ -1,0 +1,13 @@
+.modal-backdrop {
+    opacity: 0 !important;
+    filter: alpha(opacity=0) !important;
+}
+
+body{
+    padding-right: 0!important;
+}
+
+.dialogSize{
+    width: 1500px;
+    height: 500px;
+}

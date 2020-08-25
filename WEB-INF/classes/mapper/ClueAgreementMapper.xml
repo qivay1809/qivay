@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.qivay.mapper.ClueAgreementMapper">
+
+    <resultMap id="clueAgreementMap" type="com.qivay.domain.ClueAgreement">
+        <result property="clueAgreementId" column="clue_agreement_id"/>
+        <result property="clueId" column="clue_id"/>
+        <result property="progress" column="progress"/>
+        <result property="visible" column="visible"/>
+        <result property="creator" column="creator"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateUser" column="update_user"/>
+        <result property="updateTime" column="update_time"/>
+    </resultMap>
+
+    <sql id="columns">
+        clue_agreement_id,clue_id,progress,visible,creator,create_time,update_user,update_time
+    </sql>
+
+    <sql id="imageColumns">
+        clue_agreement_image_id,clue_agreement_id,url,image_order
+    </sql>
+
+    <select id="getClueAgreement" resultMap="clueAgreementMap">
+        SELECT <include refid="columns"/> FROM clue_agreement WHERE clue_id=#{clueId}
+    </select>
+
+    <select id="getClueAgreementImages" resultType="String">
+        SELECT url FROM clue_agreement_image  WHERE clue_agreement_id=#{clueAgreementId} ORDER BY image_order
+    </select>
+
+    <insert id="addClueAgreement" parameterType="com.qivay.domain.ClueAgreement">
+        INSERT INTO
+        clue_agreement
+        (<include refid="columns"/>)
+        VALUES
+        (#{clueAgreementId}, #{clueId},#{progress}, #{visible},#{creator}, #{createTime},#{updateUser}, #{updateTime})
+    </insert>
+
+    <update id="updateClueAgreement">
+        update clue_agreement set update_user = #{updateUser},update_time = #{updateTime},visible=#{visible}
+        where clue_agreement_id = #{clueAgreementId}
+    </update>
+
+    <update id="updateClueAgreementProgress">
+        update clue_agreement set progress = #{progress}
+        where clue_agreement_id = #{clueAgreementId}
+    </update>
+
+    <insert id="addClueAgreementImage" parameterType="com.qivay.domain.ClueAgreementImage">
+        INSERT INTO
+        clue_agreement_image
+        (<include refid="imageColumns"/>)
+        VALUES
+        (#{clueAgreementImageId},#{clueAgreementId},#{url},#{imageOrder})
+    </insert>
+
+    <delete id="deleteClueAgreementImage">
+        delete from clue_agreement_image  where clue_agreement_id = #{clueAgreementId}
+    </delete>
+
+
+</mapper>

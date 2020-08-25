@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.qivay.mapper.VersionMapper" >
+  <resultMap id="BaseResultMap" type="com.qivay.domain.Version" >
+    <id column="version_id" property="versionId"/>
+    <result column="title" property="title"/>
+    <result column="note" property="note"/>
+    <result column="number" property="number"/>
+    <result column="create_time" property="createTime"/>
+  </resultMap>
+
+  <insert id="insert">
+    insert into version (version_id, title, note,`number`, create_time)
+    values (#{versionId}, #{title}, #{note},#{number}, #{createTime})
+  </insert>
+
+  <update id="updateByPrimaryKey">
+    update version
+    set title = #{title},
+      note = #{note},
+      `number` = #{number}
+    where version_id = #{versionId}
+  </update>
+
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap">
+    select
+      version_id,
+      title,
+      note,
+      `number`,
+      create_time
+    from version
+    where version_id = #{versionId}
+  </select>
+
+  <sql id="base_conditions">
+    <where>
+      <if test="title != null and title != ''">
+        and v.title like concat('%',#{title},'%')
+      </if>
+      <if test="beginDate != null and beginDate != ''">
+        and v.create_time >= #{beginDate}
+      </if>
+      <if test="endDate != null and endDate != ''">
+        and v.create_time &lt;= #{endDate}
+      </if>
+    </where>
+  </sql>
+
+  <select id="getVersions" resultMap="BaseResultMap">
+    select * from version v
+    <include refid="base_conditions"/>
+    order by v.create_time desc
+    limit #{startIndex},#{pageSize}
+  </select>
+
+  <select id="getCount" resultType="int">
+    select count(v.version_id) from version v
+    <include refid="base_conditions"/>
+  </select>
+</mapper>

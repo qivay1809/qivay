@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:v-bind="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title>编辑App广告</title>
+    <link rel="stylesheet" href="../css/bootstrap.min.css">
+    <link rel="stylesheet" href="../css/bootstrap-theme.min.css"/>
+    <link rel="stylesheet" href="../plugins/fileinput/css/fileinput.css"/>
+    <script src="../js/jquery1.11.3.min.js"></script>
+    <script src="../js/bootstrap.min.js"></script>
+    <script src="../js/vue.js"></script>
+    <script src="../js/vue-resource1.3.4.js"></script>
+    <script src="../js/config.js"></script>
+    <script src="../plugins/fileinput/js/fileinput.js"></script>
+    <script src="../plugins/fileinput/js/locales/zh.js"></script>
+    <link rel="stylesheet" href="../plugins/confirm/jquery-confirm.css">
+    <script src="../plugins/confirm/jquery-confirm.js"></script>
+
+</head>
+<body>
+<div id="editImage">
+<div class="modal-header">
+    <button type="button" class="close editClose" data-dismiss="modal" aria-label="Close"><span
+            aria-hidden="true">&times;</span></button>
+    <h4 class="modal-title">编辑App广告</h4>
+</div>
+<div class="modal-body">
+    <form class="form-horizontal">
+
+        <div class="form-group">
+            <label class="col-sm-2 control-label">广&ensp;告&ensp;名</label>
+            <div class="col-sm-9">
+                <input type="text" class="form-control" id="txtImageName" placeholder="广告名"  v-model="imageName">
+            </div>
+            <div class="col-sm-1">
+                <h4 style="color: red">*</h4>&nbsp;
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-2 control-label">广告类别</label>
+            <div class="col-sm-9">
+                <select id="adType" v-model="type" class="form-control">
+                    <option value="1">APP滚动广告</option>
+                    <option value="2">APP弹出广告</option>
+
+                    <option value="3">官网弹出广告</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="col-sm-2 control-label" style="margin-top: 12px">广告图片</label>
+            <div class="col-sm-9">
+                <div class="col-sm-2" v-if="imageCompress">
+                    <img v-bind:src="imageCompress" class="img-circle" width="60px" height="60px">
+                </div>
+                <div class="col-sm-8" style="margin-top: 12px">
+                    <input id="fileUpload" type="file" name="file" multiple="multiple" class="file-loading" accept=".png,.gif,.jpg">
+                </div>
+            </div>
+            <div class="col-sm-1">
+                <h4 style="color: red">*</h4>&nbsp;
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="col-sm-2 control-label">广告排序</label>
+            <div class="col-sm-9">
+                <input type="text" class="form-control" id="txtNewsOrder" placeholder="广告排序"  v-model="adOrder">
+            </div>
+            <div class="col-sm-1">
+                <h4 style="color: red">*</h4>&nbsp;
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-2 control-label">详情页</label>
+            <div class="col-sm-6">
+                <select v-model="newsId" class="form-control">
+                    <option v-for="news in newss" v-bind:value="news.newsId">
+                        {{news.newsTitle}}
+                    </option>
+                </select>
+            </div>
+        </div>
+        <!--<div class="form-group">
+            <label class="col-sm-2 control-label" style="margin-top: 12px">H5广告页面链接</label>
+            <div class="col-sm-9">
+                <input type="text" class="form-control" id="fileH5" placeholder="H5广告链接"  v-model="fileH5">
+            </div>
+            <div class="col-sm-1">
+                <h4 style="color: red">*</h4>&nbsp;
+            </div>
+        </div>-->
+        <div class="form-group">
+            <label class="col-sm-2 control-label">是否显示</label>
+            <div class="col-sm-9">
+                <input type="radio" id="txtShow" value="0" v-model="adShow">
+                <label for="txtShow">不显示</label>
+                <input type="radio" id="txtHide" value="1" v-model="adShow">
+                <label for="txtHide">显示</label>
+            </div>
+        </div>
+
+
+
+    </form>
+</div>
+<div class="modal-footer">
+    <button id="btnClose" type="button" class="btn btn-default editClose" data-dismiss="modal">关闭</button>
+    <button type="button" class="btn btn-primary" @click="editImage">保存</button>
+</div>
+</div>
+
+<script src="../js/adImage/edit.js"></script>
+<script src="../js/uploadImage.js"></script>
+<!--<script src="../js/uploadFile.js"></script>-->
+
+</body>
+</html>

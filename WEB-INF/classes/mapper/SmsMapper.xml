@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.qivay.mapper.SmsMapper" >
+  <resultMap id="BaseResultMap" type="com.qivay.domain.Sms" >
+    <id column="sms_id" property="smsId"/>
+    <result column="content" property="content"/>
+      <result column="code" property="code"/>
+    <result column="creator" property="creator"/>
+    <result column="create_time" property="createTime"/>
+  </resultMap>
+
+    <insert id="addSms">
+        insert into sms (sms_id, content, `code`, creator, create_time)
+        values (#{smsId}, #{content}, #{code}, #{creator}, #{createTime})
+    </insert>
+
+
+
+    <select id="findSmsByUser" resultType="String">
+        select sms_id from sms where creator = #{userId} and create_time like concat(#{createTime},'%')
+    </select>
+
+  <!-- 发送手机短信 -->
+  <!--获取已验证的用户-->
+  <select id="getUserByTimelt20190823000000" resultType="String">
+      SELECT
+        cellphone
+      FROM
+        `user`
+      WHERE
+          create_time >= '2019-08-15 00:00:00'
+          AND (user_state = 0 or user_state = 1)
+          ORDER BY create_time DESC
+    </select>
+
+
+    <select id="getNameCardTest" resultType="com.qivay.domain.Birthday">
+        SELECT
+            user_id userId,
+            `name`,
+            id_card idCard,
+            cellphone
+        FROM
+            `user`
+        WHERE
+        cellphone = '15893105954'
+		or cellphone = '15638505173'
+    </select>
+
+</mapper>

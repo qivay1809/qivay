@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>菜单列表</title>
+
+    <link rel="stylesheet" href="../css/bootstrap.min.css">
+    <link rel="stylesheet" href="../css/dialog.css">
+    <script src="../js/jquery1.11.3.min.js"></script>
+    <script src="../js/bootstrap.min.js"></script>
+    <script src="../js/vue.js"></script>
+    <script src="../js/vue-resource1.3.4.js"></script>
+
+    <script src="../js/config.js"></script>
+    <script src="../plugins/My97DatePicker/WdatePicker.js"></script>
+
+</head>
+<body>
+<div id="menuIndex">
+    <div class="form-inline">
+        <div class="form-group">
+            <label class="sr-only">菜单名</label>
+            <input id="txtName" v-model="search.menuName" style="width:135px" class="form-control" type="text"
+                   placeholder="请输入菜单名"/>
+        </div>
+        <div class="form-group">
+            创建时间：
+            <label class="sr-only">创建开始时间</label>
+            <input id="txtCreateBeginDate" class="form-control date" type="text" placeholder="请输入创建开始时间"/>
+            ---
+            <label class="sr-only">创建结束时间</label>
+            <input id="txtCreateEndDate" class="form-control date" type="text" placeholder="请输入创建结束时间"/>
+        </div>
+        <div class="form-group">
+            更新时间：
+            <label class="sr-only">更新开始时间</label>
+            <input id="txtUpdateBeginDate" class="form-control date" type="text" placeholder="请输入更新开始时间"/>
+            ---
+            <label class="sr-only">更新结束时间</label>
+            <input id="txtUpdateEndDate" class="form-control date" type="text" placeholder="请输入更新结束时间"/>
+        </div>
+
+        <button id="btnSearch" type="button" @click="getMenus" class="btn btn-primary">搜索</button>
+
+        <a class="btn btn-primary" href="edit.html" data-target="#dialog" data-toggle="modal">添加菜单</a>
+
+        <input id="txtSearch" type="hidden" @click="getMenus('msg')"/>
+        <input id="hidMenuId" type="hidden"/>
+    </div>
+
+    <div class="table-responsive">
+        <table class="table table-striped" id="main">
+            <thead>
+            <tr>
+                <th style="text-align:center;vertical-align:middle;">菜单名</th>
+                <th style="text-align:center;vertical-align:middle;">菜单码</th>
+                <th style="text-align:center;vertical-align:middle;">url</th>
+                <th style="text-align:center;vertical-align:middle;">排序</th>
+                <th style="text-align:center;vertical-align:middle;">父级菜单</th>
+                <th style="text-align:center;vertical-align:middle;">创建人</th>
+                <th style="text-align:center;vertical-align:middle;">创建时间</th>
+                <th style="text-align:center;vertical-align:middle;">更新人</th>
+                <th style="text-align:center;vertical-align:middle;">更新时间</th>
+                <th style="text-align:center;vertical-align:middle;">编辑</th>
+            </tr>
+            </thead>
+            <tbody>
+
+            <template>
+                <tr v-for="menu in menus">
+                    <td style="text-align:center;vertical-align:middle;">{{menu.menuName}}</td>
+                    <td style="text-align:center;vertical-align:middle;">{{menu.menuCode}}</td>
+                    <td style="text-align:center;vertical-align:middle;">{{menu.menuUrl}}</td>
+                    <td style="text-align:center;vertical-align:middle;">{{menu.menuOrder}}</td>
+                    <td style="text-align:center;vertical-align:middle;">{{menu.parentName}}</td>
+                    <td style="text-align:center;vertical-align:middle;">{{menu.creatorName}}</td>
+                    <td style="text-align:center;vertical-align:middle;">{{menu.createTimeDisplay}}</td>
+                    <td style="text-align:center;vertical-align:middle;">{{menu.updateUserName}}</td>
+                    <td style="text-align:center;vertical-align:middle;">{{menu.updateTimeDisplay}}</td>
+                    <td style="text-align:center;vertical-align:middle;">
+                        <a class="btn btn-xs btn-info" href="edit.html" data-target="#dialog"
+                           data-toggle="modal" onclick="setMenuId(this.id);" :id="menu.menuId">编辑</a>
+
+                        <!--<button class="btn btn-xs btn-info" onclick="setMenuId(this.id);" :id="menu.menuId">编辑</button>-->
+
+                    </td>
+                </tr>
+            </template>
+
+            </tbody>
+        </table>
+    </div>
+
+    <div id="baseDialog"><script>getDialog('baseDialog','../basedialog.html');</script></div>
+
+</div>
+
+<div id="page"><script>getPaging();</script></div>
+<script src="../js/menu/index.js"></script>
+
+</body>
+</html>

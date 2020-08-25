@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:v-bind="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title>案件记录</title>
+    <link rel="stylesheet" href="../css/bootstrap.min.css">
+    <link rel="stylesheet" href="../css/dialog.css">
+    <script src="../js/jquery1.11.3.min.js"></script>
+    <script src="../js/bootstrap.min.js"></script>
+    <script src="../js/vue.js"></script>
+    <script src="../js/vue-resource1.3.4.js"></script>
+    <script src="../js/config.js"></script>
+    <link rel="stylesheet" href="../plugins/confirm/jquery-confirm.css">
+    <script src="../plugins/confirm/jquery-confirm.js"></script>
+
+</head>
+<body>
+<div id="caseRecordIndex">
+    <div class="form-inline">
+        <div class="form-group">
+            <label class="sr-only">供应商名称</label>
+            <input v-model="search.vendorName" style="width:135px" class="form-control" type="text"
+                   placeholder="请输入广告名"/>
+        </div>
+        <div class="form-group">
+            <label class="sr-only">供应商案件编号</label>
+            <input v-model="search.vendorCaseId" style="width:135px" class="form-control" type="text"
+                   placeholder="请输入广告名"/>
+        </div>
+        <div class="form-group">
+            <label class="sr-only">联合利华案件编号</label>
+            <input v-model="search.unileverCaseId" style="width:135px" class="form-control" type="text"
+                   placeholder="请输入广告名"/>
+        </div>
+        <div class="form-group">
+            <div class="col-sm-6">
+                <select v-model="search.caseType" class="form-control">
+                    <option value="-1" selected="selected">案件类型</option>
+                    <option value="1">刑事案件</option>
+                    <option value="0">民事案件</option>
+                </select>
+            </div>
+        </div>
+
+        <button id="btnSearch" type="button" @click="getCaseRecords" class="btn btn-primary">搜索</button>
+
+        <a class="btn btn-primary" href="edit.html" data-target="#dialog" data-toggle="modal">添加案件</a>
+
+        <input id="txtSearch" type="hidden" @click="getCaseRecords('msg')"/>
+        <input id="hidImageId" type="hidden"/>
+    </div>
+
+    <div class="table-responsive">
+        <table class="table table-striped" id="main">
+            <thead>
+            <tr>
+                <th style="text-align:center;vertical-align:middle;">编号</th>
+                <th style="text-align:center;vertical-align:middle;">供应商名称</th>
+                <th style="text-align:center;vertical-align:middle;">供应商案件编号</th>
+                <th style="text-align:center;vertical-align:middle;">案件类型</th>
+                <th style="text-align:center;vertical-align:middle;">目标名字及地址</th>
+                <th style="text-align:center;vertical-align:middle;">执法单位</th>
+                <th style="text-align:center;vertical-align:middle;">执法负责人和联系方式</th>
+                <th style="text-align:center;vertical-align:middle;">行动时间</th>
+                <th style="text-align:center;vertical-align:middle;">犯罪嫌疑人</th>
+                <th style="text-align:center;vertical-align:middle;">操作</th>
+            </tr>
+            </thead>
+            <tbody>
+
+            <template>
+                <tr v-for="(caseRecord,index) in CaseRecords">
+                    <td style="text-align:center;vertical-align:middle;">{{beginIndex + 1 + index}}</td>
+                    <td style="text-align:center;vertical-align:middle;">{{caseRecord.vendorName}}</td>
+                    <td style="text-align:center;vertical-align:middle;">{{caseRecord.vendorCaseId}}</td>
+                    <td style="text-align:center;vertical-align:middle;">{{caseRecord.caseTypeDisplay}}</td>
+                    <td style="text-align:center;vertical-align:middle;">{{caseRecord.targetNameAddress}}</td>
+                    <td style="text-align:center;vertical-align:middle;">{{caseRecord.enforcementAuthority}}</td>
+                    <td style="text-align:center;vertical-align:middle;">{{caseRecord.officerInChargeContact}}</td>
+                    <td style="text-align:center;vertical-align:middle;">{{caseRecord.dateOfRaid}}</td>
+                    <td style="text-align:center;vertical-align:middle;">{{caseRecord.suspects}}</td>
+                    <td style="text-align:center;vertical-align:middle;">{{caseRecord.createTime}}</td>
+                    <td style="text-align:center;vertical-align:middle;">
+                        <a class="btn btn-xs btn-info" href="edit.html" data-target="#dialog"
+                           data-toggle="modal" onclick="setImageId(this.id);" :id="caseRecord.caseRecordId">编辑</a>
+                    </td>
+                </tr>
+            </template>
+
+            </tbody>
+        </table>
+    </div>
+
+    <div id="baseDialog">
+        <script>getDialog('baseDialog', '../basedialog.html');</script>
+    </div>
+
+</div>
+<div id="page">
+    <script>getPaging();</script>
+</div>
+<script src="../js/caserecord/index.js"></script>
+
+</body>
+</html>

@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>转账列表</title>
+    <link rel="stylesheet" href="../css/bootstrap.min.css">
+
+    <script src="../js/jquery1.11.3.min.js"></script>
+    <script src="../js/bootstrap.min.js"></script>
+    <script src="../js/vue.js"></script>
+    <script src="../js/vue-resource1.3.4.js"></script>
+    <script src="../js/config.js"></script>
+    <script src="../plugins/My97DatePicker/WdatePicker.js"></script>
+
+</head>
+<body>
+<div id="orderIndex">
+    <div class="form-inline">
+        <div class="form-group">
+            <label class="sr-only">创建企业</label>
+            <input id="txtCreator" v-model="search.creator" class="form-control" type="text" placeholder="请输入企业名" style="width:150px"/>
+        </div>
+        <div class="form-group">
+            订单金额：
+            <label class="sr-only">订单金额下限</label>
+            <input id="txtMinAmount" v-model="search.minAmount" class="form-control" type="text" placeholder="请输入订单金额下限"/>
+            ---
+            <label class="sr-only">订单金额上限</label>
+            <input id="txtMaxAmount" v-model="search.maxAmount" class="form-control" type="text" placeholder="请输入订单金额上限"/>
+        </div>
+        <div class="form-group">
+            订单时间：
+            <label class="sr-only">订单开始时间</label>
+            <input id="txtBeginDate" class="form-control" type="text" placeholder="请输入订单开始时间"/>
+            ---
+            <label class="sr-only">订单结束时间</label>
+            <input id="txtEndDate" class="form-control" type="text" placeholder="请输入订单结束时间"/>
+        </div>
+
+        <div class="form-group">
+            <div class="col-sm-6">
+                <select id="selOrderStatus" v-model="search.orderStatus" class="form-control">
+                    <option value="-1" selected="selected">支付状态</option>
+                    <option value="1">已取消</option>
+                    <option value="2">已完成</option>
+                    <option value="3">已退款</option>
+
+                </select>
+            </div>
+        </div>
+
+        <button id="btnSearch" type="button" @click="getOrders" class="btn btn-primary">搜索</button>
+
+        <input id="txtSearch" type="hidden" @click="getOrders('msg')"/>
+    </div>
+
+    <div class="table-responsive">
+        <table class="table table-striped" id="main">
+            <thead>
+            <tr>
+                <th style="text-align:center;vertical-align:middle;">订单号</th>
+                <th style="text-align:center;vertical-align:middle;">订单金额</th>
+                <th style="text-align:center;vertical-align:middle;">用户名</th>
+                <th style="text-align:center;vertical-align:middle;">创建时间</th>
+                <th style="text-align:center;vertical-align:middle;">支付状态</th>
+            </tr>
+            </thead>
+            <tbody>
+
+            <template>
+                <tr v-for="record in orders">
+                    <td style="text-align:center;vertical-align:middle;">{{record.orderId}}</td>
+                    <td style="text-align:center;vertical-align:middle;">{{record.amount}}</td>
+                    <td style="text-align:center;vertical-align:middle;">{{record.creator}}</td>
+                    <td style="text-align:center;vertical-align:middle;">{{record.createTimeDisplay}}</td>
+                    <td style="text-align:center;vertical-align:middle;">{{record.orderStatusDisplay}}</td>
+                </tr>
+            </template>
+
+            </tbody>
+        </table>
+    </div>
+
+</div>
+
+<div id="page"><script>getPaging();</script></div>
+<script src="../js/order/index.js"></script>
+
+</body>
+</html>

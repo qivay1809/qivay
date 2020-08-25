@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:v-bind="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title>招聘列表</title>
+    <link rel="stylesheet" href="../css/bootstrap.min.css">
+    <link rel="stylesheet" href="../css/dialog.css">
+    <script src="../js/jquery1.11.3.min.js"></script>
+    <script src="../js/bootstrap.min.js"></script>
+    <script src="../js/vue.js"></script>
+    <script src="../js/vue-resource1.3.4.js"></script>
+    <script src="../js/config.js"></script>
+    <script src="../plugins/My97DatePicker/WdatePicker.js"></script>
+
+</head>
+<body>
+<div id="jobIndex">
+    <div class="form-inline">
+        <div class="form-group">
+            <label class="sr-only">招聘标题</label>
+            <input id="txtJobTitle" v-model="search.jobTitle" class="form-control" type="text" placeholder="请输入招聘标题" style="width: 135px"/>
+        </div>
+        <div class="form-group">
+            <label class="sr-only">招聘创建者</label>
+            <input id="txtCreator" v-model="search.creator" style="width:135px" class="form-control" type="text"
+                   placeholder="请输入创建人"/>
+        </div>
+        <div class="form-group">
+            创建时间：
+            <label class="sr-only">创建开始时间</label>
+            <input id="txtBeginDate" class="form-control" type="text" placeholder="请输入创建开始时间"/>
+            ---
+            <label class="sr-only">创建结束时间</label>
+            <input id="txtEndDate" class="form-control" type="text" placeholder="请输入创建结束时间"/>
+        </div>
+
+        <div class="form-group">
+            <div class="col-sm-6">
+                <select id="selJobShow" v-model="search.jobShow" class="form-control">
+                    <option value="-1" selected="selected">显示情况</option>
+                    <option value="0">显示</option>
+                    <option value="1">不显示</option>
+                </select>
+            </div>
+        </div>
+
+        <button id="btnSearch" type="button" @click="getJobs" class="btn btn-primary">搜索</button>
+        <a class="btn btn-primary" href="edit.html" data-target="#dialog" data-toggle="modal">添加招聘</a>
+
+        <input id="txtSearch" type="hidden" @click="getJobs('msg')"/>
+        <input id="hidJobId" type="hidden" />
+    </div>
+
+    <div class="table-responsive">
+        <table class="table table-striped" id="main">
+            <thead>
+            <tr>
+                <th style="text-align:center;vertical-align:middle;">招聘标题</th>
+                <th style="text-align:center;vertical-align:middle;">招聘描述</th>
+                <th style="text-align:center;vertical-align:middle;">招聘需求</th>
+                <th style="text-align:center;vertical-align:middle;">招聘排序</th>
+                <th style="text-align:center;vertical-align:middle;">创建人</th>
+                <th style="text-align:center;vertical-align:middle;">创建时间</th>
+                <th style="text-align:center;vertical-align:middle;">是否显示</th>
+                <th style="text-align:center;vertical-align:middle;">操作</th>
+            </tr>
+            </thead>
+            <tbody>
+
+            <template>
+                <tr v-for="job in jobs">
+                    <td style="text-align:center;vertical-align:middle;">{{job.jobTitle}}</td>
+                    <td style="text-align:center;vertical-align:middle;" width="30%">{{job.jobDesc}}</td>
+                    <td style="text-align:center;vertical-align:middle;" width="30%">{{job.jobRequire}}</td>
+                    <td style="text-align:center;vertical-align:middle;">{{job.jobOrder}}</td>
+                    <td style="text-align:center;vertical-align:middle;">{{job.userName}}</td>
+                    <td style="text-align:center;vertical-align:middle;">{{job.createTimeDisplay}}</td>
+                    <td style="text-align:center;vertical-align:middle;">{{job.jobShowDisplay}}</td>
+                    <td style="text-align:center;vertical-align:middle;">
+                        <a class="btn btn-xs btn-info" href="edit.html" data-target="#dialog"
+                           data-toggle="modal" onclick="setJobId(this.id);" :id="job.jobId">编辑</a>
+                    </td>
+                </tr>
+            </template>
+
+            </tbody>
+        </table>
+    </div>
+
+    <div id="baseDialog"><script>getDialog('baseDialog','../basedialog.html');</script></div>
+
+</div>
+
+<div id="page"><script>getPaging();</script></div>
+<script src="../js/job/index.js"></script>
+
+</body>
+</html>

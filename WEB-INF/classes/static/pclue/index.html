@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:v-bind="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title>线索列表</title>
+    <link rel="stylesheet" href="../css/bootstrap.min.css">
+    <link rel="stylesheet" href="../css/dialog.css">
+    <script src="../js/jquery1.11.3.min.js"></script>
+    <script src="../js/bootstrap.min.js"></script>
+    <script src="../js/vue.js"></script>
+    <script src="../js/vue-resource1.3.4.js"></script>
+    <script src="../js/config.js"></script>
+    <script src="../plugins/My97DatePicker/WdatePicker.js"></script>
+    <link rel="stylesheet" href="../plugins/confirm/jquery-confirm.css">
+    <script src="../plugins/confirm/jquery-confirm.js"></script>
+
+</head>
+<body>
+<div id="clueIndex">
+    <div class="form-inline">
+
+        <div class="form-group">
+            <label class="sr-only">线索ID</label>
+            <input id="txtClueId" v-model="search.clueId" style="width:180px" class="form-control" type="text"
+                   placeholder="请输入线索ID"/>
+        </div>
+
+        <div class="form-group">
+            <label class="sr-only">商品名</label>
+            <input id="txtProductName" v-model="search.productName" style="width:120px" class="form-control" type="text"
+                   placeholder="请输入商品名"/>
+        </div>
+        <div class="form-group">
+            <label class="sr-only">品牌名</label>
+            <input id="txtBrandName" v-model="search.brandName" style="width:120px" class="form-control" type="text"
+                   placeholder="请输入品牌名"/>
+        </div>
+        <div class="form-group">
+            <label class="sr-only">任务标题</label>
+            <input id="txtTaskTitle" v-model="search.taskTitle" style="width:130px" class="form-control" type="text"
+                   placeholder="请输入任务标题"/>
+        </div>
+        <div class="form-group">
+            <label class="sr-only">编号</label>
+            <input id="txtSerialNumber" v-model="search.serialNumber" style="width:130px" class="form-control" type="text"
+                   placeholder="请输入编号"/>
+        </div>
+        <div class="form-group">
+            <label class="sr-only">创建开始时间</label>
+            <input id="txtBeginDate" class="form-control" type="text" placeholder="请输入创建开始时间"/>
+            ---
+            <label class="sr-only">创建结束时间</label>
+            <input id="txtEndDate" class="form-control" type="text" placeholder="请输入创建结束时间"/>
+        </div>
+
+        <div class="form-group">
+            <select id="selProvinceId" v-model="search.provinceId" class="form-control" style="margin-left: 15px"
+                    @change="getSubrange(search.provinceId)">
+                <option value="" selected="selected">全国</option>
+                <option v-for="province in provinces" v-bind:value="province.regionId">
+                    {{ province.regionName }}
+                </option>
+            </select>
+            ---
+            <select id="selCityId" v-model="search.cityId" class="form-control" @change="getSubrange(search.cityId)">
+                <option value="" selected="selected">全省</option>
+                <option v-for="city in cities" v-bind:value="city.regionId">
+                    {{ city.regionName }}
+                </option>
+            </select>
+            ---
+            <select id="selAreaId" v-model="search.areaId" class="form-control">
+                <option value="" selected="selected">全市</option>
+                <option v-for="area in areas" v-bind:value="area.regionId">
+                    {{ area.regionName }}
+                </option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label class="sr-only">街道</label>
+            <input id="txtStreet" v-model="search.street" style="width:130px" class="form-control" type="text"
+                   placeholder="请输入街道信息"/>
+        </div>
+
+        <div class="form-group">
+            <div class="col-sm-6">
+                <select id="selClueVerify" v-model="search.clueVerify" class="form-control">
+                    <option value="-1" selected="selected">跟进情况</option>
+                    <option value="3">未开始</option>
+                    <option value="5">专人跟进</option>
+                    <option value="6">方案制定</option>
+                    <option value="7">方案实施</option>
+                    <option value="8">案件正常完成</option>
+                    <option value="9">案件非正常完成</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <div class="col-sm-6">
+                <select id="selHasTask" v-model="search.hasTask" class="form-control">
+                    <option value="-1" selected="selected">有无任务</option>
+                    <option value="0">无</option>
+                    <option value="1">有</option>
+                </select>
+            </div>
+        </div>
+
+        <button id="btnSearch" type="button" @click="getClues" class="btn btn-primary">搜索</button>
+
+        <a class="btn btn-primary" :href="exportUrl">导出</a>
+
+        <input id="txtSearch" type="hidden" @click="getClues('msg')"/>
+        <input id="hidClueId" type="hidden"/>
+    </div>
+
+    <div class="table-responsive">
+        <table class="table table-striped" id="main">
+            <thead>
+            <tr>
+                <th style="text-align:center;vertical-align:middle;">序号</th>
+                <th style="text-align:center;vertical-align:middle;">编号</th>
+                <th style="text-align:center;vertical-align:middle;">线索ID</th>
+                <th style="text-align:center;vertical-align:middle;">品牌</th>
+                <th style="text-align:center;vertical-align:middle;">产品</th>
+                <th style="text-align:center;vertical-align:middle;">地址</th>
+                <th style="text-align:center;vertical-align:middle;">任务</th>
+
+                <th style="text-align:center;vertical-align:middle;">调查员</th>
+
+                <th style="text-align:center;vertical-align:middle;">创建时间</th>
+                <th style="text-align:center;vertical-align:middle;">专人跟进</th>
+                <th style="text-align:center;vertical-align:middle;">方案制定</th>
+                <th style="text-align:center;vertical-align:middle;">方案实施</th>
+                <th style="text-align:center;vertical-align:middle;">跟进进度</th>
+                <th style="text-align:center;vertical-align:middle;">累计奖金</th>
+                <!--<th style="text-align:center;vertical-align:middle;">奖金发放</th>-->
+                <th style="text-align:center;vertical-align:middle;">操作</th>
+            </tr>
+            </thead>
+            <tbody>
+
+            <template>
+                <tr v-for="(clue,index) in clues">
+                    <td style="text-align:center;vertical-align:middle;">{{beginIndex + 1 + index}}</td>
+                    <td style="text-align:center;vertical-align:middle;">{{clue.serialNumber}}</td>
+                    <td style="text-align:center;vertical-align:middle;">{{clue.clueId}}</td>
+                    <td style="text-align:center;vertical-align:middle;">{{clue.brand}}</td>
+                    <td style="text-align:center;vertical-align:middle;">{{clue.product}}</td>
+                    <td style="text-align:center;vertical-align:middle;width: 9%">{{clue.address}}</td>
+                    <td style="text-align:center;vertical-align:middle;">{{clue.taskTitle != null ? clue.taskTitle : '无' }}</td>
+
+                    <td style="text-align:center;vertical-align:middle;">
+                        <span v-if="clue.assignType == 0">
+                            {{clue.name}}
+                        </span>
+                        <span v-else style="color: red">
+                            {{clue.name}}
+                        </span>
+                    </td>
+
+                    <td style="text-align:center;vertical-align:middle;">{{clue.createTime}}</td>
+                    <td style="text-align:center;vertical-align:middle;width: 8%" v-for="result in clue.status">{{result}}</td>
+                    <td style="text-align:center;vertical-align:middle;color: #9b59b6">{{clue.validateDisplay}}</td>
+                    <td style="text-align:center;vertical-align:middle;color: #5b80ce">{{clue.amountDisplay}}</td>
+                    <!--<td style="text-align:center;vertical-align:middle;color: red">{{clue.rewardValidateDisplay}}</td>-->
+                    <td style="text-align:center;vertical-align:middle;">
+                        <div v-if="clue.validate == 1 || clue.validate == 3">
+                            <div v-if="clue.caseStatus == 0">
+                                <a class="btn btn-xs btn-success" href="edit.html" data-target="#dialog"
+                                   data-toggle="modal" onclick="setClueId(this.id);" :id="clue.clueId">立案调查</a>
+                            </div>
+                            <div v-if="clue.follow == 0 && clue.caseStatus == 1">
+                                <a class="btn btn-xs btn-info" href="#"  onclick="parent.openTab(this.id,'/pclue/assign.html?id='+this.id,'线索指派')"
+                                   :id="clue.clueId">开始跟进</a>
+                            </div>
+                        </div>
+                        <div v-else-if="clue.validate == 5">
+                            <a class="btn btn-xs btn-success" href="edit.html" data-target="#dialog"
+                               data-toggle="modal" onclick="setClueId(this.id);" :id="clue.clueId">专人跟进</a>
+                        </div>
+                        <div v-else-if="clue.validate == 6">
+                            <a class="btn btn-xs btn-success" href="edit.html" data-target="#dialog"
+                               data-toggle="modal" onclick="setClueId(this.id);" :id="clue.clueId">方案制定</a>
+                        </div>
+                        <div v-else-if="clue.validate == 7">
+                            <a class="btn btn-xs btn-success" href="edit.html" data-target="#dialog"
+                               data-toggle="modal" onclick="setClueId(this.id);" :id="clue.clueId">方案实施</a>
+                        </div>
+
+                        <div v-else>
+                            <a class="btn btn-xs btn-success" href="edit.html" data-target="#dialog"
+                               data-toggle="modal" onclick="setClueId(this.id);" :id="clue.clueId">跟进详情</a>
+                        </div>
+                        <!--<div v-else-if="clue.validate == 8 && clue.rewardValidate == null">
+                            <a class="btn btn-xs btn-success" href="edit.html" data-target="#dialog"
+                               data-toggle="modal" onclick="setClueId(this.id);" :id="clue.clueId">发放奖金</a>
+                        </div>-->
+                        <!--<div v-if="clue.validate == 5 || clue.validate == 6 || clue.validate == 7 || clue.validate == 8 || clue.validate == 9">-->
+                        <div v-if="clue.validate >= 5">
+                            <!--<a class="btn btn-xs btn-success" href="edit.html" data-target="#dialog"
+                               data-toggle="modal" onclick="setClueId(this.id);" :id="clue.clueId">奖金</a>-->
+                            <a class="btn btn-xs btn-info" href="#"  onclick="parent.openTab(this.id,'/pclue/reward.html?id='+this.id,this.name)"
+                               :id="clue.clueId" :name="clue.serialNumber">发放奖金</a>
+                        </div>
+                        <!--<div v-else-if="clue.validate == 8 && (clue.rewardValidate != null && clue.rewardValidate == 2)">
+                            <a class="btn btn-xs btn-success" href="edit.html" data-target="#dialog"
+                               data-toggle="modal" onclick="setClueId(this.id);" :id="clue.clueId">修改奖金</a>
+                        </div>-->
+
+                        <div>
+                            <a class="btn btn-xs btn-info" href="../clue/check.html" data-target="#dialog"
+                               data-toggle="modal" onclick="setClueId(this.id);" :id="clue.clueId">线索详情</a>
+                        </div>
+
+                        <!--<button class="btn btn-xs btn-info" onclick="setUserId(this.id);" :id="user.userId">编辑</button>-->
+
+                    </td>
+                </tr>
+            </template>
+
+            </tbody>
+        </table>
+    </div>
+
+    <div id="baseDialog">
+        <script>getDialog('baseDialog', '../basedialog.html');</script>
+    </div>
+
+
+</div>
+<div id="secondDialog">
+    <script>getDialog('secondDialog', '../seconddialog.html');</script>
+</div>
+
+<div id="page">
+    <script>getPaging();</script>
+</div>
+<script src="../js/pclue/index.js"></script>
+</body>
+</html>

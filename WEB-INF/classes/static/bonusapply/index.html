@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>奖金申请列表</title>
+    <link rel="stylesheet" href="../css/bootstrap.min.css">
+
+    <script src="../js/jquery1.11.3.min.js"></script>
+    <script src="../js/bootstrap.min.js"></script>
+    <link rel="stylesheet" href="../css/load.css">
+    <script src="../js/vue.js"></script>
+    <script src="../js/vue-resource1.3.4.js"></script>
+    <script src="../js/config.js"></script>
+    <script src="../plugins/My97DatePicker/WdatePicker.js"></script>
+
+</head>
+<body>
+<div id="bonusApplyIndex">
+    <div class="form-inline">
+        <div class="form-group">
+            <label class="sr-only">姓名</label>
+            <input v-model="search.name" style="width:135px" class="form-control" type="text" placeholder="请输入姓名"/>
+        </div>
+        <div class="form-group">
+            <label class="sr-only">手机号</label>
+            <input v-model="search.cellphone" style="width:135px" class="form-control" type="text" placeholder="请输入手机号"/>
+        </div>
+        <div class="form-group">
+            <label class="sr-only">金额</label>
+            <input v-model="search.amount" style="width:135px" class="form-control" type="text" placeholder="获取输入金额以下的数据"/>
+        </div>
+        <div class="form-group">
+            <div class="col-sm-6">
+                <select id="accountType" v-model="search.bonusType" class="form-control">
+                    <option value="-1" selected="selected">奖金类型</option>
+                    <option value="1">活动红包</option>
+                    <option value="2">案件奖金</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <div class="col-sm-6">
+                <select id="validate" v-model="search.validate" class="form-control">
+                    <option value="-1" selected="selected">验证状态</option>
+                    <option value="0">待审核</option>
+                    <option value="1">通过</option>
+                    <option value="2">未通过</option>
+                </select>
+            </div>
+        </div>
+        <div class="form-group">
+            申请时间：
+            <label class="sr-only">开始时间</label>
+            <input id="txtBeginDate" class="form-control" type="text" placeholder="开始时间"/>
+            ---
+            <label class="sr-only">结束时间</label>
+            <input id="txtEndDate" class="form-control" type="text" placeholder="结束时间"/>
+        </div>
+        <button id="btnSearch" type="button" @click="getBonusApplys" class="btn btn-primary">搜索</button>
+
+        <div class="form-group">
+            <span >待审核数量：</span>
+            <input v-model="total" style="width:100px;color: red" readonly class="form-control" type="text"/>
+        </div>
+        <div class="form-group">
+            <span >待审核金额：</span>
+            <input v-model="allAmount" style="width:100px;color: red" readonly class="form-control" type="text"/>
+        </div>
+
+
+       <!-- <a class="btn btn-primary" :href="exportUrl">导出</a>-->
+        <input id="txtSearch" type="hidden" @click="getBonusApplys('msg')"/>
+
+        <button type="button" @click="batchCheck('batch')" class="btn btn-primary">批量审核</button>
+        <input id="sendType" type="hidden"/>
+        <input id="hidbonusApplyId" type="hidden"/>
+    </div>
+
+    <div class="table-responsive">
+        <table class="table table-striped" id="main">
+            <thead>
+            <tr>
+                <th style="text-align:center;vertical-align:middle;"><input type="checkbox" id="myCheckBox" onclick="selectAll()"/></th>
+                <th style="text-align:center;vertical-align:middle;">序号</th>
+                <th style="text-align:center;vertical-align:middle;">姓名</th>
+                <th style="text-align:center;vertical-align:middle;">奖金类型</th>
+                <th style="text-align:center;vertical-align:middle;">领取前金额</th>
+                <th style="text-align:center;vertical-align:middle;">本次领取金额</th>
+                <th style="text-align:center;vertical-align:middle;">领取后余额</th>
+
+                <th style="text-align:center;vertical-align:middle;">实际到账</th>
+                <th style="text-align:center;vertical-align:middle;">税费</th>
+
+                <th style="text-align:center;vertical-align:middle;">验证状态</th>
+                <th style="text-align:center;vertical-align:middle;">驳回原因</th>
+                <th style="text-align:center;vertical-align:middle;">申请时间</th>
+                <th style="text-align:center;vertical-align:middle;">操作</th>
+            </tr>
+            </thead>
+            <tbody>
+
+            <template>
+                <tr v-for="(mp,index) in bonusApplys">
+                    <td style="text-align:center;vertical-align:middle;"><input type="checkbox" :value="mp.bonusApplyId"/></td>
+                    <td style="text-align:center;vertical-align:middle;">{{beginIndex + 1 + index}}</td>
+                    <td style="text-align:center;vertical-align:middle;">{{mp.name}}</td>
+                    <td style="text-align:center;vertical-align:middle;">{{mp.bonusTypeDisplay}}</td>
+                    <td style="text-align:center;vertical-align:middle;">{{mp.beforeAmount}}</td>
+                    <td style="text-align:center;vertical-align:middle;">{{mp.amount}}</td>
+                    <td style="text-align:center;vertical-align:middle;">{{mp.afterAmount}}</td>
+                    <td style="text-align:center;vertical-align:middle;">{{mp.realAmount}}</td>
+                    <td style="text-align:center;vertical-align:middle;">{{mp.tax}}</td>
+                    <td style="text-align:center;vertical-align:middle;">
+                        <span v-if="mp.validate == 1" style="color: green">
+                            {{mp.validateDisplay}}
+                        </span>
+                        <span v-else-if="mp.validate == 2" style="color: red">
+                            {{mp.validateDisplay}}
+                        </span>
+                        <span v-else="mp.validate == 0">
+                            {{mp.validateDisplay}}
+                        </span>
+                    </td>
+                    <td style="text-align:center;vertical-align:middle;">{{mp.messageContent}}</td>
+                    <td style="text-align:center;vertical-align:middle;">{{mp.createTime}}</td>
+                    <td style="text-align:center;vertical-align:middle;">
+                        <a v-if="mp.validate == 0" class="btn btn-xs btn-info" href="check.html" data-target="#dialog"
+                           data-toggle="modal" onclick="setbonusApplyId(this.id);" :id="mp.bonusApplyId">验证</a>
+                    </td>
+                </tr>
+            </template>
+
+            </tbody>
+        </table>
+    </div>
+    <div class="container text-center" v-if="loading">
+        <div class="row">
+            <div class="col-sm-2">
+                <div class="sp sp-circle"></div>
+            </div>
+        </div>
+    </div>
+    <div id="baseDialog"><script>getDialog('baseDialog','../basedialog.html');</script></div>
+
+</div>
+
+<div id="page"><script>getPaging();</script></div>
+<script src="js/index.js"></script>
+
+</body>
+</html>

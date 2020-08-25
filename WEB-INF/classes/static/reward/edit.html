@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:v-bind="http://www.w3.org/1999/xhtml" xmlns:v-binde="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title>奖金审核</title>
+    <link rel="stylesheet" href="../css/bootstrap.min.css">
+    <!--<link rel="stylesheet" href="../plugins/fancyBox/jquery.fancybox.css">-->
+    <script src="../js/jquery1.11.3.min.js"></script>
+    <script src="../js/bootstrap.min.js"></script>
+    <script src="../js/vue.js"></script>
+    <script src="../js/vue-resource1.3.4.js"></script>
+    <script src="../js/config.js"></script>
+    <!--<script src="../plugins/fancyBox/jquery.fancybox.js"></script>-->
+
+</head>
+<body>
+<div id="editClue">
+    <div class="modal-header">
+        <button type="button" class="close editClose" data-dismiss="modal" aria-label="Close"><span
+                aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title">奖金审核</h4>
+    </div>
+    <div class="modal-body">
+        <form class="form-horizontal" id="clueForm">
+        <h5 style="color: red;text-align: center">进度情况</h5>
+            <div class="form-group">
+                <label class="col-sm-2 control-label">线索进度</label>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" id="txtValidateDisplay" placeholder="线索进度" v-model="validateDisplay" readonly>
+                </div>
+            </div>
+
+            <div class="form-group" v-if="validate >= 5">
+                <label class="col-sm-2 control-label">专人跟进</label>
+                <div class="col-sm-10">
+                    <textarea class="form-control" rows="3" id="txtFollow" v-model="follow" readonly></textarea>
+                </div>
+            </div>
+
+            <div class="form-group" v-if="validate == 6 || validate > 6 && formulate != ''">
+                <label class="col-sm-2 control-label">方案制定</label>
+                <div class="col-sm-10">
+                    <textarea class="form-control" rows="3" id="txtFormulate" v-model="formulate" readonly></textarea>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="col-sm-2 control-label">实施结果</label>
+                <div class="col-sm-10">
+                    <textarea class="form-control" rows="3" id="txtActualize" v-model="actualize" readonly></textarea>
+                </div>
+            </div>
+            <h5 style="color: red;text-align: center">奖金信息</h5>
+            <div class="form-group">
+                <label class="col-sm-2 control-label">奖金</label>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control"  v-model="rewardTipster" readonly>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="col-sm-2 control-label">平台奖金</label>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control"  v-model="platform" readonly>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="col-sm-2 control-label">小计金额</label>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control"  v-model="spending" readonly>
+                </div>
+            </div>
+
+            <!--<div class="form-group">
+                <label class="col-sm-2 control-label">税&emsp;&emsp;费</label>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" v-model="tax" readonly>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="col-sm-2 control-label">支出总额</label>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control"  v-model="amount" readonly>
+                </div>
+            </div>-->
+            <div class="form-group">
+                <label class="col-sm-2 control-label">收款人</label>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control"  v-model="payee" readonly>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-2 control-label">身份证号</label>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control"  v-model="idCard" readonly>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="col-sm-2 control-label">是否奖励</label>
+                <div class="col-sm-10">
+                    <div v-if="isPlatform == 1">
+                        <input type="text" class="form-control" value="是" readonly>
+                    </div>
+                    <div v-if="isPlatform == 0">
+                        <input type="text" class="form-control" value="否" readonly>
+                    </div>
+                </div>
+            </div>
+
+            <!--<div class="form-group">
+                <label class="col-sm-2 control-label">代缴税费</label>
+                <div class="col-sm-10">
+                    <div v-if="isTax == 1">
+                        <input type="text" class="form-control" value="已计算" readonly>
+                    </div>
+                    <div v-if="isTax == 0">
+                        <input type="text" class="form-control" value="未计算" readonly>
+                    </div>
+                </div>
+            </div>-->
+        </form>
+    </div>
+    <div class="modal-footer">
+        <div v-if="rewardValidate != 1 && (authority == 2 || authority == 3)">
+            <button type="button" value="不通过" class="btn btn-warning" @click="verifyReward($event.currentTarget)" data-msg="2">不通过</button>
+            <button type="button" value="通过" class="btn btn-success" @click="verifyReward($event.currentTarget)" data-msg="1">通过</button>
+        </div>
+    </div>
+</div>
+
+<script src="../js/reward/edit.js"></script>
+
+</body>
+</html>

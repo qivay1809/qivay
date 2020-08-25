@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:v-bind="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title>编辑案件</title>
+    <link rel="stylesheet" href="../css/bootstrap.min.css">
+    <link rel="stylesheet" href="../css/bootstrap-theme.min.css"/>
+    <link rel="stylesheet" href="../ueditor/themes/iframe.css">
+    <script src="../js/jquery1.11.3.min.js"></script>
+    <script src="../js/bootstrap.min.js"></script>
+    <script src="../js/vue.js"></script>
+    <script src="../js/vue-resource1.3.4.js"></script>
+    <script src="../js/config.js"></script>
+    <script src="../js/bootstrap3-typeahead.min.js"></script>
+    <script src="../plugins/confirm/jquery-confirm.js"></script>
+    <script src="../plugins/My97DatePicker/WdatePicker.js"></script>
+    <script type="text/javascript" charset="utf-8" src="../ueditor/ueditor.config.js"></script>
+    <script type="text/javascript" charset="utf-8" src="../ueditor/ueditor.all.min.js"></script>
+    <script type="text/javascript" charset="utf-8" src="../ueditor/lang/zh-cn/zh-cn.js"></script>
+    <link rel="stylesheet" href="../plugins/fileinput/css/fileinput.css"/>
+    <script src="../plugins/fileinput/js/fileinput.js"></script>
+    <script src="../plugins/fileinput/js/locales/zh.js"></script>
+
+</head>
+<body>
+<div id="editCase">
+    <div class="modal-header">
+        <button type="button" class="close editClose" data-dismiss="modal" aria-label="Close"><span
+                aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title">编辑案件</h4>
+    </div>
+    <div class="modal-body">
+        <form class="form-horizontal">
+            <div>
+                <div class="form-group">
+                    <label class="col-sm-2 control-label">案件标题</label>
+                    <div class="col-sm-9">
+                        <input type="text" class="form-control" id="txtCaseTitle" v-model="caseTitle">
+                    </div>
+                    <div class="col-sm-1">
+                        <h4 style="color: red">*</h4>&nbsp;
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="col-sm-2 control-label">品牌</label>
+                    <div class="col-sm-9">
+                        <input type="text" class="form-control" v-model="brandName"/>
+                    </div>
+                    <div class="col-sm-1">
+                        <h4 style="color: red">*</h4>&nbsp;
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="col-sm-2 control-label">产品</label>
+                    <div class="col-sm-9">
+                        <input type="text" class="form-control" v-model="product"/>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="col-sm-2 control-label">案件内容</label>
+                    <div class="col-sm-9">
+                        <!--<script id="editor" type="text/plain" style="width:635px;height:500px;"></script>-->
+                        <textarea class="form-control" v-model="caseContent" rows="5"></textarea>
+                    </div>
+                    <div class="col-sm-1">
+                        <h4 style="color: red">*</h4>&nbsp;
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="col-sm-2 control-label">调查地区</label>
+                    <div class="col-sm-9">
+                        <input type="text" class="form-control" v-model="region"/>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="col-sm-2 control-label">行业</label>
+                    <div class="col-sm-9">
+                        <input type="text" class="form-control" v-model="industry"/>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="col-sm-2 control-label">截止日期</label>
+                    <div class="col-sm-9">
+                        <input id="txtDeadline" type="text" class="form-control"/>
+
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="col-sm-2 control-label">奖金描述</label>
+                    <div class="col-sm-9">
+                        <!--<input type="text" class="form-control" v-model="reward"/>-->
+                        <textarea class="form-control" v-model="reward" rows="5"></textarea>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="col-sm-2 control-label" style="margin-top: 12px">上传图片</label>
+                    <div class="col-sm-10">
+                        <div class="col-sm-8" style="margin-top: 12px">
+                            <input id="fileUpload" type="file" name="file" multiple="multiple" class="file-loading"
+                                   accept=".png,.jpg">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="col-sm-2 control-label">案件图片</label>
+                    <div class="col-sm-10">
+                        <div style="float: left" v-for="(image,index) in caseImages">
+                            <img v-bind:src="image" width="150px" height="150px" data-index="index"
+                                 onclick="openDialog(this);" style="cursor:pointer;">
+
+                            <input v-bind:value="index" hidden/>
+                            <a data-toggle="modal" href="#example2" class="btn-large" id="imageDialog" hidden></a>
+
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </form>
+    </div>
+    <div class="modal-footer" >
+        <button id="btnClose" type="button" class="btn btn-default editClose" data-dismiss="modal">关闭</button>
+        <button type="button" class="btn btn-primary" @click="editCase">保存</button>
+        <!--<button id="btnPublish" type="button" class="btn btn-default" @click="publish" >发布</button>-->
+    </div>
+</div>
+
+<script src="../js/case/edit.js"></script>
+<script src="../js/uploadImages.js"></script>
+
+</body>
+</html>

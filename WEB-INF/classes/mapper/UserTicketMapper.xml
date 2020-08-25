@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.qivay.mapper.UserTicketMapper">
+
+    <resultMap id="userTicketMap" type="com.qivay.domain.UserTicket">
+        <id property="userTicketId" column="user_ticket_id" />
+        <result property="userId" column="user_id" />
+        <result property="ticket" column="ticket" />
+        <result property="createTime" column="create_time" />
+        <result property="isValid" column="is_valid" />
+    </resultMap>
+
+    <sql id="columns">
+        user_ticket_id,user_id,ticket,create_time,is_valid
+    </sql>
+
+    <select id="checkUserTicket" parameterType="map" resultType="String">
+        SELECT  user_ticket_id  FROM  user_ticket  WHERE user_id = #{userId} AND ticket = #{ticket}
+    </select>
+
+    <insert id="insertUserTicket" parameterType="com.qivay.domain.UserTicket" >
+        INSERT INTO
+        user_ticket
+        (<include refid="columns" />)
+        VALUES
+        (#{userTicketId},#{userId}, #{ticket},#{createTime}, #{isValid})
+    </insert>
+
+    <delete id="deleteUserTicket" parameterType="String" >
+       DELETE FROM user_ticket WHERE user_id = #{userId}
+    </delete>
+
+    <select id="getTicket" resultMap="userTicketMap">
+        select <include refid="columns"/>
+        from user_ticket
+        where user_id = #{userId}
+    </select>
+
+
+</mapper>

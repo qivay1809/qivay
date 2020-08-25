@@ -1,0 +1,230 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.qivay.mapper.RewardMapper">
+    <resultMap id="BaseResultMap" type="com.qivay.domain.Reward">
+        <id column="reward_id" property="rewardId"/>
+        <result column="clue_id" property="clueId"/>
+        <result column="case_id" property="caseId"/>
+        <result column="creator" property="creator"/>
+        <result column="create_time" property="createTime"/>
+        <result column="validate" property="validate"/>
+
+        <result column="tipster" property="tipster"/>
+        <result column="platform" property="platform"/>
+        <result column="spending" property="spending"/>
+        <result column="is_platform" property="isPlatform"/>
+        <result column="type" property="type"/>
+    </resultMap>
+    <resultMap id="ShowResultMap" type="com.qivay.domain.Reward">
+        <id column="reward_id" property="rewardId"/>
+        <result column="clue_id" property="clueId"/>
+        <result column="create_time" property="createTime"/>
+        <result column="validate" property="validate"/>
+        <result column="tipster" property="tipster"/>
+        <result column="platform" property="platform"/>
+        <result column="spending" property="spending"/>
+
+        <result column="reward_author" property="rewardAuthor"/>
+        <result column="clue_author" property="clueAuthor"/>
+        <result column="serial_number" property="serialNumber"/>
+        <result column="id_card" property="idCard"/>
+
+        <result column="remark" property="remark"/>
+        <result column="clue_validate" property="clueValidate"/>
+        <result column="type" property="type"/>
+    </resultMap>
+    <resultMap id="ExcelRewardMap" type="com.qivay.vo.ExcelReward">
+        <!--<id column="reward_id" property="rewardId"/>-->
+        <result column="clue_id" property="clue"/>
+        <!--<result column="name" property="creator"/>-->
+        <result column="create_time" property="createTime"/>
+        <result column="validate" property="validate"/>
+        <result column="tipster" property="tipster"/>
+        <result column="platform" property="platform"/>
+        <result column="spending" property="spending"/>
+        <result column="reward_author" property="rewardAuthor"/>
+        <result column="clue_author" property="clueAuthor"/>
+        <result column="serial_number" property="serialNumber"/>
+        <result column="id_card" property="idCard"/>
+        <result column="remark" property="remark"/>
+        <result column="clue_validate" property="clueValidate"/>
+        <result column="type" property="type"/>
+    </resultMap>
+
+    <insert id="insert">
+        insert into reward (reward_id, clue_id,
+          creator, create_time, validate,case_id,tipster,platform,spending,is_platform,remark,clue_validate,payee,type)
+        values (#{rewardId}, #{clueId},
+          #{creator}, #{createTime}, #{validate},#{caseId},#{tipster},#{platform},#{spending},#{isPlatform},#{remark},#{clueValidate},#{payee},#{type})
+    </insert>
+
+    <update id="updateReward">
+      update reward
+      set tipster = #{tipster},
+          platform = #{platform},
+          spending = #{spending},
+          validate = #{validate},
+          is_platform = #{isPlatform},
+          remark = #{remark}
+      where reward_id = #{rewardId}
+   </update>
+    <!--缴税情况-->
+    <update id="updateTaxState">
+        update reward
+        set tax_state = #{taxState}
+        where reward_id = #{rewardId}
+    </update>
+
+    <select id="selectByPrimaryKey" resultMap="BaseResultMap">
+        select * from reward
+        where reward_id = #{rewardId}
+    </select>
+
+    <select id="selectAll" resultMap="BaseResultMap">
+          select reward_id, clue_id,case_id, creator, create_time, validate
+          from reward
+    </select>
+
+    <select id="getRewardByClueId" resultMap="BaseResultMap">
+        select reward_id, clue_id,case_id, creator, create_time, validate,tipster,platform,spending,is_platform
+        from reward where clue_id = #{clueId}
+    </select>
+
+    <sql id="base_conditions">
+        <where>
+            <if test="userName != null and userName != ''">
+                us.name like concat('%',#{userName},'%')
+            </if>
+            <if test="validate != -1">
+                and r.validate = #{validate}
+            </if>
+            <if test="clueId != null and clueId != ''">
+                and r.clue_id = #{clueId}
+            </if>
+            <if test="serialNumber != null and serialNumber != ''">
+                and r.serial_number = #{serialNumber}
+            </if>
+            <if test="minAmount != null">
+                and r.spending >= #{minAmount}
+            </if>
+            <if test="maxAmount != null">
+                and r.spending &lt;= #{maxAmount}
+            </if>
+            <if test="beginDate != null">
+                and r.create_time >= #{beginDate}
+            </if>
+            <if test="endDate != null">
+                and r.create_time &lt;= #{endDate}
+            </if>
+            <if test="type != -1">
+                and r.type = #{type}
+            </if>
+        </where>
+    </sql>
+
+    <select id="getCount" resultType="int">
+        SELECT
+        count(r.reward_id)
+        FROM
+        (
+        SELECT
+        y.*,
+        u.`name` reward_author,
+        c.creator clue_creator,
+        c.serial_number
+        FROM
+        reward y
+        JOIN `user` u ON y.creator = u.user_id
+        JOIN clue c ON y.clue_id = c.clue_id
+        ) r
+        JOIN `user` us ON r.payee = us.user_id
+        <include refid="base_conditions"/>
+    </select>
+
+
+    <select id="getRewards" resultMap="ShowResultMap">
+        SELECT
+            r.clue_id,
+            r.reward_id,
+            r.create_time,
+            r.validate,
+            r.tipster,
+            r.platform,
+            r.spending,
+            r.reward_author,
+            r.serial_number,
+            r.remark,
+            r.clue_validate,
+            r.type,
+            us.`name` clue_author,
+            us.id_card
+        FROM
+            (
+                SELECT
+                y.*,
+                u.`name` reward_author,
+                c.serial_number
+                FROM
+                reward y
+                JOIN `user` u ON y.creator = u.user_id
+                JOIN clue c ON y.clue_id = c.clue_id
+            ) r
+        JOIN `user` us ON r.payee = us.user_id
+        <include refid="base_conditions"/>
+        order by r.validate asc,r.create_time desc
+        limit #{startIndex},#{pageSize}
+    </select>
+
+    <select id="getExcelRewards" resultMap="ExcelRewardMap">
+        SELECT
+            r.clue_id,
+            r.reward_id,
+            r.create_time,
+            r.validate,
+            r.tipster,
+            r.platform,
+            r.spending,
+            r.reward_author,
+            r.serial_number,
+            r.remark,
+            r.clue_validate,
+            r.type,
+            us.`name` clue_author,
+            us.id_card
+        FROM
+            (
+                SELECT
+                y.*,
+                u.`name` reward_author,
+                c.serial_number
+                FROM
+                reward y
+                JOIN `user` u ON y.creator = u.user_id
+                JOIN clue c ON y.clue_id = c.clue_id
+            ) r
+            JOIN `user` us ON r.payee = us.user_id
+        <include refid="base_conditions"/>
+        order by r.validate asc,r.create_time desc
+    </select>
+
+    <update id="verifyReward">
+        update reward set validate = #{validate}
+        where reward_id = #{rewardId}
+    </update>
+
+    <select id="getRewardById" resultMap="BaseResultMap">
+        select reward_id,clue_id,case_id,validate,tipster,platform,spending from reward where reward_id = #{rewardId}
+    </select>
+
+    <select id="getValdiate" resultType="int">
+        select validate from reward where reward_id = #{rewardId}
+    </select>
+    <!--未缴税的总额度-->
+    <!--<select id="countNotTax" resultType="double">
+      SELECT ifnull(SUM(tax),0) from reward where validate = 1 and tax_state = 0
+    </select>-->
+<!--判断奖金表中是否已存在 奖金列-->
+    <select id="isNotClue" resultType="String">
+        SELECT clue_validate FROM reward where clue_id = #{clueId} AND clue_validate = #{clueValidate};
+    </select>
+</mapper>

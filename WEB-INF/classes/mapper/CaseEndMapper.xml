@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.qivay.mapper.CaseEndMapper">
+
+    <resultMap id="caseEndMap" type="com.qivay.domain.CaseEnd">
+        <id property="caseEndId" column="case_end_id"/>
+        <result property="content" column="content"/>
+        <result property="caseId" column="case_id"/>
+        <result property="check" column="check"/>
+    </resultMap>
+
+
+    <sql id="columns">
+        case_end_id, content, case_id, `check`
+    </sql>
+
+    <select id="findById" resultMap="caseEndMap">
+        select
+        <include refid="columns"/>
+        from case_end
+        where case_end_id = #{caseEndId}
+    </select>
+
+    <select id="getCaseEndByCaseId" resultMap="caseEndMap">
+        SELECT
+        <include refid="columns"/>
+        FROM case_end
+        where case_id = #{caseId}
+    </select>
+
+    <insert id="insert" parameterType="com.qivay.domain.CaseEnd">
+        INSERT INTO
+        case_end
+        (<include refid="columns"/>)
+        VALUES
+        (#{caseEndId},#{content},#{caseId}, #{check})
+    </insert>
+
+
+    <!--确认案件跟进信息的状态-->
+    <update id="updateCheck">
+        update case_end
+        set `check` = #{check}
+        where case_end_id = #{caseEndId}
+    </update>
+</mapper>

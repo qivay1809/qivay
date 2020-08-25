@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.qivay.mapper.JoinMapper">
+
+    <resultMap id="joinMap" type="com.qivay.domain.Join" >
+        <id column="join_id" property="joinId"/>
+        <result column="name" property="name"/>
+        <result column="telephone" property="telephone"/>
+        <result column="email" property="email"/>
+        <result column="company" property="company"/>
+        <result column="join_num" property="joinNum"/>
+        <result column="position" property="position"/>
+        <result column="company_addr" property="companyAddr"/>
+        <result column="certificate_id" property="certificateId"/>
+        <result column="join_agreement" property="joinAgreement"/>
+        <result column="create_time" property="createTime"/>
+    </resultMap>
+
+    <sql id="base_conditions">
+        <where>
+            <if test="name != null and name != ''">
+                and  `name` = #{name}
+            </if>
+            <if test="telephone != null and telephone != ''">
+                and telephone = #{telephone}
+            </if>
+            <if test="company != null and company != ''">
+                and company = #{company}
+            </if>
+        </where>
+    </sql>
+    <select id="getJoins" resultMap="joinMap">
+        select * from `join`
+        <include refid="base_conditions"/>
+        order by create_time desc
+        limit #{startIndex}, #{pageSize}
+    </select>
+    <select id="getCount" resultType="int">
+        select count(join_id) from `join`
+        <include refid="base_conditions"/>
+    </select>
+    <select id="findById" resultMap="joinMap">
+        select * from `join`
+        where join_id = #{joinId}
+    </select>
+</mapper>

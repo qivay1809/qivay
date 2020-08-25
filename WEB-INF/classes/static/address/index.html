@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:v-bind="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title>地址列表</title>
+    <link rel="stylesheet" href="../css/bootstrap.min.css">
+    <link rel="stylesheet" href="../css/dialog.css">
+    <script src="../js/jquery1.11.3.min.js"></script>
+    <script src="../js/bootstrap.min.js"></script>
+    <script src="../js/vue.js"></script>
+    <script src="../js/vue-resource1.3.4.js"></script>
+    <script src="../js/config.js"></script>
+    <link rel="stylesheet" href="../css/font-awesome.min.css" media="all"/>
+</head>
+<body>
+<div id="addressIndex">
+    <div class="form-inline">
+        <div class="form-group">
+            <label class="sr-only">街道</label>
+            <input id="txtStreet" v-model="search.street" style="width:135px" class="form-control" type="text"
+                   placeholder="请输入街道信息"/>
+        </div>
+
+        <div class="form-group">
+            <select id="selProvinceId" v-model="search.provinceId" class="form-control" style="margin-left: 15px"
+                             @change="getSubrange(search.provinceId)">
+            <option value="" selected="selected">全国</option>
+            <option v-for="province in provinces" v-bind:value="province.regionId">
+                {{ province.regionName }}
+            </option>
+        </select>
+            ---
+            <select id="selCityId" v-model="search.cityId" class="form-control" @change="getSubrange(search.cityId)">
+                <option value="" selected="selected">全省</option>
+                <option v-for="city in cities" v-bind:value="city.regionId">
+                    {{ city.regionName }}
+                </option>
+            </select>
+            ---
+            <select id="selAreaId" v-model="search.areaId" class="form-control">
+                <option value="" selected="selected">全市</option>
+                <option v-for="area in areas" v-bind:value="area.regionId">
+                    {{ area.regionName }}
+                </option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <div class="col-sm-6">
+                <select id="selAddressVerify" v-model="search.addressVerify" class="form-control">
+                    <option value="-1" selected="selected">验证情况</option>
+                    <option value="0">未验证</option>
+                    <option value="1">已验证</option>
+                    <option value="2">未通过</option>
+                </select>
+            </div>
+        </div>
+
+        <button id="btnSearch" type="button" @click="getAddresses" class="btn btn-primary">搜索</button>
+
+        <input id="txtSearch" type="hidden" @click="getAddresses('msg')"/>
+        <input id="hidAddressId" type="hidden"/>
+        <input id="hidAddressVerify" type="hidden"/>
+    </div>
+
+    <div class="table-responsive">
+        <table class="table table-striped" id="main">
+            <thead>
+            <tr>
+                <th style="text-align:center;vertical-align:middle;">编号</th>
+                <th style="text-align:center;vertical-align:middle;">街道</th>
+                <th style="text-align:center;vertical-align:middle;">街道英文名</th>
+                <th style="text-align:center;vertical-align:middle;">区域名</th>
+                <th style="text-align:center;vertical-align:middle;">经度</th>
+                <th style="text-align:center;vertical-align:middle;">纬度</th>
+                <th style="text-align:center;vertical-align:middle;">验证情况</th>
+                <th style="text-align:center;vertical-align:middle;">操作</th>
+            </tr>
+            </thead>
+            <tbody>
+
+            <template>
+                <tr v-for="(address,index) in addresses">
+                    <td style="text-align:center;vertical-align:middle;">{{beginIndex + 1 + index}}</td>
+                    <td style="text-align:center;vertical-align:middle;">{{address.street}}</td>
+                    <td style="text-align:center;vertical-align:middle;">{{address.streetEn}}</td>
+                    <td style="text-align:center;vertical-align:middle;">{{address.regionName}}</td>
+                    <td style="text-align:center;vertical-align:middle;">{{address.longitude}}</td>
+                    <td style="text-align:center;vertical-align:middle;">{{address.latitude}}</td>
+                    <td style="text-align:center;vertical-align:middle;">{{address.addressVerifyDisplay}}</td>
+                    <td style="text-align:center;vertical-align:middle;">
+                        <div v-if="address.addressVerify == 0">
+                            <a class="btn btn-xs btn-info" href="edit.html" data-target="#dialog"
+                               data-toggle="modal" onclick="setAddressId(this.id);" :id="address.addressId"><i class="icon-edit"></i>编辑</a>
+                            <a class="btn btn-xs btn-success" href="edit.html" data-target="#dialog"
+                               data-toggle="modal" onclick="setAddressAndVerify(this.id,'verify');" :id="address.addressId"><i class="icon-check"></i>验证</a>
+                            <a class="btn btn-xs btn-danger"
+                               data-toggle="modal" onclick="del(this.id);" :id="address.addressId"><i class="icon-trash"></i>删除</a>
+                        </div>
+                        <div v-else-if="address.addressVerify == 1">
+                            <span>已验证</span>
+                        </div>
+                        <div v-else>
+                            <a class="btn btn-xs btn-info" href="edit.html" data-target="#dialog"
+                               data-toggle="modal" onclick="setAddressId(this.id);" :id="address.addressId"><i class="icon-edit"></i>编辑</a>
+                        </div>
+
+                        <!--<button class="btn btn-xs btn-info" onclick="setUserId(this.id);" :id="user.userId">编辑</button>-->
+
+                    </td>
+                </tr>
+            </template>
+
+            </tbody>
+        </table>
+    </div>
+
+    <div id="baseDialog"><script>getDialog('baseDialog','../basedialog.html');</script></div>
+
+</div>
+<div id="page"><script>getPaging();</script></div>
+<script src="../js/address/index.js"></script>
+
+</body>
+</html>

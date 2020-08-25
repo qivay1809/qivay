@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:v-bind="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title>新闻列表</title>
+    <link rel="stylesheet" href="../css/bootstrap.min.css">
+    <link rel="stylesheet" href="../css/dialog.css">
+    <script src="../js/jquery1.11.3.min.js"></script>
+    <script src="../js/bootstrap.min.js"></script>
+    <script src="../js/vue.js"></script>
+    <script src="../js/vue-resource1.3.4.js"></script>
+    <script src="../js/config.js"></script>
+    <script src="../plugins/My97DatePicker/WdatePicker.js"></script>
+
+</head>
+<body>
+<div id="newsIndex">
+    <div class="form-inline">
+        <div class="form-group">
+            <label class="sr-only">新闻标题</label>
+            <input id="txtNewsTitle" v-model="search.newsTitle" class="form-control" type="text" placeholder="请输入新闻标题" style="width: 135px"/>
+        </div>
+        <div class="form-group">
+            <label class="sr-only">新闻创建者</label>
+            <input id="txtCreator" v-model="search.creator" style="width:135px" class="form-control" type="text"
+                   placeholder="请输入创建人"/>
+        </div>
+        <div class="form-group">
+            创建时间：
+            <label class="sr-only">创建开始时间</label>
+            <input id="txtBeginDate" class="form-control" type="text" placeholder="请输入创建开始时间"/>
+            ---
+            <label class="sr-only">创建结束时间</label>
+            <input id="txtEndDate" class="form-control" type="text" placeholder="请输入创建结束时间"/>
+        </div>
+
+        <div class="form-group">
+            <div class="col-sm-6">
+                <select id="selNewsShow" v-model="search.newsShow" class="form-control">
+                    <option value="-1" selected="selected">显示情况</option>
+                    <option value="0">显示</option>
+                    <option value="1">不显示</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <div class="col-sm-6">
+                <select id="selNewsType" v-model="search.newsType" class="form-control">
+                    <option value="-1" selected="selected">新闻类型</option>
+                    <option value="0">公司新闻</option>
+                    <option value="1">行业新闻</option>
+                    <option value="2">APP首页咨讯</option>
+                    <option value="3">打假课堂</option>
+                    <option value="4">法律常识</option>
+                    <option value="5">APP滚动/弹出广告详情</option>
+                </select>
+            </div>
+        </div>
+
+        <button id="btnSearch" type="button" @click="getNewses" class="btn btn-primary">搜索</button>
+        <a class="btn btn-primary" href="edit.html" data-target="#dialog" data-toggle="modal">添加新闻</a>
+
+        <input id="txtSearch" type="hidden" @click="getNewses('msg')"/>
+        <input id="hidNewsId" type="hidden" />
+    </div>
+
+    <div class="table-responsive">
+        <table class="table table-striped" id="main">
+            <thead>
+            <tr>
+                <th style="text-align:center;vertical-align:middle;">序号</th>
+                <th style="text-align:center;vertical-align:middle;">新闻标题</th>
+                <th style="text-align:center;vertical-align:middle;">新闻简介</th>
+                <th style="text-align:center;vertical-align:middle;">新闻图片</th>
+                <th style="text-align:center;vertical-align:middle;">新闻排序</th>
+                <th style="text-align:center;vertical-align:middle;">创建人</th>
+                <th style="text-align:center;vertical-align:middle;">创建时间</th>
+                <th style="text-align:center;vertical-align:middle;">是否显示</th>
+                <th style="text-align:center;vertical-align:middle;">新闻类型</th>
+                <th style="text-align:center;vertical-align:middle;">操作</th>
+            </tr>
+            </thead>
+            <tbody>
+
+            <template>
+                <tr v-for="(news,index) in newses">
+                    <td style="text-align:center;vertical-align:middle;">{{beginIndex + 1 + index}}</td>
+                    <td style="text-align:center;vertical-align:middle;">{{news.newsTitle}}</td>
+                    <td style="text-align:center;vertical-align:middle;width: 44%">{{news.newsDesc}}</td>
+                    <td style="text-align:center;vertical-align:middle;"><img v-bind:src="news.newsImageCompress ? news.newsImageCompress : news.newsImage" class="img-circle" width="80px" height="80px"></td>
+                    <td style="text-align:center;vertical-align:middle;">{{news.newsOrder}}</td>
+                    <td style="text-align:center;vertical-align:middle;">{{news.userName}}</td>
+                    <td style="text-align:center;vertical-align:middle;">{{news.createTimeDisplay}}</td>
+                    <td style="text-align:center;vertical-align:middle;">{{news.newsShowDisplay}}</td>
+                    <td style="text-align:center;vertical-align:middle;">{{news.newsTypeDisplay}}</td>
+                    <td style="text-align:center;vertical-align:middle;">
+                        <a class="btn btn-xs btn-info" href="edit.html" data-target="#dialog"
+                           data-toggle="modal" onclick="setNewsId(this.id);" :id="news.newsId">编辑</a>
+                    </td>
+                </tr>
+            </template>
+
+            </tbody>
+        </table>
+    </div>
+
+    <div class="modal fade" id="dialog" role="basic" aria-hidden="true">
+        <div class="modal-dialog" style="width:1024px;height:500px;">
+            <div class="modal-content">
+
+            </div>
+        </div>
+    </div>
+
+
+</div>
+
+<div id="page"><script>getPaging();</script></div>
+<script src="../js/news/index.js"></script>
+
+</body>
+</html>

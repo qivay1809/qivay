@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.qivay.mapper.MenuMapper">
+    <resultMap id="BaseResultMap" type="com.qivay.domain.Menu">
+        <id column="menu_id" property="menuId"/>
+        <result column="parent_id" property="parentId"/>
+        <result column="parentName" property="parentName"/>
+        <result column="menu_name" property="menuName"/>
+        <result column="menu_code" property="menuCode"/>
+        <result column="menu_url" property="menuUrl"/>
+        <result column="menu_order" property="menuOrder"/>
+        <result column="creator" property="creator"/>
+        <result column="creatorName" property="creatorName"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_user" property="updateUser"/>
+        <result column="updateName" property="updateUserName"/>
+        <result column="update_time" property="updateTime"/>
+    </resultMap>
+
+    <resultMap id="SingleResultMap" type="com.qivay.domain.Menu">
+        <id column="menu_id" property="menuId"/>
+        <result column="parent_id" property="parentId"/>
+        <result column="menu_name" property="menuName"/>
+        <result column="menu_code" property="menuCode"/>
+        <result column="menu_url" property="menuUrl"/>
+        <result column="menu_order" property="menuOrder"/>
+    </resultMap>
+
+    <sql id="base_columns">
+        m.menu_id, m.parent_id,p.menu_name parentName, m.menu_name, m.menu_code, m.menu_url, m.menu_order, m.creator,c.name creatorName,m.create_time,
+        m.update_user,u.name updateName, m.update_time
+  </sql>
+
+    <delete id="deleteByPrimaryKey">
+    delete from menu
+    where menu_id = #{menuId,jdbcType=VARCHAR}
+  </delete>
+
+    <insert id="insert">
+    insert into menu (menu_id, parent_id, menu_name, 
+      menu_code, menu_url, menu_order, 
+      creator, create_time,update_user,update_time)
+    values (#{menuId}, #{parentId}, #{menuName},
+      #{menuCode}, #{menuUrl}, #{menuOrder},
+      #{creator}, #{createTime},#{updateUser},#{updateTime})
+  </insert>
+    <update id="updateByPrimaryKey">
+    update menu
+    set parent_id = #{parentId},
+      menu_name = #{menuName},
+      menu_code = #{menuCode},
+      menu_url = #{menuUrl},
+      menu_order = #{menuOrder},
+      update_user = #{updateUser},
+      update_time = #{updateTime}
+    where menu_id = #{menuId}
+  </update>
+
+    <select id="selectByPrimaryKey" resultMap="SingleResultMap">
+    select menu_id, parent_id, menu_name,
+      menu_code, menu_url, menu_order
+    from menu
+    where menu_id = #{menuId}
+  </select>
+
+    <sql id="base_conditions">
+        <where>
+            <if test="menuName != null">
+                m.menu_name like concat('%',#{menuName},'%')
+            </if>
+            <if test="createBeginDateDisplay != null">
+                and m.create_time >= #{createBeginDateDisplay}
+            </if>
+            <if test="createEndDateDisplay != null">
+                and m.create_time &lt;= #{createEndDateDisplay}
+            </if>
+            <if test="updateBeginDateDisplay != null">
+                and m.update_time >= #{updateBeginDateDisplay}
+            </if>
+            <if test="updateEndDateDisplay != null">
+                and m.update_time &lt;= #{updateEndDateDisplay}
+            </if>
+        </where>
+    </sql>
+
+    <select id="getCount" resultType="int">
+        select count(m.menu_id) from menu m left join user c on m.creator = c.user_id
+        left join user u on m.update_user = u.user_id
+        left join menu p on m.parent_id = p.menu_id
+        <include refid="base_conditions"/>
+    </select>
+
+    <select id="getMenus" resultMap="BaseResultMap">
+        select
+        <include refid="base_columns"/>
+        from menu m left join user c on m.creator = c.user_id
+        left join user u on m.update_user = u.user_id
+        left join menu p on m.parent_id = p.menu_id
+        <include refid="base_conditions"/>
+        order by m.menu_order
+        limit #{startIndex},#{pageSize}
+    </select>
+
+    <select id="getParents" resultType="map">
+    select menu_id menuId, menu_name menuName,menu_code menuCode,menu_url menuUrl from menu
+    where parent_id is null
+    order by menu_order
+   </select>
+
+    <select id="getChildes" resultType="map">
+    select menu_id menuId, menu_name menuName,menu_code menuCode,menu_url menuUrl from menu
+    where parent_id = #{parentId}
+    order by menu_order
+   </select>
+
+    <select id="getAll" resultType="map">
+        select menu_id menuId, menu_name menuName from menu
+        where parent_id is null or (menu_url is null or menu_url = '')
+        order by parent_id,menu_order
+    </select>
+
+    <select id="getChildCount" resultType="int">
+        select count(menu_id) from menu where parent_id = #{parentId}
+    </select>
+
+    <select id="getUnverifiedCount" resultType="int">
+        select count(*) from ${tableName} <include refid="count_conditions"/>
+    </select>
+
+    <sql id="count_conditions">
+        where
+            <if test="tableName == 'user'">
+                (user_state = 0 and id_card is not null) or user_state = 4
+            </if>
+            <if test="tableName != 'user'">
+                ${columnName} in <foreach collection="states" item="item" index="index"
+                                          open="(" separator="," close=")">#{item}</foreach>
+            </if>
+    </sql>
+
+    <select id="getUnverifiedEclueCount" resultType="int">
+        select count(c.clue_id) from ${tableName} c
+        join task t on c.task_id = t.task_id
+        where ((t.progress in (1,3) and c.validate in (1,3)) or (t.progress = 2 and c.validate = 3)) and t.creator = #{userId} and ${columnName} in <foreach collection="states" item="item" index="index"
+                                                                                open="(" separator="," close=")">#{item}</foreach>
+    </select>
+
+    <select id="getUnStartClueCount" resultType="int">
+        select count(c.clue_id) from clue c
+        left join task t on c.task_id = t.task_id
+        where (t.task_id is null and c.validate = 1) or (t.task_id is not null and c.validate = 3)
+    </select>
+
+    <select id="getUnReturn" resultType="int">
+        select count(examination_id) from examination where status >= 4 and has_return = 0
+    </select>
+
+</mapper>

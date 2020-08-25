@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.qivay.mapper.CaseFollowMapper">
+
+    <resultMap id="caseFollowMap" type="com.qivay.domain.CaseFollow">
+        <id property="caseFollowId" column="case_follow_id"/>
+        <result property="content" column="content"/>
+        <result property="caseId" column="case_id"/>
+        <result property="check" column="check"/>
+    </resultMap>
+
+
+    <sql id="columns">
+        case_follow_id, content, case_id, `check`
+    </sql>
+
+    <select id="findById" resultMap="caseFollowMap">
+        select
+        <include refid="columns"/>
+        from case_follow
+        where case_follow_id = #{caseFollowId}
+    </select>
+
+    <select id="getCaseFollowByCaseId" resultMap="caseFollowMap">
+        SELECT
+        <include refid="columns"/>
+        FROM case_follow
+        where case_id = #{caseId}
+    </select>
+
+    <insert id="insert" parameterType="com.qivay.domain.CaseFollow">
+        INSERT INTO
+        case_follow
+        (<include refid="columns"/>)
+        VALUES
+        (#{caseFollowId},#{content},#{caseId},#{check})
+    </insert>
+
+
+    <!--确认案件跟进信息的状态-->
+    <update id="updateCheck">
+        update case_follow
+        set `check` = #{check}
+        where case_follow_id = #{caseFollowId}
+    </update>
+</mapper>

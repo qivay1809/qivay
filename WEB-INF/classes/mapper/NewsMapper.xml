@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.qivay.mapper.NewsMapper" >
+  <resultMap id="BaseResultMap" type="com.qivay.domain.News" >
+    <id column="news_id" property="newsId"/>
+    <result column="news_title" property="newsTitle"/>
+    <result column="news_image" property="newsImage"/>
+    <result column="news_content" property="newsContent"/>
+    <result column="news_order" property="newsOrder"/>
+    <result column="user_id" property="creator"/>
+    <result column="name" property="userName"/>
+    <result column="create_time" property="createTime"/>
+    <result column="news_desc" property="newsDesc"/>
+    <result column="news_show" property="newsShow"/>
+    <result column="news_type" property="newsType"/>
+  </resultMap>
+
+  <insert id="insert">
+    insert into news (news_id, news_title, news_image, 
+      news_content, news_order, creator, 
+      create_time,news_desc,news_show,news_type)
+    values (#{newsId}, #{newsTitle}, #{newsImage},
+      #{newsContent}, #{newsOrder}, #{creator},
+      #{createTime},#{newsDesc},#{newsShow},#{newsType})
+  </insert>
+
+  <update id="updateByPrimaryKey">
+    update news
+    set news_title = #{newsTitle},
+      news_image = #{newsImage},
+      news_content = #{newsContent},
+      news_order = #{newsOrder},
+      news_desc = #{newsDesc},
+      news_show = #{newsShow},
+      news_type = #{newsType}
+    where news_id = #{newsId}
+  </update>
+
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap">
+    select news_id, news_title, news_image, news_content, news_order, creator, create_time,news_desc,news_show,news_type
+    from news
+    where news_id = #{newsId}
+  </select>
+
+  <sql id="base_conditions">
+    <where>
+      <if test="newsTitle != null">
+        and n.news_title like concat('%',#{newsTitle},'%')
+      </if>
+      <if test="creator != null">
+        and u.name like concat('%',#{creator},'%')
+      </if>
+      <if test="beginDateDisplay != null">
+        and n.create_time >= #{beginDateDisplay}
+      </if>
+      <if test="endDateDisplay != null">
+        and n.create_time &lt;= #{endDateDisplay}
+      </if>
+      <if test="newsShow != -1">
+        and n.news_show = #{newsShow}
+      </if>
+      <if test="newsType != -1">
+        and n.news_type = #{newsType}
+      </if>
+    </where>
+  </sql>
+
+  <select id="getNewses" resultMap="BaseResultMap">
+    select n.news_id,n.news_title,n.news_image,news_desc,n.news_order,u.user_id,u.name,n.create_time,n.news_show,news_type
+    from news n join user u on n.creator = u.user_id
+    <include refid="base_conditions"/>
+    order by n.create_time desc
+    limit #{startIndex},#{pageSize}
+  </select>
+
+  <select id="getCount" resultType="int">
+    select count(n.news_id)
+    from news n join user u on n.creator = u.user_id
+    <include refid="base_conditions"/>
+  </select>
+
+  <update id="updateNewsImage">
+    update news set news_image = #{newsImage}
+    where news_id = #{newsId}
+  </update>
+
+
+  <!-- 获取APP详情对应的NEWSID -->
+  <select id="findAdDetail" resultMap="BaseResultMap">
+    select * from news where news_type = 5 order by create_time
+  </select>
+
+</mapper>

@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>配置列表</title>
+
+    <link rel="stylesheet" href="../css/bootstrap.min.css">
+    <link rel="stylesheet" href="../css/dialog.css">
+    <script src="../js/jquery1.11.3.min.js"></script>
+    <script src="../js/bootstrap.min.js"></script>
+    <script src="../js/vue.js"></script>
+    <script src="../js/vue-resource1.3.4.js"></script>
+
+    <script src="../js/config.js"></script>
+    <script src="../plugins/My97DatePicker/WdatePicker.js"></script>
+
+</head>
+<body>
+<div id="configIndex">
+    <div class="form-inline">
+        <div class="form-group">
+            <label class="sr-only">查找键</label>
+            <input id="txtKey" v-model="search.key" style="width:150px" class="form-control" type="text"
+                   placeholder="请输入查找键"/>
+        </div>
+        <div class="form-group">
+            <label class="sr-only">创建人</label>
+            <input id="txtCreator" v-model="search.creator" style="width:150px" class="form-control" type="text"
+                   placeholder="请输入创建人"/>
+        </div>
+        <div class="form-group">
+            <label class="sr-only">内容</label>
+            <input id="txtContent" v-model="search.content" style="width:150px" class="form-control" type="text"
+                   placeholder="请输入内容"/>
+        </div>
+        <div class="form-group">
+            创建时间：
+            <label class="sr-only">创建开始时间</label>
+            <input id="txtBeginDate" class="form-control date" type="text" placeholder="请输入创建开始时间"/>
+            ---
+            <label class="sr-only">创建结束时间</label>
+            <input id="txtEndDate" class="form-control date" type="text" placeholder="请输入创建结束时间"/>
+        </div>
+
+        <button id="btnSearch" type="button" @click="getConfigs" class="btn btn-primary">搜索</button>
+
+        <a class="btn btn-primary" href="edit.html" data-target="#dialog" data-toggle="modal">添加配置</a>
+
+        <a class="btn btn-primary" href="adImage.html" data-target="#dialog" data-toggle="modal">修改APP广告图</a>
+
+        <input id="txtSearch" type="hidden" @click="getConfigs('msg')"/>
+        <input id="hidConfigId" type="hidden"/>
+    </div>
+
+    <div class="table-responsive">
+        <table class="table table-striped" id="main">
+            <thead>
+            <tr>
+                <th style="text-align:center;vertical-align:middle;">关键键</th>
+                <th style="text-align:center;vertical-align:middle;">内容</th>
+                <th style="text-align:center;vertical-align:middle;">备注说明</th>
+                <th style="text-align:center;vertical-align:middle;">创建人</th>
+                <th style="text-align:center;vertical-align:middle;">创建时间</th>
+                <th style="text-align:center;vertical-align:middle;">编辑</th>
+            </tr>
+            </thead>
+            <tbody>
+
+            <template>
+                <tr v-for="config in configs">
+                    <td style="text-align:center;vertical-align:middle;">{{config.configKey}}</td>
+                    <td style="text-align:center;vertical-align:middle;">{{config.configContent}}</td>
+                    <td style="text-align:center;vertical-align:middle;">{{config.remark}}</td>
+                    <td style="text-align:center;vertical-align:middle;">{{config.creator}}</td>
+                    <td style="text-align:center;vertical-align:middle;">{{config.createTimeDisplay}}</td>
+                    <td style="text-align:center;vertical-align:middle;">
+                        <a class="btn btn-xs btn-info" href="edit.html" data-target="#dialog"
+                           data-toggle="modal" onclick="setConfigId(this.id);" :id="config.configId">编辑</a>
+
+                    </td>
+                </tr>
+            </template>
+
+            </tbody>
+        </table>
+    </div>
+
+    <div id="baseDialog"><script>getDialog('baseDialog','../basedialog.html');</script></div>
+
+</div>
+
+<div id="page"><script>getPaging();</script></div>
+<script src="../js/config/index.js"></script>
+
+</body>
+</html>

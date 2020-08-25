@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:v-bind="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title>个人信息</title>
+    <link rel="stylesheet" href="../css/bootstrap.min.css">
+
+    <script src="../js/jquery1.11.3.min.js"></script>
+    <script src="../js/bootstrap.min.js"></script>
+
+    <script src="../js/vue.js"></script>
+    <script src="../js/vue-resource1.3.4.js"></script>
+    <script src="../js/config.js"></script>
+
+</head>
+<body>
+<div id="personalIndex">
+
+    <div class="row">
+
+        <div style="float: left">
+            <div class="pull-left el-head-img" style="margin-left: 50px">
+                <img v-bind:src="icon" height="241" width="200"/>
+            </div>
+        </div>
+
+        <div style="float: left;margin-left: 70px;width: 620px">
+            <div class="row">
+                <div class="col-md-5">
+                    <h4>姓&emsp;&emsp;名&ensp;:&emsp;{{name}}</h4>
+                </div>
+                <div class="col-md-7">
+                    <h4>性&emsp;&emsp;别&ensp;:&emsp;{{genderDisplay}}</h4>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-5">
+                    <h4>电&emsp;&emsp;话&ensp;:&emsp;{{cellphone}}</h4>
+                </div>
+                <div class="col-md-7">
+                    <h4>用户类型&ensp;:&emsp;{{userTypeDisplay}}</h4>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-5">
+                    <h4>qq&emsp;&emsp;&emsp;&ensp;:&emsp;{{qq}}</h4>
+                </div>
+                <div class="col-md-7">
+                    <h4>email&emsp;&ensp;&ensp;:&emsp;{{email}}</h4>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-5">
+                    <h4>账户余额&ensp;:&emsp;{{balance}}</h4>
+                </div>
+                <div class="col-md-7">
+                    <h4>家庭住址&ensp;:&emsp;{{address}}</h4>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-5">
+                    <h4>实名验证&ensp;:&emsp;{{userStateDisplay}}</h4>
+                </div>
+                <div class="col-md-7">
+                    <h4>身份证号&ensp;:&emsp;{{idCard}}</h4>
+                </div>
+            </div>
+
+            <div class="row" v-if="introduction != null && introduction != ''">
+                <div class="col-md-6">
+                    <h4>个人介绍&ensp;:&emsp;</h4>
+                    <textarea class="form-control" rows="3" id="txtIntroduction" v-model="introduction"></textarea>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+</body>
+<script src="../js/personal/personal.js"></script>
+</html>

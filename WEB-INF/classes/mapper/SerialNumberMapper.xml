@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.qivay.mapper.SerialNumberMapper" >
+  <resultMap id="BaseResultMap" type="com.qivay.domain.SerialNumber" >
+    <id column="serial_number_id" property="serialNumberId"/>
+    <result column="number" property="number"/>
+    <result column="object_id" property="objectId"/>
+    <result column="object_type" property="objectType"/>
+  </resultMap>
+
+  <insert id="insert">
+    insert into serial_number (serial_number_id, number, object_id, 
+      object_type)
+    values (#{serialNumberId}, #{number}, #{objectId},
+      #{objectType})
+  </insert>
+
+  <update id="updateByPrimaryKey">
+    update serial_number
+    set number = #{number},
+      object_id = #{objectId},
+      object_type = #{objectType}
+    where serial_number_id = #{serialNumberId}
+  </update>
+
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap">
+    select serial_number_id, number, object_id, object_type
+    from serial_number
+    where serial_number_id = #{serialNumberId}
+  </select>
+
+  <select id="getMaxNumber" resultType="int">
+    select max(number) from serial_number where object_type = #{objectType}
+  </select>
+
+  <delete id="deleteSerialNumber">
+    delete from serial_number
+  </delete>
+
+</mapper>

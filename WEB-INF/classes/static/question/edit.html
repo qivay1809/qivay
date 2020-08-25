@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:v-bind="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title>编辑问题</title>
+    <link rel="stylesheet" href="../css/bootstrap.min.css">
+    <script src="../js/jquery1.11.3.min.js"></script>
+    <script src="../js/bootstrap.min.js"></script>
+    <script src="../js/vue.js"></script>
+    <script src="../js/vue-resource1.3.4.js"></script>
+    <script src="../js/config.js"></script>
+
+</head>
+<body>
+<div id="editQuestion">
+    <div class="modal-header">
+        <button type="button" class="close editClose" data-dismiss="modal" aria-label="Close"><span
+                aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title">编辑问题</h4>
+    </div>
+    <div class="modal-body">
+        <form class="form-horizontal">
+
+            <div class="form-group">
+                <label class="col-sm-2 control-label">问题类型</label>
+                <div class="col-sm-9">
+                    <select id="selQuestionTypeId" v-model="question.questionTypeId" class="form-control" :readonly="question.verify == '' &&(question.questionVerify == 0 || question.questionVerify == 1)">
+                        <option value="-1" selected="selected">问题类型</option>
+                        <option v-for="questionType in questionTypes" v-bind:value="questionType.questionTypeId">
+                            {{ questionType.questionTypeName }}
+                        </option>
+                    </select>
+                </div>
+                <div class="col-sm-1">
+                    <h4 style="color: red">*</h4>&nbsp;
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="col-sm-2 control-label">问题内容</label>
+                <div class="col-sm-9">
+                    <input type="text" class="form-control" id="txtQuestionContent" placeholder="问题内容" v-model="question.questionContent" :readonly="question.verify == '' &&(question.questionVerify == 0 || question.questionVerify == 1)">
+                </div>
+                <div class="col-sm-1">
+                    <h4 style="color: red">*</h4>&nbsp;
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="col-sm-2 control-label">排&emsp;&emsp;序</label>
+                <div class="col-sm-9">
+                    <input type="text" class="form-control" id="txtQuestionOrder" placeholder="排序" v-model="question.questionOrder" :readonly="question.verify == '' &&(question.questionVerify == 0 || question.questionVerify == 1)">
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-2 control-label">权&emsp;&emsp;重</label>
+                <div class="col-sm-9">
+                    <input type="text" class="form-control" id="txtQuestionWeight" placeholder="权重" v-model="question.questionWeight" :readonly="question.verify == '' &&(question.questionVerify == 0 || question.questionVerify == 1)">
+                </div>
+            </div>
+
+            <!--<div class="form-group">
+                <label class="col-sm-2 control-label">是否显示</label>
+                <div class="col-sm-9">
+                    <input type="radio" id="txtShow" value="1" v-model="question.questionShow">
+                    <label for="txtShow">显示</label>
+                    <input type="radio" id="txtHide" value="0" v-model="question.questionShow">
+                    <label for="txtHide">不显示</label>
+                </div>
+            </div>-->
+
+            <div class="form-group">
+                <label class="col-sm-2 control-label">是否匿名</label>
+                <div class="col-sm-9">
+                    <input type="radio" id="txtYes" value="true" v-model="question.anonymous">
+                    <label for="txtYes">匿名</label>
+                    <input type="radio" id="txtNo" value="false" v-model="question.anonymous">
+                    <label for="txtNo">不匿名</label>
+                </div>
+            </div>
+
+            <div v-if="question.questionVerify != -1">
+                <div class="form-group">
+                    <label class="col-sm-2 control-label">问题验证</label>
+                    <div class="col-sm-9">
+                        <input type="text" class="form-control" id="txtQuestionVerifyDisplay" placeholder="问题验证" v-model="question.questionVerifyDisplay" readonly>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group"  v-if="question.questionVerify == 0 && question.verify == ''">
+                <label class="col-sm-2 control-label">验证说明</label>
+                <div class="col-sm-9">
+                    <textarea class="form-control" rows="3" id="txtContent" v-model="question.content"></textarea>
+                </div>
+            </div>
+
+            <div v-if="question.questionVerify == 1">
+
+                <div class="form-group">
+                    <label class="col-sm-2 control-label">回答内容</label>
+                    <div class="col-sm-9">
+                        <textarea class="form-control" rows="3" id="txtAnswerContent" v-model="answer.answerContent" :readonly="answer.answerVerify == 0 && answer.verify != ''"></textarea>
+                    </div>
+                    <div class="col-sm-1">
+                        <h4 style="color: red">*</h4>&nbsp;
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="col-sm-2 control-label">权&emsp;&emsp;重</label>
+                    <div class="col-sm-9">
+                        <input type="text" class="form-control" id="txtAnswerWeight" placeholder="权重" v-model="answer.answerWeight" :readonly="answer.answerVerify == 0 && answer.verify != ''">
+                    </div>
+                </div>
+
+                <div v-if="answer.answerVerify == 0">
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label">回答验证</label>
+                        <div class="col-sm-9">
+                            <input type="text" class="form-control" id="txtAnswerVerifyDisplay" placeholder="回答验证" v-model="answer.answerVerifyDisplay" readonly>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group"  v-if="answer.answerVerify == 0 && answer.verify != ''">
+                    <label class="col-sm-2 control-label">验证说明</label>
+                    <div class="col-sm-9">
+                        <textarea class="form-control" rows="3" id="txtVerifyContent" v-model="answer.content"></textarea>
+                    </div>
+                </div>
+            </div>
+
+
+
+        </form>
+    </div>
+    <div class="modal-footer">
+        <div v-if="question.questionId == '' || question.verify != ''">
+            <button id="btnClose" type="button" class="btn btn-default editClose" data-dismiss="modal">关闭</button>
+            <button type="button" class="btn btn-primary" @click="editQuestion">保存</button>
+        </div>
+        <div v-if="question.questionVerify == 0 && question.verify == ''">
+            <button type="button" value="验证不通过" class="btn btn-warning" @click="verifyQuestion($event.currentTarget)" data-msg="2">验证不通过</button>
+            <button type="button" value="验证通过" class="btn btn-success" @click="verifyQuestion($event.currentTarget)" data-msg="1">验证通过</button>
+        </div>
+        <div v-if="question.questionVerify == 1">
+            <div v-if="answer.answerId == '' || answer.verify == ''">
+                <button id="btnAnswerClose" type="button" class="btn btn-default editClose" data-dismiss="modal">关闭</button>
+                <button type="button" class="btn btn-primary" @click="editAnswer">保存</button>
+            </div>
+            <div v-if="answer.answerVerify == 0 && answer.verify != ''">
+                <button type="button" value="验证不通过" class="btn btn-warning" @click="verifyAnswer($event.currentTarget)" data-msg="2">验证不通过</button>
+                <button type="button" value="验证通过" class="btn btn-success" @click="verifyAnswer($event.currentTarget)" data-msg="1">验证通过</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="../js/question/edit.js"></script>
+
+</body>
+</html>

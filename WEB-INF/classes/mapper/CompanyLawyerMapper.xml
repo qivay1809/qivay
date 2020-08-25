@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.qivay.mapper.CompanyLawyerMapper" >
+  <resultMap id="BaseResultMap" type="com.qivay.domain.CompanyLawyer" >
+    <id column="lawyer_id" property="lawyerId"/>
+    <result column="lawyer_name" property="lawyerName"/>
+    <result column="lawyer_desc" property="lawyerDesc"/>
+    <result column="lawyer_show" property="lawyerShow"/>
+    <result column="creator" property="creator"/>
+    <result column="create_time" property="createTime"/>
+    <result column="lawyer_order" property="lawyerOrder"/>
+    <result column="lawyer_icon" property="lawyerIcon"/>
+    <result column="lawyer_type" property="lawyerType"/>
+    <result column="en_name" property="enName"/>
+    <result column="law_firm" property="lawFirm"/>
+    <result column="work_year" property="workYear"/>
+    <result column="specialty" property="specialty"/>
+    <result column="phone" property="phone"/>
+    <result column="user_id" property="userId"/>
+  </resultMap>
+  <resultMap id="ListResultMap" type="com.qivay.domain.CompanyLawyer" >
+    <id column="lawyer_id" property="lawyerId"/>
+    <result column="lawyer_name" property="lawyerName"/>
+    <result column="lawyer_desc" property="lawyerDesc"/>
+    <result column="lawyer_show" property="lawyerShow"/>
+    <result column="name" property="creator"/>
+    <result column="create_time" property="createTime"/>
+    <result column="lawyer_order" property="lawyerOrder"/>
+    <result column="lawyer_icon" property="lawyerIcon"/>
+    <result column="lawyer_type" property="lawyerType"/>
+    <result column="en_name" property="enName"/>
+    <result column="law_firm" property="lawFirm"/>
+    <result column="work_year" property="workYear"/>
+    <result column="specialty" property="specialty"/>
+  </resultMap>
+
+  <insert id="insert" parameterType="com.qivay.domain.CompanyLawyer" >
+    insert into company_lawyer (lawyer_id, lawyer_name, lawyer_desc, 
+      lawyer_show, creator, create_time,lawyer_order,lawyer_icon,lawyer_type,en_name,law_firm,work_year,specialty,phone,user_id)
+    values (#{lawyerId}, #{lawyerName}, #{lawyerDesc},
+      #{lawyerShow}, #{creator}, #{createTime},#{lawyerOrder},#{lawyerIcon},#{lawyerType},#{enName},#{lawFirm},#{workYear},#{specialty},#{phone},#{userId})
+  </insert>
+
+  <update id="updateByPrimaryKey">
+    update company_lawyer
+    set lawyer_name = #{lawyerName},
+      en_name = #{enName},
+      lawyer_desc = #{lawyerDesc},
+      lawyer_show = #{lawyerShow},
+      lawyer_order = #{lawyerOrder},
+      lawyer_icon = #{lawyerIcon},
+      law_firm = #{lawFirm},
+      work_year = #{workYear},
+      specialty = #{specialty},
+      phone = #{phone},
+      user_id = #{userId},
+      lawyer_type = #{lawyerType}
+    where lawyer_id = #{lawyerId}
+  </update>
+
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap">
+    select lawyer_id, lawyer_name, lawyer_desc,
+    lawyer_show, creator, create_time,lawyer_order,
+    lawyer_icon,lawyer_type,en_name,law_firm,work_year,specialty
+    ,phone,user_id
+    from company_lawyer
+    where lawyer_id = #{lawyerId}
+  </select>
+
+  <sql id="base_conditions">
+      <where>
+        <if test="lawyerName != null">
+          cl.lawyer_name like concat('%',#{lawyerName},'%')
+        </if>
+        <if test="enName != null">
+          cl.en_name like concat('%',#{enName},'%')
+        </if>
+        <if test="creator != null">
+          and u.name like concat('%',#{creator},'%')
+        </if>
+        <if test="beginDateDisplay != null">
+          and cl.create_time >= #{beginDateDisplay}
+        </if>
+        <if test="endDateDisplay != null">
+          and cl.create_time &lt;= #{endDateDisplay}
+        </if>
+        <if test="lawyerShow != -1">
+          and lawyer_show = #{lawyerShow}
+        </if>
+        <if test="lawyerType != -1">
+          and lawyer_type = #{lawyerType}
+        </if>
+        <if test="lawFirm != null and lawFirm != ''">
+          and law_firm like concat('%',#{lawFirm},'%')
+        </if>
+        <if test="minWorkYear != null">
+          and work_year >= #{minWorkYear}
+        </if>
+        <if test="maxWorkYear != null">
+          and work_year &lt;= #{maxWorkYear}
+        </if>
+      </where>
+  </sql>
+
+  <select id="getLawyers" resultMap="ListResultMap">
+    select cl.lawyer_id, cl.lawyer_name, cl.lawyer_desc, cl.lawyer_show,cl.create_time,u.name,cl.lawyer_order,cl.lawyer_icon,cl.lawyer_type,cl.en_name,cl.law_firm,cl.work_year,cl.specialty
+    from company_lawyer cl left join user u on cl.creator = u.user_id
+    <include refid="base_conditions"/>
+    order by cl.create_time desc
+    limit #{startIndex},#{pageSize}
+  </select>
+
+  <select id="getCount" resultType="int">
+    select count(cl.lawyer_id)
+    from company_lawyer cl left join user u on cl.creator = u.user_id
+    <include refid="base_conditions"/>
+  </select>
+
+</mapper>

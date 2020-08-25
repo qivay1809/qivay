@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:v-bind="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title>企业线索验证</title>
+    <link rel="stylesheet" href="../css/bootstrap.min.css">
+    <script src="../js/jquery1.11.3.min.js"></script>
+    <script src="../js/bootstrap.min.js"></script>
+    <script src="../js/vue.js"></script>
+    <script src="../js/vue-resource1.3.4.js"></script>
+    <script src="../js/config.js"></script>
+
+</head>
+<body>
+<div id="editClue">
+    <div class="modal-header">
+        <button type="button" class="close editClose" data-dismiss="modal" aria-label="Close"><span
+                aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title">企业线索验证</h4>
+    </div>
+    <div class="modal-body">
+        <form class="form-horizontal" id="clueForm">
+
+            <div class="form-group">
+                <label class="col-sm-2 control-label">编&emsp;&emsp;号</label>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" id="txtSerialNumber" placeholder="编号" v-model="serialNumber" readonly>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-2 control-label">任务标题</label>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" id="txtTaskTitle" placeholder="产品" v-model="taskTitle" readonly>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-2 control-label">产&emsp;&emsp;品</label>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" id="txtProduct" placeholder="产品" v-model="product" readonly>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-2 control-label">品&emsp;&emsp;牌</label>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" id="txtBrand" placeholder="品牌" v-model="brand" readonly>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-2 control-label">数&emsp;&emsp;量</label>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" id="txtAmount" placeholder="数量" v-model="amount" readonly>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-2 control-label">地&emsp;&emsp;址</label>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" id="txtAddress" placeholder="地址" v-model="address" readonly>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-2 control-label" v-html="shopTypeDisplay"></label>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" id="txtShop" placeholder="商店" v-model="shop" readonly>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-2 control-label">描&emsp;&emsp;述</label>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" id="txtDescription" placeholder="描述" v-model="description" readonly>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="col-sm-2 control-label">发现时间</label>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" id="txtFindTime" placeholder="发现时间" v-model="findTime" readonly>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="col-sm-2 control-label">创建时间</label>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" id="txtCreateTime" placeholder="创建时间" v-model="createTime" readonly>
+                </div>
+            </div>
+
+            <div class="form-group" v-if="shopType == 3">
+                <label class="col-sm-2 control-label">怀疑原因</label>
+                <div class="col-sm-10">
+                    <textarea rows="3" class="form-control" id="txtReason"  v-model="reason" readonly></textarea>
+                </div>
+            </div>
+
+
+            <div class="form-group">
+                <label class="col-sm-2 control-label">验证情况</label>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" id="txtClueVerify" v-model="clueVerifyDisplay" readonly>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="col-sm-2 control-label">线索图片</label>
+                <div class="col-sm-10">
+                    <div style="float: left"  v-for="(image,index) in images">
+                        <img v-bind:src="image" width="150px" height="150px" data-index="index"
+                             onclick="openImage(this);" style="cursor:pointer;">
+                        <input v-bind:value="index" hidden/>
+                    </div>
+                </div>
+            </div>
+
+            <a data-toggle="modal" href="#example2" class="btn-large" id="imageDialog" hidden></a>
+
+            <div class="form-group">
+                <label class="col-sm-2 control-label">验证说明</label>
+                <div class="col-sm-10">
+                    <textarea class="form-control" rows="3" id="txtContent" v-model="content"></textarea>
+                </div>
+            </div>
+
+        </form>
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-warning" @click="verifyClue($event.currentTarget)" data-msg="4">验证不通过</button>
+        <button type="button" class="btn btn-success" @click="verifyClue($event.currentTarget)" data-msg="3">验证通过</button>
+    </div>
+</div>
+
+<script src="../js/eclue/edit.js"></script>
+
+</body>
+</html>

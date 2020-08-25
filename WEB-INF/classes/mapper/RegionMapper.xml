@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.qivay.mapper.RegionMapper">
+
+    <resultMap id="regionMap" type="com.qivay.domain.Region">
+        <id property="regionId" column="region_id"/>
+        <result property="parentId" column="parent_id"/>
+        <result property="regionCode" column="region_code"/>
+        <result property="regionName" column="region_name"/>
+        <result property="regionEnname" column="region_enname"/>
+        <result property="longitude" column="longitude"/>
+        <result property="latitude" column="latitude"/>
+    </resultMap>
+
+    <sql id="columns">
+        region_id,parent_id,region_code,region_name,region_enname,longitude,latitude
+    </sql>
+
+
+    <insert id="insertRegion">
+        INSERT INTO
+        region
+        (<include refid="columns"/>)
+        VALUES
+        (#{regionId}, #{parentId},#{regionCode},#{regionName},#{regionEnname},#{longitude},#{latitude})
+    </insert>
+
+
+    <update id="updateRegion">
+        update region set longitude = #{longitude},latitude = #{latitude},region_enname = #{regionEnname}
+        where region_id = #{regionId}
+    </update>
+
+
+    <sql id="base_conditions">
+        <where>
+            <if test="regionName != null">
+                region_name like concat('%',#{regionName},'%')
+            </if>
+            <if test="cityId == null and provinceId != null">
+                and left(region_id,2) = #{provinceId}
+            </if>
+            <if test="cityId != null">
+                and left(region_id,4) = #{cityId}
+            </if>
+        </where>
+    </sql>
+
+    <select id="getRegion" resultMap="regionMap">
+        select <include refid="columns"/>
+        FROM region
+        where region_id = #{regionId}
+    </select>
+
+    <select id="getRegions" resultMap="regionMap">
+        select
+        <include refid="columns"/>
+        from region
+        <include refid="base_conditions"/>
+        order by region_id
+        limit #{startIndex},#{pageSize}
+    </select>
+
+    <select id="getCount" resultType="int">
+        select count(region_id)
+        from region
+        <include refid="base_conditions"/>
+    </select>
+
+    <select id="getProvinces" resultMap="regionMap">
+        select
+        <include refid="columns"/>
+        from region
+        where parent_id is null
+    </select>
+
+    <select id="getChilds" resultMap="regionMap">
+        select
+        <include refid="columns"/>
+        from region
+        where parent_id = #{regionId}
+    </select>
+
+</mapper>

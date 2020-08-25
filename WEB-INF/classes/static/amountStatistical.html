@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>平台统计</title>
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no">
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+    <script src="js/jquery1.11.3.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+
+    <script type="text/javascript" src="js/echarts.js"></script>
+    <script type="text/javascript" src="js/map/china.js"></script>
+</head>
+<script type="text/javascript"
+        src="https://webapi.amap.com/maps?v=1.4.15&key=138aba94961d35dda9e34e3b708afad8"></script>
+<script type="text/javascript">
+    window.init = function () {
+        var map = new AMap.Map('container', {
+            center: [117.000923, 36.675807],
+            zoom: 11
+        });
+    }
+</script>
+<style>
+    html {
+        overflow-x: hidden
+    }
+
+    .chartmain {
+        width: 100%;
+        height: 250px;
+    }
+
+    /********* china-map *********/
+    .box {
+        position: relative;
+        width: 800px;
+        margin: 0 auto;
+        padding-top: 60px;
+    }
+
+    #china-map {
+        width: 760px;
+        height: 660px;
+        margin: auto;
+    }
+
+    #back {
+        position: absolute;
+        top: 10px;
+        left: 0;
+        cursor: pointer;
+    }
+
+    .hidden {
+        display: none;
+    }
+
+    /********* china-map-end *********/
+    #container {
+        width: 300px;
+        height: 180px;
+    }
+</style>
+<!-- data -->
+<script>
+    $.ajax({
+        url: "/statistical/inviteCount",    //请求的url地址
+        dataType: "json",   //返回格式为json
+        async: true,//请求是否异步，默认为异步，这也是ajax重要特性
+        type: "GET",   //请求方式
+        success: function (req) {
+            var data = req.obj;
+            document.getElementById("invite_a").innerText = data.invite_a + " 元";
+            document.getElementById("invite_a_c").innerText = data.invite_a_c + " 次";
+            document.getElementById("invite_b").innerText = data.invite_b + " 元";
+            document.getElementById("invite_b_c").innerText = data.invite_b_c + " 次";
+        }
+    });
+</script>
+<body>
+<div class="container-fruit">
+
+    <!-- ------------------ 第一行 文字统计 ------------------ -->
+    <div class="row">
+        <div class="col-xs-6">
+            <div class="panel panel-info">
+                <div class="panel-heading">
+                    <h3 class="panel-title">邀请奖金</h3>
+                </div>
+                <div class="panel-body">
+                    <ul>
+                        <li>24时邀请金额：<span id="invite_a">0</span></li>
+                        <li>24时邀请次数：<span id="invite_a_c">0</span></li>
+                        <li>累计邀请金额：<span id="invite_b">0</span></li>
+                        <li>累计邀请次数：<span id="invite_b_c">0</span></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="col-xs-6">
+            <div class="panel panel-info">
+                <div class="panel-heading">
+                    <h3 class="panel-title">xxx</h3>
+                </div>
+                <div class="panel-body">
+                    <ul>
+                        <li>待定</li>
+                        <!--<li>新增实名：<span id="user_b">0</span></li>
+                        <li>累计用户：<span id="user_c">0</span></li>
+                        <li>累计实名：<span id="user_d">0</span></li>-->
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- ------------------ 第二行 图表统计 ------------------ -->
+    <div class="row">
+        <div class="col-xs-6">
+            <div class="panel panel-primary">
+                <div class="panel-heading">
+                    <h4 class="panel-title">线索奖金收入排名</h4>
+                </div>
+                <div class="panel-body">
+                    <div class="chartmain" id="chartmain1"></div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xs-6">
+            <div class="panel panel-success">
+                <div class="panel-heading">
+                    <h4 class="panel-title">调查费收入排名</h4>
+                </div>
+                <div class="panel-body">
+                    <div class="chartmain" id="chartmain2"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-xs-12">
+            <div class="panel panel-info">
+                <div class="panel-heading">
+                    <h3 style="display: inline" class="panel-title">邀请奖励金</h3>
+                    <select style="display: inline" onchange="gradeChange(this.options[this.options.selectedIndex].value)">
+                        <option value="7">近7天</option>
+                        <option value="30" selected="selected">近30天</option>
+                        <option value="90">近三个月</option>
+                        <option value="366">今年</option>
+                        <option value="365">去年</option>
+                        <option value="-1">全部</option>
+                    </select>
+                </div>
+                <div class="panel-body">
+                    <div class="chartmain" id="chartmain3"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+<script type="text/javascript">
+    var name1s = [];
+    var amount1s = [];
+
+    var name0s = [];
+    var amount0s = [];
+    $.ajax({
+        url: "/statistical/findClueAmountX",    //请求的url地址
+        dataType: "json",   //返回格式为json
+        async: false,//请求是否异步，默认为异步，这也是ajax重要特性
+        type: "GET",   //请求方式
+        success: function (req) {
+            var data = req.obj;
+            var flag1 = data.flag1;
+            for (var i = 0; i < flag1.length; i++) {
+                var obj = flag1[i];
+                name1s.push(obj.name);
+                amount1s.push(obj.amount);
+            }
+            var flag0 = data.flag0;
+            for (var j = 0; j < flag0.length; j++) {
+                var obj0 = flag0[j];
+                name0s.push(obj0.name);
+                amount0s.push(obj0.amount);
+            }
+        }
+    });
+    //指定图标的配置和数据
+    var option1 = {
+        tooltip: {
+            trigger: 'axis',
+            axisPointer: {
+                type: 'shadow'
+            }
+        },
+        legend: {
+            data: ['金额']
+        },
+        grid: {
+            left: '3%',
+            right: '4%',
+            bottom: '3%',
+            containLabel: true
+        },
+        xAxis: {
+            type: 'value',
+            boundaryGap: [0, 0.01]
+        },
+        yAxis: {
+            type: 'category',
+            data: name0s
+        },
+        series: [
+            {
+                name: '合计',
+                type: 'bar',
+                itemStyle: {
+                    normal: {
+                        color: function (params) {
+                            var colorList = [
+                                '#C1232B', '#B5C334', '#FCCE10', '#E87C25', '#27727B',
+                                '#FE8463', '#9BCA63', '#FAD860', '#F3A43B', '#60C0DD'
+                            ];
+                            return colorList[params.dataIndex]
+                        }
+                    }
+                },
+                data: amount0s
+            }
+        ]
+    };
+
+    var myChart1 = echarts.init(document.getElementById('chartmain1'));
+    myChart1.setOption(option1);
+
+
+    var option2 = {
+        tooltip: {
+            trigger: 'axis',
+            axisPointer: {
+                type: 'shadow'
+            }
+        },
+        legend: {
+            data: ['金额']
+        },
+        grid: {
+            left: '3%',
+            right: '4%',
+            bottom: '3%',
+            containLabel: true
+        },
+        xAxis: {
+            type: 'value',
+            boundaryGap: [0, 0.01]
+        },
+        yAxis: {
+            type: 'category',
+            data: name1s
+        },
+        series: [
+            {
+                name: '合计',
+                type: 'bar',
+                itemStyle: {
+                    normal: {
+                        color: function (params) {
+                            var colorList = [
+                                '#C1232B', '#B5C334', '#FCCE10', '#E87C25', '#27727B',
+                                '#FE8463', '#9BCA63', '#FAD860', '#F3A43B', '#60C0DD'
+                            ];
+                            return colorList[params.dataIndex]
+                        }
+                    }
+                },
+                data: amount1s
+            }
+        ]
+    };
+    var myChart2 = echarts.init(document.getElementById('chartmain2'));
+    myChart2.setOption(option2);
+
+
+    function gradeChange(tx) {
+        findInviteNameAmount(tx);
+    }
+    window.setTimeout(function () {
+        findInviteNameAmount(30);
+    }, 6000);
+
+    var myChart3;
+    function findInviteNameAmount(val) {
+        $.ajax({
+            url: "/statistical/findInviteNameAmount?val=" + val,    //请求的url地址
+            dataType: "json",   //返回格式为json
+            async: false,//请求是否异步，默认为异步，这也是ajax重要特性
+            type: "GET",   //请求方式
+            success: function (req) {
+                var data = req.obj;
+                var count3s = [];
+                var time = [];
+                for (var i = 0; i < data.length; i++) {
+                    var obj = data[i];
+                    count3s.push(obj.amount);
+                    time.push(obj.time);
+                }
+                var option3 = {
+                    legend: {
+                        data: ['金额']
+                    },
+                    tooltip: {
+                        trigger: 'axis'
+                    },
+                    xAxis: {
+                        type: 'category',
+                        data: time
+                    },
+                    yAxis: {
+                        type: 'value'
+                    },
+                    series: [{
+                        name: '共',
+                        data: count3s,
+                        type: 'line',
+                        markPoint: {
+                            data: [
+                                {type: 'max', name: '金额'}
+                            ]
+                        }
+                    }]
+                };
+                myChart3 = echarts.init(document.getElementById('chartmain3'));
+                myChart3.setOption(option3);
+            }
+        });
+    }
+
+    //根据窗口的大小变动图表 --- 重点
+    window.onresize = function () {
+        myChart1.resize();
+        myChart2.resize();
+        myChart3.resize();
+    }
+</script>
+<script type="text/javascript" src="https://webapi.amap.com/demos/js/liteToolbar.js"></script>
+</html>

@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:v-bind="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title>编辑地区</title>
+    <link rel="stylesheet" href="../css/bootstrap.min.css">
+    <script src="../js/jquery1.11.3.min.js"></script>
+    <script src="../js/bootstrap.min.js"></script>
+    <script src="../js/vue.js"></script>
+    <script src="../js/vue-resource1.3.4.js"></script>
+    <script src="../js/config.js"></script>
+
+</head>
+<body>
+<div id="editRegion">
+    <div class="modal-header">
+        <button type="button" class="close editClose" data-dismiss="modal" aria-label="Close"><span
+                aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title">编辑地区</h4>
+    </div>
+    <div class="modal-body">
+        <form class="form-horizontal" id="regionForm">
+
+            <div class="form-group">
+                <label class="col-sm-2 control-label">区&emsp;&emsp;码</label>
+                <div class="col-sm-9">
+                    <input type="text" class="form-control" id="txtRegionId" placeholder="区码" v-model="regionId">
+                </div>
+                <div class="col-sm-1">
+                    <h4 style="color: red">*</h4>&nbsp;
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="col-sm-2 control-label">省&emsp;&emsp;市</label>
+                <div class="col-sm-4">
+                    <select id="selProvinceId" v-model="provinceId" class="form-control" @change="getAllSubrange(provinceId)">
+                        <option v-for="province in provinces" v-bind:value="province.regionId">
+                            {{ province.regionName }}
+                        </option>
+                    </select>
+                </div>
+                <div class="col-sm-3">
+                    <select id="selCityId" v-model="cityId" class="form-control">
+                        <option v-for="city in cities" v-bind:value="city.regionId">
+                            {{ city.regionName }}
+                        </option>
+                    </select>
+                </div>
+                <div class="col-sm-2"></div>
+                <div class="col-sm-1">
+                    <h4 style="color: red">*</h4>&nbsp;
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="col-sm-2 control-label">区&emsp;&emsp;名</label>
+                <div class="col-sm-9">
+                    <input type="text" class="form-control" id="txtRegionName" placeholder="地区名" v-model="regionName">
+                </div>
+                <div class="col-sm-1">
+                    <h4 style="color: red">*</h4>&nbsp;
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="col-sm-2 control-label">拼&emsp;&emsp;音</label>
+                <div class="col-sm-9">
+                    <input type="text" class="form-control" id="txtRegionEnname" placeholder="地区拼音" v-model="regionEnname">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="col-sm-2 control-label">经&emsp;&emsp;度</label>
+                <div class="col-sm-9">
+                    <input type="text" class="form-control" id="txtLongitude" placeholder="经度" v-model="longitude">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="col-sm-2 control-label">纬&emsp;&emsp;度</label>
+                <div class="col-sm-9">
+                    <input type="text" class="form-control" id="txtLatitude" placeholder="纬度" v-model="latitude">
+                </div>
+            </div>
+
+        </form>
+    </div>
+    <div class="modal-footer">
+            <button id="btnClose" type="button" class="btn btn-default editClose" data-dismiss="modal">关闭</button>
+            <button type="button" class="btn btn-primary" @click="editRegion">保存</button>
+    </div>
+</div>
+
+<script src="../js/region/edit.js"></script>
+
+</body>
+</html>

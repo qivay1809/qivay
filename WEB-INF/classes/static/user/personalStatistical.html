@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>个人统计</title>
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no">
+    <link rel="stylesheet" href="../css/bootstrap.min.css">
+    <link rel="stylesheet" href="../css/dialog.css">
+    <script src="../js/jquery1.11.3.min.js"></script>
+    <script src="../js/bootstrap.min.js"></script>
+    <script src="../js/vue.js"></script>
+    <script src="../js/vue-resource1.3.4.js"></script>
+    <script type="text/javascript" src="../js/echarts.js"></script>
+    <script type="text/javascript" src="../js/config.js"></script>
+</head>
+<!--<script type="text/javascript" src="https://webapi.amap.com/maps?v=1.4.15&key=138aba94961d35dda9e34e3b708afad8"></script>-->
+
+<style>
+    html {
+        overflow-x: hidden
+    }
+
+    .chartmain {
+        width: 100%;
+        height: 250px;
+    }
+</style>
+<!-- data -->
+<script>
+
+</script>
+<body>
+<div class="container-fruit">
+
+    <!-- ------------------ 第一行 文字统计 ------------------ -->
+    <div class="row">
+        <div class="col-xs-4">
+            <div class="panel panel-info">
+                <div class="panel-heading">
+                    <h3 class="panel-title">奖金</h3>
+                </div>
+                <div class="panel-body">
+                    <ul>
+                        <li>累计提现：<span id="withdrawal">0</span></li>
+                        <li>累计奖金：<span id="reward">0</span></li>
+                        <li>余额：<span id="balance">0</span></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="col-xs-4">
+            <div class="panel panel-warning">
+                <div class="panel-heading">
+                    <h3 class="panel-title">线索</h3>
+                </div>
+                <div class="panel-body">
+                    <ul>
+                        <li>24时新增：<span id="realtime">0</span></li>
+                        <li>进行中：<span id="ongoing">0</span></li>
+                        <li>正常完结：<span id="normal">0</span></li>
+                        <li>累计线索：<span id="all">0</span></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="col-xs-4">
+            <div class="panel panel-warning">
+                <div class="panel-heading">
+                    <h3 class="panel-title">邀请用户</h3>
+                </div>
+                <div class="panel-body">
+                    <ul>
+                        <li>邀请码：<span id="inviteCode">0</span></li>
+                        <li>累计邀请实名人数：<span id="realName">0</span></li>
+                        <li>累计邀请用户总数：<span id="all_x">0</span></li>
+                        <li>转化率：<span id="rate">0</span></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- ------------------ 第二行 图表统计 ------------------ -->
+    <div class="row">
+        <div class="col-xs-6">
+            <div class="panel panel-primary">
+                <div class="panel-heading">
+                    <h4 class="panel-title">每日奖金</h4>
+                </div>
+                <div class="panel-body">
+                    <div class="chartmain" id="chartmain1"></div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xs-6">
+            <div class="panel panel-success">
+                <div class="panel-heading">
+                    <h4 class="panel-title">下层用户统计</h4>
+                </div>
+                <div class="panel-body">
+                    <div class="chartmain" id="chartmain_x"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-xs-12">
+            <div class="panel panel-primary">
+                <div class="panel-heading">
+                    <h4 class="panel-title">活跃情况</h4>
+                </div>
+                <div class="panel-body">
+                    <div class="chartmain" id="chartmain2"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-xs-12">
+            <div class="panel panel-info">
+                <div class="panel-heading">
+                    <h3 style="display: inline" class="panel-title">
+                        奖金明细
+                    </h3>
+                    <select onchange="getRecords(this.options[this.options.selectedIndex].value)"
+                            style="display: inline">
+                        <option value="3">提现</option>
+                        <option value="1">奖金</option>
+                    </select>
+                </div>
+                <div class="panel-body">
+                    <div id="inviteCount">
+                        <div class="table-responsive">
+                            <table class="table table-striped" id="main">
+                                <thead>
+                                <tr>
+                                    <th style="text-align:center;vertical-align:middle;">序号</th>
+                                    <th style="text-align:center;vertical-align:middle;">姓名</th>
+                                    <th style="text-align:center;vertical-align:middle;">转账类型</th>
+                                    <th style="text-align:center;vertical-align:middle;">账户类型</th>
+                                    <th style="text-align:center;vertical-align:middle;">金额</th>
+                                    <th style="text-align:center;vertical-align:middle;">转账说明</th>
+                                    <th style="text-align:center;vertical-align:middle;">转账时间</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <template v-if="transferRecords.length != 0">
+                                    <tr v-for="(record, index) in transferRecords">
+                                        <td style="text-align:center;vertical-align:middle;">{{beginIndex + 1 +
+                                            index}}
+                                        <td style="text-align:center;vertical-align:middle;">
+                                            {{record.userDisplay}}
+                                        </td>
+                                        <td style="text-align:center;vertical-align:middle;">
+                                            {{record.transferTypeDisplay}}
+                                        </td>
+                                        <td style="text-align:center;vertical-align:middle;">
+                                            {{record.accountTypeDisplay}}
+                                        </td>
+                                        <td style="text-align:center;vertical-align:middle;">
+                                            {{record.transferAmount}}
+                                        </td>
+                                        <td style="text-align:center;width: 40%">{{record.transferRemark}}</td>
+                                        <td style="text-align:center;vertical-align:middle;">
+                                            {{record.transferTimeDisplay}}
+                                        </td>
+                                    </tr>
+                                </template>
+                                <template v-else="transferRecords.length == 0">
+                                    <tr>
+                                        <td colspan="7" style="text-align: center;">暂无</td>
+                                    </tr>
+                                </template>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+<script type="text/javascript">
+    var userId = request("id");
+    //上层
+    $.ajax({
+        url: "/statistical/findReward?userId=" + userId,    //请求的url地址
+        dataType: "json",   //返回格式为json
+        async: true,//请求是否异步，默认为异步，这也是ajax重要特性
+        type: "GET",   //请求方式
+        success: function (req) {
+            var data = req.obj;
+            document.getElementById("withdrawal").innerText = data.withdrawal + " 元";
+            document.getElementById("reward").innerText = data.reward + " 元";
+            document.getElementById("balance").innerText = data.balance + " 元";
+        }
+    });
+    $.ajax({
+        url: "/statistical/findClue?userId=" + userId,    //请求的url地址
+        dataType: "json",   //返回格式为json
+        async: true,//请求是否异步，默认为异步，这也是ajax重要特性
+        type: "GET",   //请求方式
+        success: function (req) {
+            var data = req.obj;
+            document.getElementById("realtime").innerText = data.realtime + " 条";
+            document.getElementById("ongoing").innerText = data.ongoing + " 条";
+            document.getElementById("normal").innerText = data.normal + " 条";
+            document.getElementById("all").innerText = data.all + " 条";
+        }
+    });
+    $.ajax({
+        url: "/statistical/inviteUserInfo?userId=" + userId,    //请求的url地址
+        dataType: "json",   //返回格式为json
+        async: true,//请求是否异步，默认为异步，这也是ajax重要特性
+        type: "GET",   //请求方式
+        success: function (req) {
+            var data = req.obj;
+            document.getElementById("inviteCode").innerText = data.inviteCode;
+            document.getElementById("realName").innerText = data.realName + " 个";
+            document.getElementById("all_x").innerText = data.all + " 个";
+            document.getElementById("rate").innerText = data.rate;
+        }
+    });
+
+    //下层
+    var amounts = [];
+    var times = [];
+    $.ajax({
+        url: "/statistical/findAmountGrowth?userId=" + userId,    //请求的url地址
+        dataType: "json",   //返回格式为json
+        async: false,//请求是否异步，默认为异步，这也是ajax重要特性
+        type: "GET",   //请求方式
+        success: function (req) {
+            var data = req.obj;
+            for (var i = 0; i < data.length; i++) {
+                var obj = data[i];
+                amounts.push(obj.amount);
+                times.push(obj.time);
+            }
+        }
+    });
+
+    var option1 = {
+        tooltip: {
+            trigger: 'axis'
+        },
+        xAxis: {
+            type: 'category',
+            data: times
+        },
+        yAxis: {
+            type: 'value'
+        },
+        series: [{
+            name: '当日奖金',
+            type: 'line',
+            data: amounts,
+            markPoint: {
+                data: [
+                    {type: 'max', name: '最多'},
+                    {type: 'min', name: '最少'}
+                ]
+            }
+        }]
+    };
+    var myChart1 = echarts.init(document.getElementById('chartmain1'));
+    myChart1.setOption(option1);
+
+    var counts = [];
+    var times_x = [];
+    $.ajax({
+        url: "/statistical/findActive?userId=" + userId,    //请求的url地址
+        dataType: "json",   //返回格式为json
+        async: false,//请求是否异步，默认为异步，这也是ajax重要特性
+        type: "GET",   //请求方式
+        success: function (req) {
+            var data = req.obj;
+            for (var i = 0; i < data.length; i++) {
+                var obj = data[i];
+                counts.push(obj.count);
+                times_x.push(obj.time);
+            }
+        }
+    });
+
+    var option2 = {
+        tooltip: {
+            trigger: 'axis'
+        },
+        xAxis: {
+            type: 'category',
+            data: times_x
+        },
+        yAxis: {
+            type: 'value'
+        },
+        series: [{
+            name: '访问次数',
+            type: 'line',
+            data: counts,
+            markPoint: {
+                data: [
+                    {type: 'max', name: '最多'},
+                    {type: 'min', name: '最少'}
+                ]
+            }
+        }]
+    };
+    var myChart2 = echarts.init(document.getElementById('chartmain2'));
+    myChart2.setOption(option2);
+
+
+    var option_x = {
+        series: [{
+            type: 'pie',
+            radius: 60,
+            center: ['25%', '30%'],
+            data: [{value: 335, name: '直接访问'},
+                {value: 310, name: '邮件营销'},
+                {value: 234, name: '联盟广告'},
+                {value: 135, name: '视频广告'},
+                {value: 1548, name: '搜索引擎'}]
+        }, {
+            type: 'pie',
+            radius: 60,
+            center: ['45%', '30%'],
+            data: [{value: 335, name: '直接访问'},
+                {value: 310, name: '邮件营销'},
+                {value: 234, name: '联盟广告'},
+                {value: 135, name: '视频广告'},
+                {value: 1548, name: '搜索引擎'}]
+        }, {
+            type: 'pie',
+            radius: 60,
+            center: ['65%', '30%'],
+            data: [{value: 335, name: '直接访问'},
+                {value: 310, name: '邮件营销'},
+                {value: 234, name: '联盟广告'},
+                {value: 135, name: '视频广告'},
+                {value: 1548, name: '搜索引擎'}]
+        }]
+    };
+    var myChart_x = echarts.init(document.getElementById('chartmain_x'));
+    myChart_x.setOption(option_x);
+
+
+    //根据窗口的大小变动图表
+    window.onresize = function () {
+        myChart1.resize();
+        myChart2.resize();
+        myChart_x.resize();
+    };
+
+    var app = new Vue({
+        el: '#inviteCount',
+        data: {
+            beginIndex: 0,
+            transferType: 3,
+            userId: '',
+            transferRecords: []
+        },
+        methods: {
+            getTransferRecords: function (userId, transferType) {
+                if (transferType != null) {
+                    this.transferType = transferType
+                }
+                var params = {
+                    userId: userId,
+                    transferType: this.transferType,
+                    pageIndex: 1,
+                    pageSize: 1000
+                };
+                this.$http.post("/transfer/getTransferRecords", params, {emulateJSON: true})
+                    .then(function (response) {
+                        this.transferRecords = response.data.obj.rows;
+                    })
+            }
+        }
+    });
+
+    $(function () {
+        var userId = request("id");
+        app.getTransferRecords(userId, null);
+    });
+
+    function getRecords(transferType) {
+        var userId = request("id");
+        app.getTransferRecords(userId, transferType);
+    }
+</script>
+</html>

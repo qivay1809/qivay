@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.qivay.mapper.CaseRecordMapper">
+    <resultMap id="BaseResultMap" type="com.qivay.domain.CaseRecord">
+        <id column="case_record_id" property="caseRecordId"/>
+        <result column="vendor_name" property="vendorName"/>
+        <result column="vendor_case_id" property="vendorCaseId"/>
+        <result column="unilever_case_id" property="unileverCaseId"/>
+        <result column="case_type" property="caseType"/>
+        <result column="target_name_address" property="targetNameAddress"/>
+        <result column="enforcement_authority" property="enforcementAuthority"/>
+        <result column="officer_inCharge_contact" property="officerInChargeContact"/>
+        <result column="date_of_raid" property="dateOfRaid"/>
+        <result column="suspects" property="suspects"/>
+        <result column="pdf" property="pdf"/>
+        <result column="word" property="word"/>
+        <result column="create_time" property="createTime"/>
+    </resultMap>
+
+    <sql id="base_conditions">
+        <where>
+            1 = 1
+            <if test="vendorName != null and vendorName != ''">
+                and vendor_name like concat('%',#{vendorName},'%')
+            </if>
+            <if test="vendorCaseId != null and vendorCaseId != ''">
+                and vendor_case_id like concat('%',#{vendorCaseId},'%')
+            </if>
+            <if test="unileverCaseId != null and unileverCaseId != ''">
+                and unilever_case_id like concat('%',#{unileverCaseId},'%')
+            </if>
+            <if test="caseType != -1">
+                and case_type = #{caseType}
+            </if>
+        </where>
+    </sql>
+
+    <insert id="insert">
+        insert into case_record (case_record_id, vendor_name, vendor_case_id, unilever_case_id, case_type, target_name_address,enforcement_authority,
+        officer_inCharge_contact, date_of_raid, suspects, pdf, word, create_time)
+        values (#{caseRecordId}, #{vendorName}, #{vendorCaseId}, #{unileverCaseId}, #{caseType}, #{targetNameAddress}, #{enforcementAuthority},
+        #{officerInChargeContact}, #{date_of_raid}, #{suspects}, #{pdf}, #{word}, #{create_time})
+    </insert>
+
+    <select id="getCaseRecords" resultMap="BaseResultMap">
+        select * from case_record
+        <include refid="base_conditions"/>
+        order by date_of_raid desc
+        limit #{pageIndex}, #{pageSize}
+    </select>
+
+    <select id="getCount" resultType="int">
+        select count(case_record_id) from case_record
+        <include refid="base_conditions"/>
+    </select>
+
+    <select id="getCaseRecordExcel" resultMap="BaseResultMap">
+        select * from case_record order by date_of_raid desc
+    </select>
+</mapper>

@@ -1,0 +1,654 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.qivay.mapper.UserMapper">
+
+    <resultMap id="userMap" type="com.qivay.domain.User">
+        <id property="userId" column="user_id"/>
+        <result property="userName" column="user_name"/>
+        <result property="name" column="name"/>
+        <result property="email" column="email"/>
+        <result property="cellphone" column="cellphone"/>
+        <result property="gender" column="gender"/>
+        <result property="birthday" column="birthday"/>
+        <result property="userType" column="user_type"/>
+        <result property="userState" column="user_state"/>
+        <result property="idCard" column="id_card"/>
+        <result property="idCardFront" column="id_card_front"/>
+        <result property="idCardBack" column="id_card_back"/>
+        <result property="holdIdCard" column="hold_id_card"/>
+        <result property="qq" column="qq"/>
+        <result property="introduction" column="introduction"/>
+        <result property="homeAddr" column="home_addr"/>
+        <result property="companyAddr" column="company_addr"/>
+        <result property="balance" column="balance"/>
+        <result property="amount" column="amount"/>
+        <result property="employee" column="employee"/>
+        <result property="admin" column="admin"/>
+        <result property="updateUser" column="update_user"/>
+        <result property="allowLogin" column="allow_login"/>
+        <result property="createTime" column="create_time"/>
+        <result property="attribution" column="attribution"/>
+        <result property="inviteCode" column="invite_code"/>
+        <result property="position" column="position"/>
+        <result property="department" column="department"/>
+        <result property="activated" column="activated"/>
+
+        <result property="enterpriseName" column="enterprise_name"/>
+    </resultMap>
+
+    <resultMap id="lawyerMap" type="com.qivay.domain.ContractLawyer">
+        <id property="userId" column="user_id"/>
+        <result property="name" column="name"/>
+        <result property="cellphone" column="cellphone"/>
+        <result property="gender" column="gender"/>
+        <result property="birthday" column="birthday"/>
+        <result property="createTime" column="create_time"/>
+        <result property="attribution" column="attribution"/>
+        <result property="icon" column="icon"/>
+        <result property="certificateId" column="certificate_id"/>
+    </resultMap>
+    <resultMap id="excelLawyerMap" type="com.qivay.vo.ExcelContractLawyer">
+        <id property="userId" column="user_id"/>
+        <result property="name" column="name"/>
+        <result property="cellphone" column="cellphone"/>
+        <result property="gender" column="gender"/>
+        <result property="birthday" column="birthday"/>
+        <result property="createTime" column="create_time"/>
+        <result property="attribution" column="attribution"/>
+        <result property="certificate" column="certificate_id"/>
+    </resultMap>
+
+    <resultMap id="showUserMap" type="com.qivay.domain.ShowUser">
+        <id property="userId" column="user_id"/>
+        <result property="name" column="name"/>
+        <result property="cellphone" column="cellphone"/>
+        <result property="icon" column="icon"/>
+    </resultMap>
+
+    <resultMap id="excelUserMap" type="com.qivay.vo.ExcelUser">
+        <result property="name" column="name"/>
+        <result property="cellphone" column="cellphone"/>
+        <result property="gender" column="gender"/>
+        <result property="birthday" column="birthday"/>
+        <result property="userType" column="user_type"/>
+        <result property="userState" column="user_state"/>
+        <result property="employee" column="employee"/>
+        <result property="allowLogin" column="allow_login"/>
+        <result property="createTime" column="create_time"/>
+        <result property="inviteCode" column="invite_code"/>
+        <result property="amount" column="amount"/>
+        <result property="balance" column="balance"/>
+    </resultMap>
+
+    <resultMap id="updateUserMap" type="com.qivay.domain.UpdateUser">
+        <id property="userId" column="user_id"/>
+        <result property="name" column="name"/>
+        <result property="cellphone" column="cellphone"/>
+        <result property="gender" column="gender"/>
+        <result property="birthday" column="birthday"/>
+        <result property="userType" column="user_type"/>
+        <result property="userState" column="user_state"/>
+        <result property="idCard" column="id_card"/>
+        <result property="idCardFront" column="id_card_front"/>
+        <result property="idCardBack" column="id_card_back"/>
+        <result property="icon" column="icon"/>
+        <result property="email" column="email"/>
+        <result property="qq" column="qq"/>
+        <result property="introduction" column="introduction"/>
+        <result property="region" column="region_id"/>
+        <result property="address" column="street"/>
+        <result property="balance" column="balance"/>
+        <result property="employee" column="employee"/>
+        <result property="admin" column="admin"/>
+        <result property="allowLogin" column="allow_login"/>
+    </resultMap>
+
+    <sql id="get_columns">
+        u.user_id,u.user_name,u.name,u.create_time, u.email,u.cellphone,u.gender,u.birthday,u.user_type,u.user_state,u.id_card,u.id_card_front,u.id_card_back,u.icon,u.qq,u.introduction,u.home_addr,u.company_addr,u.balance,tr.amount,u.employee,u.update_user,u.allow_login,u.attribution,u.invite_code
+    </sql>
+    <!-- user_id,password,user_name,name, email,cellphone,gender,birthday,user_type,user_state,id_card,id_card_front,id_card_back,hold_id_card,icon,qq,introduction,home_addr,company_addr,company,create_time,employee,admin,balance,invite_code,position,department, -->
+    <sql id="columns">
+        u.*,e.enterprise_name
+    </sql>
+
+    <sql id="updateUserColumns">
+         u.user_id,u.user_name,u.name,
+        u.email,u.cellphone,u.gender,u.birthday,u.user_type,u.user_state,u.id_card,u.id_card_front,u.id_card_back,u.icon,u.qq,u.introduction,
+        a.region_id,a.street,u.balance,u.company,u.admin,u.employee,u.allow_login
+    </sql>
+
+
+    <update id="updateUser" parameterType="com.qivay.domain.User">
+        UPDATE
+        user
+        SET
+        name = #{name},gender = #{gender},birthday = #{birthday},employee = #{employee},user_type = #{userType},cellphone = #{cellphone},update_user = #{updateUser},update_time = #{updateTime},user_state = #{userState}
+        WHERE
+        user_id = #{userId}
+    </update>
+
+    <update id="updateEnterpriseUser" parameterType="com.qivay.domain.User">
+        UPDATE user
+        SET
+        name = #{name},
+        gender = #{gender},
+        email = #{email},
+        update_user = #{updateUser},
+        update_time = #{updateTime},
+        position = #{position}
+        <if test="password != null and password != ''">
+            ,password=#{password}
+        </if>
+        <if test="department != null and department != ''">
+            ,department=#{department}
+        </if>
+        WHERE
+        user_id = #{userId}
+    </update>
+
+    <update id="updateValidateUser" parameterType="com.qivay.domain.User">
+        UPDATE
+        user
+        SET
+        birthday = #{birthday},employee = #{employee},user_type = #{userType},cellphone = #{cellphone},update_user = #{updateUser},update_time = #{updateTime},user_state = #{userState}
+        WHERE
+        user_id = #{userId}
+    </update>
+
+    <insert id="addUser">
+        insert into user(user_id,password,user_name,name,cellphone,email,gender,birthday,user_type,user_state,create_time,balance,employee,admin,update_user,update_time,position,department,activated)
+        VALUES (#{userId},#{password},#{userName},#{name},#{cellphone},#{email},#{gender},#{birthday},#{userType},#{userState},#{createTime},#{balance},#{employee},0,#{updateUser},#{updateTime},#{position},#{department},#{activated})
+    </insert>
+
+    <sql id="base_conditions">
+        <where>
+            <if test="cellphone != null and cellphone != ''">
+                and cellphone LIKE concat('%',#{cellphone},'%')
+            </if>
+            <if test="userName != null and userName != ''">
+                and name like concat('%',#{userName},'%')
+            </if>
+            <if test="inviteCode != null and inviteCode != ''">
+                and invite_code like concat('%',#{inviteCode},'%')
+            </if>
+            <if test="userType != -1">
+                and user_type = #{userType}
+            </if>
+            <if test="userId != null and userId != ''">
+                and user_id = #{userId}
+            </if>
+            <if test="abnormal == 1">
+                and abnormal = #{abnormal}
+            </if>
+            <if test="beginDate != null">
+                and create_time >= #{beginDate}
+            </if>
+            <if test="endDate != null">
+                and create_time &lt;= #{endDate}
+            </if>
+            <if test="userState != -2">
+                and (user_state = #{userState}
+                <if test="idCard != ''">
+                    and id_card is not null or user_state = 4
+                </if>)
+            </if>
+            <if test="keyWords != '' and keyWords != null">
+                and (
+                birthday like concat('%',#{keyWords},'%')
+                  or
+                id_card like concat('%',#{keyWords},'%')
+                )
+            </if>
+
+            <if test="employee != -1">
+                and employee = #{employee}
+            </if>
+            <if test="attribution != null and attribution != ''">
+                and attribution like concat('%',#{attribution},'%')
+            </if>
+        </where>
+    </sql>
+
+    <select id="getUsers" resultMap="userMap">
+        SELECT
+        <include refid="get_columns"/>
+        FROM user u
+        left JOIN (SELECT sum(transfer_amount) amount,user_id FROM transfer_record
+        WHERE transfer_type = 3 GROUP BY user_id) tr ON u.user_id = tr.user_id
+        <include refid="base_conditions"/>
+        order by field(user_state,4,0,1,2,3) ,IF(ISNULL(id_card),1,0),create_time DESC
+        limit #{startIndex},#{pageSize}
+    </select>
+
+    <select id="getExcelUsers" resultMap="excelUserMap">
+        SELECT
+        <include refid="get_columns"/>
+        FROM user u
+        left JOIN (SELECT sum(transfer_amount) amount,user_id FROM transfer_record
+        WHERE transfer_type = 1 GROUP BY user_id) tr ON u.user_id = tr.user_id
+        <include refid="base_conditions"/>
+        order by field(user_state,4,0,1,2,3) ,IF(ISNULL(id_card),1,0),create_time DESC
+    </select>
+
+    <select id="getCount" resultType="int">
+        select count(u.user_id)
+        FROM user u
+        <include refid="base_conditions"/>
+    </select>
+
+    <select id="findUser" resultMap="userMap">
+        select
+        <include refid="columns"/>
+        FROM user u
+        LEFT JOIN enterprise_user eu ON u.user_id = eu.user_id
+        LEFT JOIN enterprise e ON eu.enterprise_id = e.enterprise_id
+        where u.user_id = #{userId}
+    </select>
+
+
+    <!-- 批量审核 -->
+    <select id="findUserBatch" resultMap="userMap">
+        SELECT
+        <include refid="columns"/>
+        FROM
+            `user` u
+        LEFT JOIN enterprise_user eu ON u.user_id = eu.user_id
+        LEFT JOIN enterprise e ON eu.enterprise_id = e.enterprise_id
+        where u.user_state = 4
+        ORDER BY u.create_time ASC LIMIT 0, 5
+    </select>
+
+
+    <update id="auditUser">
+        UPDATE user SET user_state = #{userState}
+        where user_id = #{userId}
+    </update>
+
+    <select id="getUsersByName" resultType="map">
+        select user_id userId,name userName,cellphone from user
+        where name like concat('%',#{keyword},'%')
+    </select>
+
+    <select id="getUsersByCellphone" resultType="map">
+        select user_id userId,name userName,cellphone from user
+        where cellphone like concat(#{keyword},'%')
+    </select>
+
+    <select id="login" parameterType="map" resultMap="updateUserMap">
+        SELECT
+        <include refid="updateUserColumns"/>
+        FROM user u LEFT JOIN address a
+        ON u.home_addr=a.address_id
+        WHERE u.cellphone = #{cellphone} AND u.password = #{password} AND u.allow_login = 1
+    </select>
+
+    <select id="checkAllowLogin" resultType="int">
+        select allow_login from `user` where cellphone = #{cellphone}
+    </select>
+
+    <select id="checkCellphone" parameterType="String" resultType="String">
+        SELECT  user_id  FROM  user
+        WHERE cellphone = #{cellphone}
+    </select>
+
+    <select id="checkLogin" resultType="String">
+        select user_id from `user` where allow_login = 1 and cellphone = #{cellphone}
+    </select>
+
+    <select id="checkEmail" parameterType="String" resultType="String">
+        SELECT  user_id  FROM  user
+        WHERE email = #{email}
+    </select>
+
+    <update id="resetPassword">
+        update user set password = #{password}
+        where user_id = #{userId}
+    </update>
+
+    <update id="userAudit">
+        update user set user_state = #{userState}
+        where user_id = #{userId}
+    </update>
+
+    <update id="userAbnormal">
+        update user set abnormal = #{abnormal}
+        where user_id = #{userId}
+    </update>
+
+    <update id="updateBalance">
+        update user set balance = (balance + #{reward}),version = version + 1
+        where user_id = #{userId} and version = #{version}
+    </update>
+
+
+    <!--劳务报酬增加-->
+    <update id="addReward">
+        update user set reward = (reward + #{reward}),version = version + 1
+        where user_id = #{userId} and version = #{version}
+    </update>
+
+
+    <!--活动报酬增加-->
+    <update id="addBonus">
+        update user set bonus = (bonus + #{bonus}),version = version + 1
+        where user_id = #{userId} and version = #{version}
+    </update>
+
+
+
+    <select id="getUserState" resultType="int">
+        select user_state from user where user_id = #{userId}
+    </select>
+
+    <select id="getAllUserId" resultType="string">
+        select user_id from user
+    </select>
+
+    <select id="getAllValidateUserId" resultType="string">
+        select user_id from user where user_state = 1 or user_state = 5
+    </select>
+
+    <select id="getCellphoneByUserId" resultType="string">
+        select cellphone from user where user_id = #{userId}
+    </select>
+
+    <update id="allowLogin">
+        update user set allow_login = #{allowLogin} where user_id = #{userId}
+    </update>
+
+    <select id="getUserIdByEnterpriseId" resultType="string">
+        select user_id from enterprise_user where enterprise_id = #{enterpriseId}
+    </select>
+
+    <select id="getCellphoneAndUserId" resultType="map">
+        select user_id userId,cellphone from user where attribution is null or attribution = ''
+    </select>
+
+    <update id="setAttribution">
+        update user set attribution = #{carrier}
+        where user_id = #{userId}
+    </update>
+
+    <select id="getVerifyUsersByName" resultType="map">
+        select user_id userId,name userName
+        from user
+        where user_state = 1 and user_type in (2,3,5) and name like concat('%',#{keyword},'%')
+    </select>
+
+    <sql id="lawyer_conditions">
+        <where>
+            u.user_type = 2 and u.user_state = 1
+            <if test="name != null and name != ''">
+                and u.name like concat('%',#{name},'%')
+            </if>
+            <if test="cellphone != null and cellphone != ''">
+                and u.cellphone like concat('%',#{cellphone},'%')
+            </if>
+            <if test="attribution != null and attribution != ''">
+                and u.attribution like concat('%',#{attribution},'%')
+            </if>
+            <if test="certificateId != null and certificateId != ''">
+                and l.certificate_id like concat('%',#{certificateId},'%')
+            </if>
+            <if test="contract != -1">
+                and u.contract = #{contract}
+            </if>
+            <if test="beginDate != null">
+                and create_time >= #{beginDate}
+            </if>
+            <if test="endDate != null">
+                and create_time &lt;= #{endDate}
+            </if>
+        </where>
+    </sql>
+
+    <select id="getLawyerCount" resultType="int">
+        select count(u.user_id)
+        from user u
+        join lawyer l on l.user_id = u.user_id
+        <include refid="lawyer_conditions"/>
+    </select>
+
+    <select id="getLawyers" resultMap="lawyerMap">
+        select
+        u.user_id,u.name,u.cellphone,u.gender,u.birthday,u.icon,u.create_time,u.attribution,u.contract,l.certificate_id
+        from user u
+        join lawyer l on l.user_id = u.user_id
+        <include refid="lawyer_conditions"/>
+        order by u.contract,u.create_time desc
+        limit #{startIndex},#{pageSize}
+    </select>
+
+    <select id="getExcelLawyers" resultMap="excelLawyerMap">
+        select
+        u.user_id,u.name,u.cellphone,u.gender,u.birthday,u.icon,u.create_time,u.attribution,u.contract,l.certificate_id
+        from user u
+        join lawyer l on l.user_id = u.user_id
+        <include refid="lawyer_conditions"/>
+        order by u.contract desc,u.create_time desc
+    </select>
+
+    <update id="updateContract">
+        update user
+        set contract = #{contract}
+        where user_id = #{userId}
+    </update>
+
+    <select id="getVersion" resultType="int">
+        select version from user where user_id = #{clueCreator}
+    </select>
+
+    <select id="getContract" resultType="int">
+        select contract from user where user_id = #{userId}
+    </select>
+
+    <select id="getInviteCode" resultType="string">
+        select invite_code from user where user_id = #{userId}
+    </select>
+
+    <select id="getUserIdByInter" resultType="string">
+        select user_id from user where cellphone like concat('%',#{cellphone})
+    </select>
+
+    <delete id="deleteTicket" parameterType="String">
+        DELETE FROM user_ticket WHERE user_id = #{userId}
+    </delete>
+
+    <resultMap id="permissionObjectMap" type="com.qivay.domain.PermissionObject">
+        <result column="object_id" property="objectId"/>
+        <result column="data_type" property="dataType"/>
+    </resultMap>
+
+    <select id="getUserPermissionObjects" resultMap="permissionObjectMap">
+        select up.object_id,up.data_type from user_permission up
+        where  up.user_id = #{userId}
+        UNION
+        select rp.object_id,rp.data_type from user_role ur,role_permission rp
+        where ur.role_id=rp.role_id and ur.user_id = #{userId}
+    </select>
+
+    <select id="getUsersByRoleId" resultMap="showUserMap">
+        select u.user_id,u.name,u.icon,u.cellphone from user_role ur
+        join user u on ur.user_id = u.user_id
+        where ur.role_id = #{roleId}
+    </select>
+
+    <select id="getEnterpriseUsers" resultMap="userMap">
+        select u.user_id,u.name,u.email,u.gender,u.position,u.department,u.activated,u.create_time from user u
+        left join enterprise_user eu on u.user_id = eu.user_id
+        <include refid="eu_conditions"/>
+        order by u.create_time desc
+        limit #{startIndex},#{pageSize}
+    </select>
+
+    <sql id="eu_conditions">
+        <where>
+            eu.enterprise_id = #{enterpriseId}
+            <if test="name != null and name != ''">
+                and u.name like concat('%',#{name},'%')
+            </if>
+            <if test="cellphone != null and cellphone != ''">
+                and u.cellphone like concat('%',#{cellphone},'%')
+            </if>
+            <if test="email != null and email != ''">
+                and u.email like concat('%',#{email},'%')
+            </if>
+            <if test="department != null and department != ''">
+                and u.department like concat('%',#{department},'%')
+            </if>
+            <if test="position != null and position != ''">
+                and u.position like concat('%',#{position},'%')
+            </if>
+
+            <if test="beginDate != null">
+                and u.create_time >= #{beginDate}
+            </if>
+            <if test="endDate != null">
+                and u.create_time &lt;= #{endDate}
+            </if>
+        </where>
+    </sql>
+
+    <select id="getEnterpriseUsersCount" resultType="int">
+        select count(u.user_id) from user u
+        left join enterprise_user eu on u.user_id = eu.user_id
+        <include refid="eu_conditions"/>
+    </select>
+
+    <update id="updateActivated">
+        update user
+        set activated = #{activated}
+        where activated>0 and user_id = #{userId}
+    </update>
+
+    <!--<select id="getActivated" resultType="int">-->
+        <!--select activated from user where user_id = #{userId}-->
+    <!--</select>-->
+
+    <update id="setAdmin">
+        update user set admin = #{admin}
+        where user_id = #{userId}
+    </update>
+
+  <!-- 计算所有用户的可提现的总余额，用户仿止用户同时体现导致余额不足的问题 -->
+    <select id="allBalance" resultType="double">
+        SELECT ifnull(SUM(balance), 0) FROM `user` where user_state = 1
+    </select>
+
+
+    <select id="findUserByNameOrPhone" resultType="map">
+        SELECT user_id value,CONCAT(name, cellphone) name FROM `user`
+        where 1 = 1
+        and (user_type = 3 or user_type = 1)
+        and `name` is not null
+        and name != ''
+        and cellphone is not null
+        and cellphone != ''
+        <if test="keywards != null and keywards != ''">
+        and
+        (
+        name like concat('%',#{keywards},'%')
+        or cellphone like concat('%',#{keywards},'%')
+        )
+        </if>
+    </select>
+
+<update id="updatePosition">
+    UPDATE user set `lat_long` = #{latLong} where id_card = #{idCard}
+</update>
+
+    <select id="getInvestigators" resultType="string">
+        select user_id from `user` where user_type = 3
+    </select>
+
+    <!-- 用户增势 TEMP-->
+    <select id="growthTemp" resultType="map">
+        SELECT * FROM (SELECT count(user_id) count, invite_code inviteCode FROM `user` where invite_code is not null AND invite_code != '' AND create_time >= '2019-08-16 00:00:00' GROUP BY invite_code) x
+        ORDER BY x.count desc
+    </select>
+
+    <select id="getNameByPhone" resultType="string">
+        select `name` from  `user` where cellphone = #{cellphone} limit 0, 20
+    </select>
+
+
+    <!--根据手机号获取姓名和奖金-->
+    <select id="getNameBonus" resultType="Map">
+        select u.`name`, x.amount from
+           (
+            SELECT
+                sum(transfer_amount) amount,
+                user_id
+            FROM transfer_record
+            WHERE transfer_type = 1
+            GROUP BY user_id
+            ) x
+            LEFT JOIN `user` u
+            ON x.user_id = u.user_id
+        where u.cellphone = #{cellphone}
+    </select>
+
+    <!--验证码登录login-->
+    <select id="qrcodeLogin" resultMap="updateUserMap">
+        SELECT
+        <include refid="updateUserColumns"/>
+        FROM user u LEFT JOIN address a
+        ON u.home_addr=a.address_id
+        WHERE u.user_id = #{userId}
+    </select>
+
+
+    <!-- 获取已实名且已验证姓名和身份证号，用于生日祝词推送 -->
+    <select id="getNameCard" resultType="com.qivay.domain.Birthday">
+        SELECT
+            user_id userId,
+            `name`,
+            id_card idCard,
+            cellphone
+        FROM
+            `user`
+        WHERE
+            id_card IS NOT NULL
+        AND user_state = 1
+        AND DATE_FORMAT(cast(substring(id_card, 7, 8) as date),'%m-%d') = DATE_FORMAT(now(), '%m-%d')
+    </select>
+
+
+    <select id="d">
+        SELECT `name`, cellphone, id_card, id_card_front, id_card_back, hold_id_card FROM `user` where id_card is not null AND user_state = 1 AND balance = 8 AND create_time > '2019-08-15 00:00:00' AND create_time &lt;= '2019-08-27 00:00:00'
+    </select>
+
+
+    <select id="getUserLogouts" resultType="com.qivay.domain.UserLogout">
+        select
+          ul.cause, IFNULL(u.name, u.cellphone) userId, ul.create_time createTime
+        from user_logout ul
+        left join `user` u on ul.user_id = u.user_id
+        where 1=1
+        <if test="name != null and name != ''">
+            and u.name = #{name}
+        </if>
+        <if test="phone != null and phone != ''">
+            and u.cellphone = #{phone}
+        </if>
+        order by ul.create_time desc
+        limit #{startIndex},#{pageSize}
+    </select>
+    <select id="getUserLogoutCount" resultType="int">
+        select
+          count(ul.logout_id)
+        from user_logout ul
+        left join `user` u on ul.user_id = u.user_id
+        where 1=1
+        <if test="name != null and name != ''">
+            and u.name = #{name}
+        </if>
+        <if test="phone != null and phone != ''">
+            and u.cellphone = #{phone}
+        </if>
+    </select>
+
+    <select id="findByUserType" resultMap="userMap">
+        select * from `user` where user_type = #{userType} AND (`name` != '' OR `name` != null OR email != null OR email != '')
+    </select>
+</mapper>

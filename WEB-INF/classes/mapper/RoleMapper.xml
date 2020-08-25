@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.qivay.mapper.RoleMapper" >
+  <resultMap id="BaseResultMap" type="com.qivay.domain.Role" >
+    <id column="role_id" property="roleId"/>
+    <result column="role_name" property="roleName"/>
+    <result column="description" property="description"/>
+  </resultMap>
+  <resultMap id="PermissionResultMap" type="com.qivay.domain.DataObject" >
+    <id column="role_permission_id" property="dataObjectId"/>
+    <result column="data_type" property="dataType"/>
+    <result column="field_name" property="fieldName"/>
+    <result column="object_id" property="className"/>
+  </resultMap>
+
+  <insert id="insert">
+    insert into role (role_id, role_name, description)
+    values (#{roleId}, #{roleName}, #{description})
+  </insert>
+
+  <update id="updateRole">
+    update role
+    set role_name = #{roleName},
+      description = #{description}
+    where role_id = #{roleId}
+  </update>
+
+  <select id="getRole" resultMap="BaseResultMap">
+    select role_id, role_name, description
+    from role
+    where role_id = #{roleId}
+  </select>
+
+  <select id="selectAll" resultMap="BaseResultMap" >
+    select role_id, role_name, description
+    from role
+  </select>
+
+  <sql id="base_conditions">
+    <where>
+      <if test="roleId != null and roleId != ''">
+        and role_id like concat('%',#{roleId},'%')
+      </if>
+      <if test="roleName != null and roleName != ''">
+        and role_name like concat('%',#{roleName},'%')
+      </if>
+      <if test="description != null and description != ''">
+        and description like concat('%',#{description},'%')
+      </if>
+    </where>
+  </sql>
+
+  <select id="getCount" resultType="int">
+    select count(role_id) from role
+    <include refid="base_conditions"/>
+  </select>
+
+  <select id="getRoles" resultMap="BaseResultMap">
+    select * from role
+    <include refid="base_conditions"/>
+    limit #{startIndex},#{pageSize}
+  </select>
+
+  <select id="getUserRoleId" resultType="string">
+    select user_role_id from user_role where user_id = #{userId} and role_id = #{roleId}
+  </select>
+
+  <insert id="insertUserRole">
+    insert into user_role(user_role_id,user_id,role_id)
+    values(#{userRoleId},#{userId},#{roleId})
+  </insert>
+
+  <sql id="permission_conditions">
+    <where>
+      <if test="roleId != null and roleId != ''">
+        and rp.role_id = #{roleId}
+      </if>
+      <if test="objectId != null and objectId != ''">
+        and rp.object_id like concat('%',#{objectId},'%')
+      </if>
+      <if test="dataType != -1">
+        and rp.data_type = #{dataType}
+      </if>
+      <if test="fieldName != null and fieldName != ''">
+        and d.field_name like concat('%',#{fieldName},'%')
+      </if>
+    </where>
+  </sql>
+
+  <select id="getPermissionCount" resultType="int">
+    select count(rp.role_permission_id) from role_permission rp
+    join data_object d on rp.data_type = d.data_type
+    <include refid="permission_conditions"/>
+  </select>
+
+  <select id="getRolePermissions" resultMap="PermissionResultMap">
+    select rp.role_permission_id,rp.data_type,rp.object_id,d.field_name from role_permission rp
+    join data_object d on rp.data_type = d.data_type
+    <include refid="permission_conditions"/>
+    limit #{startIndex},#{pageSize}
+  </select>
+
+  <select id="getDataObjects" resultMap="PermissionResultMap">
+    select data_type,field_name from data_object
+  </select>
+
+  <insert id="addPermission">
+    insert into role_permission(role_permission_id,role_id,object_id,data_type) values(#{rolePermissionId},#{roleId},#{objectId},#{dataType})
+  </insert>
+
+  <delete id="deleteRoleUser">
+    delete from user_role where role_id = #{roleId} and user_id = #{userId}
+  </delete>
+
+  <delete id="deletePermission">
+    delete from role_permission where role_permission_id = #{rolePermissionId}
+  </delete>
+
+</mapper>

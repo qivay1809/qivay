@@ -1,0 +1,171 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.qivay.mapper.CaseInfoMapper">
+    <resultMap id="BaseResultMap" type="com.qivay.domain.CaseInfo">
+        <id column="case_id" property="caseId"/>
+        <result column="case_title" property="caseTitle"/>
+        <result column="case_content" property="caseContent"/>
+        <result column="brand_id" property="brandId"/>
+        <result column="brand_name" property="brandName"/>
+        <result column="progress" property="progress"/>
+        <result column="name" property="creator"/>
+        <result column="create_time" property="createTime"/>
+        <result column="clue_id" property="clueId"/>
+        <result property="serialNumber" column="serial_number"/>
+        <result column="source" property="source"/>
+        <result column="region" property="region"/>
+        <result column="industry" property="industry"/>
+        <result column="reward" property="reward"/>
+        <result column="deadline" property="deadline"/>
+        <result column="product" property="product"/>
+        <result column="status" property="status"/>
+        <result column="validate" property="rewardValidate"/>
+        <result column="reward_id" property="rewardId"/>
+
+    </resultMap>
+    <resultMap id="ExcelResultMap" type="com.qivay.vo.ExcelCase">
+        <id column="case_id" property="caseIn"/>
+        <result column="case_title" property="caseTitle"/>
+        <result column="brand_id" property="brandId"/>
+        <result column="brand_name" property="brandName"/>
+        <result column="progress" property="progress"/>
+        <result column="name" property="creator"/>
+        <result column="create_time" property="createTime"/>
+    </resultMap>
+
+    <insert id="insert">
+    insert into case_info (case_id, case_title,
+      case_content, brand_id, progress, 
+      creator, create_time,clue_id,serial_number,source,product,region,reward,deadline,industry)
+    values (#{caseId}, #{caseTitle},
+      #{caseContent}, #{brandId}, #{progress},
+      #{creator}, #{createTime},#{clueId},#{serialNumber},#{source},#{product},#{region},#{reward},#{deadline},#{industry})
+  </insert>
+
+    <update id="updateCase">
+    update case_info
+    set case_title = #{caseTitle},case_content = #{caseContent},brand_id = #{brandId},
+    product = #{product},region = #{region},reward = #{reward},deadline = #{deadline},industry = #{industry}
+    where case_id = #{caseId}
+  </update>
+
+    <select id="getCase" resultMap="BaseResultMap">
+    select c.case_id, c.case_title,c.clue_id, c.case_content, b.brand_id, c.progress, c.creator,b.brand_name,
+    c.create_time,c.product,c.region,c.industry,c.reward,c.deadline,c.status
+    from case_info c
+    left join brand b on c.brand_id = b.brand_id
+    where c.case_id = #{caseId}
+  </select>
+
+    <sql id="base_conditions">
+        <where>
+            <if test="caseTitle != null and caseTitle != ''">
+                c.case_title like concat('%',#{caseTitle},'%')
+            </if>
+            <if test="creator != null and creator != ''">
+                and u.name like concat('%',#{creator},'%')
+            </if>
+            <if test="brandName != null and brandName != ''">
+                and b.brand_name like concat('%',#{brandName},'%')
+            </if>
+            <if test="product != null and product != ''">
+                and c.product like concat('%',#{product},'%')
+            </if>
+            <if test="status != -1">
+                and c.status = #{status}
+            </if>
+            <if test="serialNumber != null and serialNumber != ''">
+                and c.serial_number like concat('%',#{serialNumber},'%')
+            </if>
+            <if test="beginDate != null">
+                and c.create_time >= #{beginDate}
+            </if>
+            <if test="endDate != null">
+                and c.create_time &lt;= #{endDate}
+            </if>
+            <!--<if test="caseType == 1">-->
+            <!--and (select count(*) from case cr where c.case_id=cr.case_id and cr.progress>10 and cr.progress &lt; 20)>0-->
+            <!--</if>-->
+            <!--<if test="caseType == 2">-->
+            <!--and (select count(*) from case cr where c.case_id=cr.case_id and cr.progress>20 and cr.progress &lt; 30)>0-->
+            <!--</if>-->
+        </where>
+    </sql>
+
+    <select id="getCount" resultType="int">
+        select count(c.case_id) from case_info c
+        join user u on c.creator = u.user_id
+        left join brand b on b.brand_id = c.brand_id
+        <include refid="base_conditions"/>
+    </select>
+
+    <select id="getCases" resultMap="BaseResultMap">
+        select c.case_id, c.case_title, c.progress,
+        c.create_time,u.name,b.brand_name,c.serial_number,c.source,c.product,c.clue_id,c.status,r.reward_id,r.spending reward,r.validate
+        from case_info c
+        join user u on c.creator = u.user_id
+        left join brand b on b.brand_id = c.brand_id
+        left join reward r on r.case_id = c.case_id
+        <include refid="base_conditions"/>
+        order by c.create_time desc
+        limit #{startIndex},#{pageSize}
+    </select>
+
+    <select id="getExcelCases" resultMap="ExcelResultMap">
+        select c.case_id, c.case_title, c.progress,
+        c.create_time,u.name,b.brand_name
+        from case_info c
+        join user u on c.creator = u.user_id
+        left join brand b on b.brand_id = c.brand_id
+        <include refid="base_conditions"/>
+        order by c.progress,c.create_time desc
+    </select>
+
+    <update id="updateProgress">
+    update case_info
+    set progress = #{progress}
+    where case_id = #{caseId}
+  </update>
+
+    <update id="updateProgressWithClueId">
+    update case_info
+    set progress = #{progress}
+    where clue_id = #{clueId}
+  </update>
+
+    <select id="getProgress" resultType="int">
+    select progress from case_info where case_id = #{caseId}
+  </select>
+
+    <sql id="imageColumns">
+    case_image_id,case_id,url,image_order
+  </sql>
+
+    <insert id="addCaseImage" parameterType="com.qivay.domain.CaseImage">
+        INSERT INTO
+        case_image
+        (<include refid="imageColumns"/>)
+        VALUES
+        (#{caseImageId},#{caseId},#{url},#{imageOrder})
+    </insert>
+
+    <select id="getCaseImages" resultType="String">
+    select url from case_image where case_id = #{caseId} order by image_order
+  </select>
+
+    <delete id="deleteCaseImages">
+    delete from case_image where case_id = #{caseId}
+  </delete>
+
+    <update id="setStatus">
+        update case_info
+        set status = #{status}
+        where case_id = #{caseId}
+    </update>
+
+
+    <delete id="delete">
+      DELETE FROM case_info WHERE case_id = #{caseId}
+    </delete>
+
+</mapper>

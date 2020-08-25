@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>转账列表</title>
+    <link rel="stylesheet" href="../css/bootstrap.min.css">
+    <link rel="stylesheet" href="../css/load.css">
+
+    <script src="../js/jquery1.11.3.min.js"></script>
+    <script src="../js/bootstrap.min.js"></script>
+    <script src="../js/vue.js"></script>
+    <script src="../js/vue-resource1.3.4.js"></script>
+    <script src="../js/config.js"></script>
+    <script src="../plugins/My97DatePicker/WdatePicker.js"></script>
+
+</head>
+<body>
+<div id="moneyTransferIndex">
+    <div class="form-inline">
+        <div class="form-group">
+            <label class="sr-only">转账对象</label>
+            <input id="txtRealName" v-model="search.realName" class="form-control" type="text" placeholder="请输入转账对象"
+                   style="width: 135px"/>
+        </div>
+        <div class="form-group">
+            <label class="sr-only">转账说明</label>
+            <input id="txtRemark" v-model="search.remark" style="width:135px" class="form-control" type="text"
+                   placeholder="请输入转账说明"/>
+        </div>
+        <div class="form-group">
+            转账金额：
+            <label class="sr-only">转账金额下限</label>
+            <input id="txtMinAmount" v-model="search.minAmount" class="form-control" type="text"
+                   placeholder="请输入转账金额下限"/>
+            ---
+            <label class="sr-only">转账金额上限</label>
+            <input id="txtMaxAmount" v-model="search.maxAmount" class="form-control" type="text"
+                   placeholder="请输入转账金额上限"/>
+        </div>
+        <div class="form-group">
+            转账时间：
+            <label class="sr-only">转账开始时间</label>
+            <input id="txtBeginDate" v-model="search.beginDate" onfocus="WdatePicker({dateFmt:'yyyy-MM-dd'})"
+                   class="form-control" type="text" placeholder="请输入转账开始时间"/>
+            ---
+            <label class="sr-only">转账结束时间</label>
+            <input id="txtEndDate" v-model="search.endDate" onfocus="WdatePicker({dateFmt:'yyyy-MM-dd'})"
+                   class="form-control" type="text" placeholder="请输入转账结束时间"/>
+        </div>
+
+        <div class="form-group">
+            <div class="col-sm-6">
+                <select id="selTransferType" v-model="search.transferType" class="form-control">
+                    <option value="-1" selected="selected">转账类型</option>
+                    <option value="1">收入金额</option>
+                    <option value="2">支出金额</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <div class="col-sm-6">
+                <select id="selTransferAccount" v-model="search.transferAccount" class="form-control">
+                    <option value="-1" selected="selected">账户类型</option>
+                    <option value="1">支付宝</option>
+                    <option value="2">微信</option>
+                    <option value="3">银联</option>
+                </select>
+            </div>
+        </div>
+
+        <button id="btnSearch" type="button" @click="getMoneyTransferRecords" class="btn btn-primary">搜索</button>
+
+        <a class="btn btn-primary" href="edit.html" data-target="#dialog"
+           data-toggle="modal">添加金额</a>
+
+        <a class="btn btn-primary" :href="exportUrl">导出</a>
+
+        <input id="txtSearch" type="hidden" @click="getMoneyTransferRecords('msg')"/>
+
+    </div>
+
+    <div class="table-responsive">
+        <table class="table table-striped" id="main">
+            <thead>
+            <tr>
+                <th style="text-align:center;vertical-align:middle;">收入</th>
+                <th style="text-align:center;vertical-align:middle;">
+                    <input v-model="inAmount" style="width:100px;color: red" READONLY class="form-control"/>
+                </th>
+                <th style="text-align:center;vertical-align:middle;">支出</th>
+                <th style="text-align:center;vertical-align:middle;">
+                    <input v-model="outAmount" style="width:100px;color: red" READONLY class="form-control"/>
+                </th>
+            </tr>
+            <tr>
+                <th style="text-align:center;vertical-align:middle;">账务流水号</th>
+                <th style="text-align:center;vertical-align:middle;">商户订单号</th>
+                <th style="text-align:center;vertical-align:middle;">转账时间</th>
+                <!-- <th style="text-align:center;vertical-align:middle;">金额</th>-->
+                <!--<th style="text-align:center;vertical-align:middle;">税费</th>-->
+                <th style="text-align:center;vertical-align:middle;">转账类型</th>
+                <th style="text-align:center;vertical-align:middle;">收入</th>
+                <th style="text-align:center;vertical-align:middle;">支出</th>
+                <th style="text-align:center;vertical-align:middle;">账户余额</th>
+                <th style="text-align:center;vertical-align:middle;">账户类型</th>
+                <th style="text-align:center;vertical-align:middle;">转账对象</th>
+                <th style="text-align:center;vertical-align:middle;">身份证号</th>
+                <th style="text-align:center;vertical-align:middle;">第三方平台用户id</th>
+                <th style="text-align:center;vertical-align:middle;">摘要</th>
+            </tr>
+            </thead>
+            <tbody>
+
+            <template>
+                <tr v-for="record in moneyTransferRecords">
+
+                    <td style="text-align:center;vertical-align:middle;">{{record.orderId}}</td>
+                    <td style="text-align:center;vertical-align:middle;">{{record.tradeNo}}</td>
+                    <td style="text-align:center;vertical-align:middle;">{{record.transferTimeDisplay}}</td>
+                    <td style="text-align:center;vertical-align:middle;">{{record.transferTypeDisplay}}</td>
+                    <td style="text-align:center;vertical-align:middle;">
+                        <span v-if="record.transferType == 1">{{record.amount}}</span>
+                        <span v-else></span>
+                    </td>
+                    <td style="text-align:center;vertical-align:middle;">
+                        <span v-if="record.transferType == 2 || record.transferType == 3">{{record.amount}}</span>
+                        <span v-else></span>
+                    </td>
+                    <td style="text-align:center;vertical-align:middle;">{{record.balance}}</td>
+                    <td style="text-align:center;vertical-align:middle;">{{record.accountTypeDisplay}}</td>
+                    <td style="text-align:center;vertical-align:middle;">{{record.realName}}</td>
+                    <td style="text-align:center;vertical-align:middle;">{{record.idCard}}</td>
+                    <td style="text-align:center;vertical-align:middle;">{{record.otherUserId}}</td>
+                    <td style="text-align:center;vertical-align:middle;">{{record.remark}}</td>
+                </tr>
+            </template>
+            </tbody>
+        </table>
+    </div>
+    <div id="baseDialog">
+        <script>getDialog('baseDialog', '../basedialog.html');</script>
+    </div>
+
+    <div class="container text-center" v-if="loading">
+        <div class="row">
+            <div class="col-sm-2">
+                <div class="sp sp-circle"></div>
+                <h5>圆圈</h5>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="page">
+    <script>getPaging();</script>
+</div>
+<script src="../js/money/index.js"></script>
+
+</body>
+</html>

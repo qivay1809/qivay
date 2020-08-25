@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html xmlns:v-bind="http://www.w3.org/1999/xhtml">
+<head>
+    <title>线索指派</title>
+    <!--<script type="text/javascript" src="http://www.daimajiayuan.com/download/jquery/jquery-1.10.2.min.js"></script>-->
+    <!--    <script type="text/javascript"
+                src="http://cdn.bootcss.com/bootstrap-select/2.0.0-beta1/js/bootstrap-select.js"></script>
+        <link rel="stylesheet" type="text/css"
+              href="http://cdn.bootcss.com/bootstrap-select/2.0.0-beta1/css/bootstrap-select.css">-->
+    <script src="../js/vue.js"></script>
+    <script src="../js/vue-resource1.3.4.js"></script>
+    <script src="../js/config.js"></script>
+    <script src="../js/jquery1.12.4.min.js"></script>
+
+    <!-- 3.0
+    <link href="http://netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css" rel="stylesheet">
+    <script src="http://netdna.bootstrapcdn.com/bootstrap/3.0.0/js/bootstrap.min.js"></script> -->
+    <script src="../js/bootstrap.min.js"></script>
+    <link rel="stylesheet" href="../css/bootstrap.min.css">
+
+    <script src="../js/bootstrap-select.js"></script>
+    <link rel="stylesheet" href="../css/bootstrap-select.css">
+    <!-- 2.3.2
+    <link href="http://netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/css/bootstrap-combined.min.css" rel="stylesheet">
+    <script src="http://netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/js/bootstrap.js"></script>-->
+
+</head>
+<body>
+<div id="assign">
+    <div class="modal-body">
+        <form class="form-horizontal" role="form">
+            <div class="form-group">
+                <label for="getSelect" class="col-lg-2 control-label">选择调查者类别</label>
+                <div class="col-lg-6">
+                    <select id="getSelect" class="form-control" @change="getSelect()">
+                        <option value="0">举报者本人</option>
+                        <option value="1">个人调查员</option>
+                        <option value="2">调查企业</option>
+                    </select>
+                </div>
+            </div>
+            <div id="no1" class="form-group" style="display: none">
+                <label for="bs2Select" class="col-lg-2 control-label">个人调查员：</label>
+                <div class="col-lg-6">
+                    <select id="bs2Select" class="selectpicker show-tick form-control" data-live-search="true" @change="survey()">
+                        <option>---选择个人调查员---</option>
+                        <option v-for="isSelect in isSelects" v-bind:value="isSelect.value">
+                                {{ isSelect.name }}
+                        </option>
+                    </select>
+                </div>
+            </div>
+            <div id="no2" class="form-group" style="display: none">
+                <label for="bs1Select" class="col-lg-2 control-label">调查企业：</label>
+                <div class="col-lg-6">
+                    <select id="bs1Select" class="selectpicker show-tick form-control" data-live-search="true" @change="findSurvey()">
+                        <option>---选择调查企业---</option>
+                        <option v-for="isSelect1 in isSelects1" v-bind:value="isSelect1.enterpriseId">
+                            {{ isSelect1.enterpriseName }}
+                        </option>
+                    </select>
+                </div>
+            </div>
+            <div id="no3" class="form-group" style="display: none">
+                <label for="bs0Select" class="col-lg-2 control-label">企业调查员：</label>
+                <div class="col-lg-6">
+                    <select id="bs0Select" class="selectpicker show-tick form-control" data-live-search="true" @change="enterpriseSurvey()">
+                        <option>---选择企业调查员---</option>
+                        <option v-for="isSelect2 in isSelects2" v-bind:value="isSelect2.value">
+                            {{ isSelect2.name }}
+                        </option>
+                    </select>
+                </div>
+            </div>
+        </form>
+    </div>
+    <div class="modal-footer" style="text-align: center">
+        <!--<button id="btnClose" type="button" class="btn btn-default editClose" data-dismiss="modal">关闭</button>-->
+        <button type="button" class="btn btn-primary" @click="saveAssign">保存</button>
+    </div>
+</div>
+
+</body>
+<script src="../js/pclue/assign.js"></script>
+</html>

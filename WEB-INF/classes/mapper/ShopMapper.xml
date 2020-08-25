@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.qivay.mapper.ShopMapper">
+
+    <sql id="columns">
+        shop_id,address_id,shop_name,shop_enname,shop_verify
+    </sql>
+
+    <select id="findShopByName" resultType="String">
+        SELECT  shop_id  FROM  shop  WHERE shop_name = #{shopName}
+    </select>
+
+    <insert id="insertShop" parameterType="com.qivay.domain.Shop" >
+        INSERT INTO
+        shop
+        (<include refid="columns" />)
+        VALUES
+        (#{shopId},#{addressId},#{shopName}, #{shopEnname}, #{shopVerify})
+    </insert>
+
+
+</mapper>

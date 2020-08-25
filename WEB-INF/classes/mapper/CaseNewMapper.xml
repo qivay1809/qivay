@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.qivay.mapper.CaseNewMapper">
+
+    <resultMap id="caseNewMap" type="com.qivay.domain.CaseNew">
+        <id property="caseId" column="case_id"/>
+        <result property="title" column="title"/>
+        <result property="content" column="content"/>
+        <result property="progress" column="progress"/>
+        <result property="clueId" column="clue_id"/>
+        <result property="nature" column="nature"/>
+        <result property="createTime" column="create_time"/>
+        <result property="name" column="name"/>
+        <result property="cellphone" column="cellphone"/>
+    </resultMap>
+
+    <sql id="columns">
+        case_id, title, content, progress, clue_id,nature, create_time
+    </sql>
+
+    <select id="getCaseNews" resultMap="caseNewMap">
+        SELECT
+            cn.*, u.`name`,
+            u.cellphone
+        FROM
+            `case_new` cn
+        LEFT JOIN clue_assign ca ON cn.clue_id = ca.clue_id
+        LEFT JOIN `user` u ON ca.user_id = u.user_id
+        ORDER BY cn.create_time DESC
+        LIMIT #{pageIndex}, #{pageSize}
+    </select>
+    <select id="getCaseCount" resultType="int">
+        SELECT
+            count(cn.case_id)
+        FROM
+            `case_new` cn
+        LEFT JOIN clue_assign ca ON cn.clue_id = ca.clue_id
+        LEFT JOIN `user` u ON ca.user_id = u.user_id
+        ORDER BY cn.create_time DESC
+    </select>
+
+    <select id="getCaseById" resultMap="caseNewMap">
+        SELECT
+        <include refid="columns"/>
+        FROM case_new
+        where case_id = #{caseId}
+    </select>
+    <select id="getCaseByClueId" resultMap="caseNewMap">
+        SELECT
+        <include refid="columns"/>
+        FROM case_new
+        where clue_id = #{clueId}
+    </select>
+
+
+    <select id="getDataByClueId" resultType="Map">
+        SELECT
+            cn.case_id caseId,
+            ca.clue_assign_id clueAssignId
+        FROM
+            `case_new` cn
+        LEFT JOIN clue_assign ca ON cn.clue_id = ca.clue_id
+        where cn.clue_id = #{clueId}
+    </select>
+
+    <insert id="insert" parameterType="com.qivay.domain.CaseNew">
+        INSERT INTO
+        case_new
+        (<include refid="columns"/>)
+        VALUES
+        (#{caseId},#{title},#{content},#{progress},#{clueId},#{nature},#{createTime})
+    </insert>
+
+</mapper>

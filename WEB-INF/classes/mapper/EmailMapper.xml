@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.qivay.mapper.EmailMapper" >
+  <resultMap id="BaseResultMap" type="com.qivay.domain.Email" >
+    <id column="email_id" property="emailId"/>
+    <result column="email_address" property="emailAddress"/>
+    <result column="email_name" property="emailName"/>
+    <result column="create_time" property="createTime"/>
+    <result column="name" property="creator"/>
+  </resultMap>
+
+  <insert id="insert">
+    insert into email (email_id, email_address, email_name, 
+      create_time, creator)
+    values (#{emailId}, #{emailAddress}, #{emailName},
+      #{createTime}, #{creator})
+  </insert>
+
+  <update id="updateEmail">
+    update email
+    set email_address = #{emailAddress},
+      email_name = #{emailName}
+    where email_id = #{emailId}
+  </update>
+
+  <select id="selectByEmailId" resultMap="BaseResultMap">
+    select email_id, email_address, email_name, create_time, creator
+    from email
+    where email_id = #{emailId}
+  </select>
+
+  <select id="selectAll" resultMap="BaseResultMap" >
+    select email_id, email_address, email_name, create_time, creator
+    from email
+  </select>
+
+  <sql id="base_conditions">
+    <where>
+      <if test="emailAddress != null and emailName != null">
+        e.email_address like concat('%',#{emailAddress},'%')
+      </if>
+      <if test="emailName != null and emailName != ''">
+        and e.email_name like concat('%',#{emailName},'%')
+      </if>
+      <if test="beginDate != null">
+        and e.create_time >= #{beginDate}
+      </if>
+      <if test="endDate != null">
+        and e.create_time &lt;= #{endDate}
+      </if>
+    </where>
+  </sql>
+
+  <select id="getCount" resultType="int">
+    select count(email_id) from email e
+    <include refid="base_conditions"/>
+  </select>
+
+  <select id="getEmails" resultMap="BaseResultMap">
+    select e.email_id,e.email_address,e.email_name,e.create_time,u.name
+    from email e left join user u on e.creator = u.user_id
+    <include refid="base_conditions"/>
+    limit #{startIndex},#{pageSize}
+  </select>
+
+  <select id="getEmailsByEmail" resultMap="BaseResultMap">
+    select email_id ,email_address,email_name from email where email_address like concat(#{email},'%')
+  </select>
+
+  <select id="getEmailsByName" resultMap="BaseResultMap">
+    select email_id ,email_name,email_address from email where email_name like concat(#{name},'%')
+  </select>
+
+  <select id="getEmailsByIds" resultType="string">
+    select email_address from email where email_id in <foreach collection="receivers" item="item" index="index"
+                                                               open="(" separator="," close=")">#{item}</foreach>
+  </select>
+
+  <select id="getReceivers" resultMap="BaseResultMap">
+    select e.email_id,e.email_address,e.email_name,er.create_time,u.name
+    from email e
+    join email_receiver er on er.email_id = e.email_id
+    join user u on er.creator = u.user_id
+    where er.object_id = #{clueId}
+  </select>
+
+</mapper>

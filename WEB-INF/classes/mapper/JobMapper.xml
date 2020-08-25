@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.qivay.mapper.JobMapper" >
+  <resultMap id="BaseResultMap" type="com.qivay.domain.Job" >
+    <id column="job_id" property="jobId"/>
+    <result column="job_title" property="jobTitle"/>
+    <result column="job_desc" property="jobDesc"/>
+    <result column="job_require" property="jobRequire"/>
+    <result column="job_order" property="jobOrder"/>
+    <result column="user_id" property="creator"/>
+    <result column="name" property="userName"/>
+    <result column="create_time" property="createTime"/>
+    <result column="job_show" property="jobShow"/>
+  </resultMap>
+
+  <insert id="insert" parameterType="com.qivay.domain.Job" >
+    insert into job (job_id, job_title, job_desc, 
+      job_require, job_order, creator, 
+      create_time, job_show)
+    values (#{jobId}, #{jobTitle}, #{jobDesc},
+      #{jobRequire}, #{jobOrder}, #{creator},
+      #{createTime}, #{jobShow})
+  </insert>
+
+  <update id="updateByPrimaryKey" parameterType="com.qivay.domain.Job" >
+    update job
+    set job_title = #{jobTitle},
+      job_desc = #{jobDesc},
+      job_require = #{jobRequire},
+      job_order = #{jobOrder},
+      job_show = #{jobShow}
+    where job_id = #{jobId}
+  </update>
+
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap">
+    select job_id, job_title, job_desc, job_require, job_order, creator, create_time, 
+    job_show
+    from job
+    where job_id = #{jobId}
+  </select>
+
+  <sql id="base_conditions">
+    <where>
+      <if test="jobTitle != null">
+        and j.job_title like concat('%',#{jobTitle},'%')
+      </if>
+      <if test="creator != null">
+        and u.name like concat('%',#{creator},'%')
+      </if>
+      <if test="beginDateDisplay != null">
+        and j.create_time >= #{beginDateDisplay}
+      </if>
+      <if test="endDateDisplay != null">
+        and j.create_time &lt;= #{endDateDisplay}
+      </if>
+      <if test="jobShow != -1">
+        and j.job_show = #{jobShow}
+      </if>
+    </where>
+  </sql>
+
+  <select id="getJobs" resultMap="BaseResultMap">
+    select j.job_id,j.job_title,j.job_desc,j.job_require,j.job_order,u.user_id,u.name,j.create_time,j.job_show
+    from job j join user u on u.user_id = j.creator
+    <include refid="base_conditions"/>
+    order by j.create_time desc
+    limit #{startIndex},#{pageSize}
+  </select>
+
+  <select id="getCount" resultType="int">
+    select count(j.job_id)
+    from job j join user u on u.user_id = j.creator
+    <include refid="base_conditions"/>
+  </select>
+
+</mapper>
+
+
+
+
+
+
+
+
+
+
+

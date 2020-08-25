@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>企业账号列表</title>
+
+    <link rel="stylesheet" href="../css/bootstrap.min.css">
+    <link rel="stylesheet" href="../css/dialog.css">
+    <script src="../js/jquery1.11.3.min.js"></script>
+    <script src="../js/bootstrap.min.js"></script>
+    <script src="../js/vue.js"></script>
+    <script src="../js/vue-resource1.3.4.js"></script>
+    <script src="../js/config.js"></script>
+
+    <link rel="stylesheet" href="../plugins/confirm/jquery-confirm.css">
+    <script src="../plugins/confirm/jquery-confirm.js"></script>
+
+</head>
+<body>
+<div id="rewardIndex">
+    <div class="form-inline">
+        <div class="form-group">
+            <!--<label class="sr-only">编号</label>
+            <input id="txtName" v-model="search.serialNumber" style="width:135px" class="form-control" type="text"
+                   placeholder="请输入编号"/>-->
+        </div>
+
+        <!--<button id="btnSearch" type="button" @click="getBonuses" class="btn btn-primary">搜索</button>-->
+
+        <a class="btn btn-primary" href="bonuses.html" data-target="#dialog"
+           data-toggle="modal" onclick="setClueId_x(this.id);" :id="clueId">发放奖金</a>
+        <input id="txtSearch" type="hidden" @click="getBonuses('msg')"/>
+        <input id="hidClueId" type="hidden"/>
+        <input id="hidRewardId" type="hidden"/>
+    </div>
+
+    <div class="table-responsive">
+        <table class="table table-striped" id="main">
+            <thead>
+            <tr>
+                <th style="text-align:center;vertical-align:middle;">序号</th>
+                <th style="text-align:center;vertical-align:middle;">编号</th>
+                <th style="text-align:center;vertical-align:middle;">跟进进度</th>
+                <th style="text-align:center;vertical-align:middle;">本次金额</th>
+                <th style="text-align:center;vertical-align:middle;">奖金备注</th>
+                <th style="text-align:center;vertical-align:middle;">奖金发放</th>
+                <th style="text-align:center;vertical-align:middle;">操作</th>
+            </tr>
+            </thead>
+            <tbody>
+
+            <template>
+                <tr v-for="(bonuse,index) in bonuses">
+                    <td style="text-align:center;vertical-align:middle;">{{beginIndex + 1 + index}}</td>
+                    <td style="text-align:center;vertical-align:middle;">{{bonuse.serialNumber}}</td>
+                    <td style="text-align:center;vertical-align:middle;">{{bonuse.clueValidateDisplay}}</td>
+                    <td style="text-align:center;vertical-align:middle;">{{bonuse.tipster}}</td>
+                    <td style="text-align:center;vertical-align:middle;">{{bonuse.remark}}</td>
+                    <td style="text-align:center;vertical-align:middle;">{{bonuse.rewardValidateDisplay}}</td>
+                    <td style="text-align:center;vertical-align:middle;">
+                        <div v-if="bonuse.rewardValidate == 2">
+                            <a class="btn btn-xs btn-info" href="bonuses.html" data-target="#dialog"
+                               data-toggle="modal" onclick="setRewardId_x(this.id);" :id="bonuse.rewardId">修改</a>
+                        </div>
+                    </td>
+                </tr>
+            </template>
+
+            </tbody>
+        </table>
+    </div>
+
+    <div id="baseDialog">
+        <script>getDialog('baseDialog', '../basedialog.html');</script>
+    </div>
+</div>
+
+<!--<div id="page">
+    <script>getPaging();</script>
+</div>-->
+<script src="/js/pclue/reward.js"></script>
+
+</body>
+</html>

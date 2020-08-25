@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:v-bind="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title>律师列表</title>
+    <link rel="stylesheet" href="../css/bootstrap.min.css">
+    <link rel="stylesheet" href="../css/dialog.css">
+    <script src="../js/jquery1.11.3.min.js"></script>
+    <script src="../js/bootstrap.min.js"></script>
+    <script src="../js/vue.js"></script>
+    <script src="../js/vue-resource1.3.4.js"></script>
+    <script src="../js/config.js"></script>
+    <script src="../plugins/My97DatePicker/WdatePicker.js"></script>
+
+</head>
+<body>
+<div id="lawyerIndex">
+    <div class="form-inline">
+        <div class="form-group">
+            <label class="sr-only">律师名</label>
+            <input id="txtLawyerName" v-model="search.lawyerName" style="width:135px" class="form-control" type="text"
+                   placeholder="请输入律师名"/>
+        </div>
+        <div class="form-group">
+            <label class="sr-only">律师英文名</label>
+            <input id="txtEnName" v-model="search.enName" style="width:135px" class="form-control" type="text"
+                   placeholder="请输入英文名"/>
+        </div>
+        <div class="form-group">
+            <label class="sr-only">区域律师</label>
+            <input id="txtLawFirm" v-model="search.lawFirm" style="width:135px" class="form-control" type="text"
+                   placeholder="请输入区域律师"/>
+        </div>
+        <div class="form-group">
+            <label class="sr-only">创建人</label>
+            <input id="txtCreator" v-model="search.creator" style="width:135px" class="form-control" type="text"
+                   placeholder="请输入创建人"/>
+        </div>
+        <div class="form-group">
+            执业年限：
+            <label class="sr-only">最小工年</label>
+            <input id="txtMinAmount" class="form-control" type="text" placeholder="请输入最小工年" v-model="search.minWorkYear"/>
+            ---
+            <label class="sr-only">最大工年</label>
+            <input id="txtMaxAmount" class="form-control" type="text" placeholder="请输入最大工年" v-model="search.maxWorkYear"/>
+        </div>
+        <div class="form-group">
+            创建时间：
+            <label class="sr-only">创建开始时间</label>
+            <input id="txtBeginDate" class="form-control" type="text" placeholder="请输入创建开始时间"/>
+            ---
+            <label class="sr-only">创建结束时间</label>
+            <input id="txtEndDate" class="form-control" type="text" placeholder="请输入创建结束时间"/>
+        </div>
+
+        <div class="form-group">
+            <div class="col-sm-6">
+                <select id="selLawyerShow" v-model="search.lawyerShow" class="form-control">
+                    <option value="-1" selected="selected">显示情况</option>
+                    <option value="0">显示</option>
+                    <option value="1">不显示</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <div class="col-sm-6">
+                <select id="selLawyerType" v-model="search.lawyerType" class="form-control">
+                    <option value="-1" selected="selected">律师类型</option>
+                    <option value="0">国内律师</option>
+                    <option value="1">国际律师</option>
+                </select>
+            </div>
+        </div>
+
+        <button id="btnSearch" type="button" @click="getLawyers" class="btn btn-primary">搜索</button>
+        <a class="btn btn-primary" href="edit.html" data-target="#dialog" data-toggle="modal">添加律师</a>
+
+        <input id="txtSearch" type="hidden" @click="getLawyers('msg')"/>
+        <input id="hidLawyerId" type="hidden" />
+    </div>
+
+    <div class="table-responsive">
+        <table class="table table-striped" id="main">
+            <thead>
+            <tr>
+                <th style="text-align:center;vertical-align:middle;">序号</th>
+                <th style="text-align:center;vertical-align:middle;">律师名</th>
+                <th style="text-align:center;vertical-align:middle;">英文名</th>
+                <th style="text-align:center;vertical-align:middle;">律师头像</th>
+                <th style="text-align:center;vertical-align:middle;">区域律师</th>
+                <th style="text-align:center;vertical-align:middle;">执业年限</th>
+                <th style="text-align:center;vertical-align:middle;">专长</th>
+                <th style="text-align:center;vertical-align:middle;">律师简介</th>
+                <th style="text-align:center;vertical-align:middle;">创建人</th>
+                <th style="text-align:center;vertical-align:middle;">创建时间</th>
+                <th style="text-align:center;vertical-align:middle;">律师排序</th>
+                <th style="text-align:center;vertical-align:middle;">是否显示</th>
+                <th style="text-align:center;vertical-align:middle;">律师类型</th>
+                <th style="text-align:center;vertical-align:middle;">操作</th>
+            </tr>
+            </thead>
+            <tbody>
+
+            <template>
+                <tr v-for="(lawyer,index) in lawyers">
+                    <td style="text-align:center;vertical-align:middle;">{{beginIndex + 1 + index}}</td>
+                    <td style="text-align:center;vertical-align:middle;">{{lawyer.lawyerName}}</td>
+                    <td style="text-align:center;vertical-align:middle;">{{lawyer.enName}}</td>
+                    <td style="text-align:center;vertical-align:middle;"><img :src="lawyer.lawyerIconCompress" class="img-rounded" width="80px" height="80px"/></td>
+                    <td style="text-align:center;vertical-align:middle;">{{lawyer.lawFirm}}</td>
+                    <td style="text-align:center;vertical-align:middle;">{{lawyer.workYear == 0 ? '':lawyer.workYear}}</td>
+                    <td style="text-align:center;vertical-align:middle;">{{lawyer.specialty}}</td>
+                    <td style="text-align:center;vertical-align:middle;width: 28%">{{lawyer.lawyerDesc}}</td>
+                    <td style="text-align:center;vertical-align:middle;">{{lawyer.creator}}</td>
+                    <td style="text-align:center;vertical-align:middle;">{{lawyer.createTimeDisplay}}</td>
+                    <td style="text-align:center;vertical-align:middle;">{{lawyer.lawyerOrder}}</td>
+                    <td style="text-align:center;vertical-align:middle;">{{lawyer.lawyerShowDisplay}}</td>
+                    <td style="text-align:center;vertical-align:middle;">{{lawyer.lawyerTypeDisplay}}</td>
+                    <td style="text-align:center;vertical-align:middle;">
+                        <a class="btn btn-xs btn-info" href="edit.html" data-target="#dialog"
+                           data-toggle="modal" onclick="setLawyerId(this.id);" :id="lawyer.lawyerId">编辑</a>
+                    </td>
+                </tr>
+            </template>
+
+            </tbody>
+        </table>
+    </div>
+
+    <div id="baseDialog"><script>getDialog('baseDialog','../basedialog.html');</script></div>
+
+
+</div>
+
+<div id="page"><script>getPaging();</script></div>
+<script src="../js/lawyer/index.js"></script>
+
+</body>
+</html>

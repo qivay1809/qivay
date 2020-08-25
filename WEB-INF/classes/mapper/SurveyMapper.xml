@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.qivay.mapper.SurveyMapper" >
+  <resultMap id="BaseResultMap" type="com.qivay.domain.Survey" >
+    <id column="survey_id" property="surveyId"  />
+    <result column="name" property="name"  />
+    <result column="phone" property="phone"  />
+    <result column="category" property="category"  />
+    <result column="type" property="type"  />
+    <result column="purpose" property="purpose"  />
+    <result column="describe" property="describe"  />
+    <result column="status" property="status"  />
+    <result column="validate" property="validate"  />
+    <result column="remark" property="remark"  />
+    <result column="address_id" property="addressId"  />
+    <result column="creator" property="creator"  />
+    <result column="create_time" property="createTime"  />
+  </resultMap>
+
+  <sql id="Base_Column_List" >
+    survey_id, `name`, phone, category,`type`, purpose, `describe`, status, validate, remark, address_id,
+    creator, create_time
+  </sql>
+
+  <sql id="base_conditions">
+    <where>
+      <if test="userId != null and userId != ''">
+        and creator = #{userId}
+      </if>
+      <if test="validate != -1">
+        and validate = #{validate}
+      </if>
+    </where>
+  </sql>
+
+
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from survey
+    where survey_id = #{surveyId}
+  </select>
+
+  <select id="findSurveys" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from survey
+    <include refid="base_conditions"/>
+    order by create_time desc
+    LIMIT #{startIndex}, #{pageSize}
+  </select>
+
+  <select id="getCount" resultType="int">
+    select
+    count(survey_id)
+    from survey
+    <include refid="base_conditions"/>
+  </select>
+
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from survey
+    where survey_id = #{surveyId}
+  </delete>
+
+
+  <insert id="insert" parameterType="com.qivay.domain.Survey" >
+    insert into survey (survey_id, `name`, phone,
+      category,`type`, purpose, `describe`,
+      status, validate, remark, 
+      address_id, creator, create_time)
+    values (#{surveyId}, #{name}, #{phone}, 
+      #{category},#{type}, #{purpose}, #{describe},
+      #{status}, #{validate}, #{remark}, 
+      #{addressId}, #{creator}, #{createTime})
+  </insert>
+  <update id="updateByPrimaryKey" parameterType="com.qivay.domain.Survey" >
+    update survey
+    set name = #{name},
+      phone = #{phone},
+      category = #{category},
+      `type` = #{type},
+      purpose = #{purpose},
+      `describe` = #{describe},
+      status = #{status},
+      validate = #{validate},
+      remark = #{remark},
+      address_id = #{addressId},
+      creator = #{creator},
+      create_time = #{createTime}
+    where survey_id = #{surveyId}
+  </update>
+
+  <update id="updateValidate">
+    update survey
+    set validate = #{validate}
+    where survey_id = #{surveyId}
+  </update>
+
+
+  <select id="findCountSurveyId" resultType="int">
+    select
+    count(survey_apply_id)
+    from survey_apply
+    where survey_id = #{surveyId}
+  </select>
+
+</mapper>

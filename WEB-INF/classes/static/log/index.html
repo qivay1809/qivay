@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:v-bind="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title>系统日志</title>
+    <link rel="stylesheet" href="../css/bootstrap.min.css">
+    <link rel="stylesheet" href="../css/dialog.css">
+    <script src="../js/jquery1.11.3.min.js"></script>
+    <script src="../js/bootstrap.min.js"></script>
+    <script src="../js/vue.js"></script>
+    <script src="../js/vue-resource1.3.4.js"></script>
+    <script src="../js/config.js"></script>
+    <script src="../plugins/My97DatePicker/WdatePicker.js"></script>
+
+</head>
+<body>
+<div id="logIndex">
+    <div class="form-inline">
+        <div class="form-group">
+            <label class="sr-only">菜单名称</label>
+            <input id="title" v-model="search.content" class="form-control" type="text" placeholder="请输入菜单名称" style="width: 135px"/>
+        </div>
+        <div class="form-group">
+            <div class="col-sm-6">
+                <select v-model="search.system" class="form-control">
+                    <option value="-1" selected="selected">系统类别</option>
+                    <option value="1">后台管理系统</option>
+                    <option value="2">ERP系统</option>
+                </select>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="sr-only">请求参数</label>
+            <input id="param" v-model="search.param" class="form-control" type="text" placeholder="请输入请求参数" style="width: 135px"/>
+        </div>
+        <div class="form-group">
+            <label class="sr-only">请求地址</label>
+            <input id="requestUri" v-model="search.requestUri" class="form-control" type="text" placeholder="请输入请求地址" style="width: 135px"/>
+        </div>
+        <div class="form-group">
+            <label class="sr-only">操作者姓名</label>
+            <input id="name" v-model="search.name" class="form-control" type="text" placeholder="请输入操作者姓名" style="width: 135px"/>
+        </div>
+        <div class="form-group">
+            <label class="sr-only">操作者电话</label>
+            <input id="cellphone" v-model="search.cellphone" class="form-control" type="text" placeholder="请输入操作者电话" style="width: 135px"/>
+        </div>
+        <div class="form-group">
+            <label class="sr-only">年月</label>
+            <input id="txtYm" v.model="search.ym" onfocus="WdatePicker({dateFmt:'yyyy-MM'})" class="form-control" type="text" placeholder="请选择年月"/>
+        </div>
+        <div class="form-group">
+            <label class="sr-only">开始时间</label>
+            <input id="txtBeginDate" v.model="search.beginDate" onfocus="WdatePicker({dateFmt:'yyyy-MM-dd'})" class="form-control" type="text" placeholder="请输入开始时间"/>
+            ---
+            <label class="sr-only">结束时间</label>
+            <input id="txtEndDate" v.model="search.endDate" onfocus="WdatePicker({dateFmt:'yyyy-MM-dd'})" class="form-control" type="text" placeholder="请输入结束时间"/>
+        </div>
+
+        <button id="btnSearch" type="button" @click="getLogs" class="btn btn-primary">搜索</button>
+        <input id="txtSearch" type="hidden" @click="getLogs('msg')"/>
+        <!--<input id="hidLogId" type="hidden" />-->
+    </div>
+
+    <div class="table-responsive">
+        <table class="table table-striped" id="main">
+            <thead>
+            <tr>
+                <th style="text-align:center;vertical-align:middle;">操作内容</th>
+                <th style="text-align:center;vertical-align:middle;">请求地址</th>
+                <th style="text-align:center;vertical-align:middle;">请求类别</th>
+                <th style="text-align:center;vertical-align:middle;">IP</th>
+                <th style="text-align:center;vertical-align:middle;">请求参数</th>
+                <th style="text-align:center;vertical-align:middle;">异常情况</th>
+                <th style="text-align:center;vertical-align:middle;">操作系统</th>
+                <th style="text-align:center;vertical-align:middle;">终端</th>
+                <th style="text-align:center;vertical-align:middle;">操作者</th>
+                <th style="text-align:center;vertical-align:middle;">电话</th>
+                <th style="text-align:center;vertical-align:middle;">创建时间</th>
+            </tr>
+            </thead>
+            <tbody>
+
+            <template>
+                <tr v-for="log in logs">
+                    <td style="text-align:center;vertical-align:middle;">{{log.content}}</td>
+                    <td style="text-align:center;vertical-align:middle;">{{log.requestUri}}</td>
+                    <td style="text-align:center;vertical-align:middle;">{{log.methodType}}</td>
+                    <td style="text-align:center;vertical-align:middle;">{{log.remoteAddr}}</td>
+                    <td style="text-align:center;vertical-align:middle;">{{log.param}}</td>
+                    <td style="text-align:center;vertical-align:middle;">{{log.exception}}</td>
+                    <td style="text-align:center;vertical-align:middle;">{{log.displaySystem}}</td>
+                    <td style="text-align:center;vertical-align:middle;">{{log.device}}</td>
+                    <td style="text-align:center;vertical-align:middle;">{{log.name}}</td>
+                    <td style="text-align:center;vertical-align:middle;">{{log.cellphone}}</td>
+                    <td style="text-align:center;vertical-align:middle;">{{log.createTime}}</td>
+                </tr>
+            </template>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<div id="page"><script>getPaging();</script></div>
+<script src="../js/log/index.js"></script>
+
+</body>
+</html>

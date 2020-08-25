@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.qivay.mapper.EmailReceiverMapper" >
+  <resultMap id="BaseResultMap" type="com.qivay.domain.EmailReceiver" >
+    <id column="email_receiver_id" property="emailReceiverId"/>
+    <result column="email_id" property="emailId"/>
+    <result column="object_id" property="objectId"/>
+    <result column="create_time" property="createTime"/>
+    <result column="creator" property="creator"/>
+  </resultMap>
+
+  <insert id="insert">
+    insert into email_receiver (email_receiver_id, email_id, object_id, 
+      create_time, creator)
+    values (#{emailReceiverId}, #{emailId}, #{objectId},
+      #{createTime}, #{creator})
+  </insert>
+
+  <update id="updateByPrimaryKey">
+    update email_receiver
+    set email_id = #{emailId},
+      object_id = #{objectId},
+      create_time = #{createTime},
+      creator = #{creator}
+    where email_receiver_id = #{emailReceiverId}
+  </update>
+
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap">
+    select email_receiver_id, email_id, object_id, create_time, creator
+    from email_receiver
+    where email_receiver_id = #{emailReceiverId}
+  </select>
+
+  <select id="selectAll" resultMap="BaseResultMap" >
+    select email_receiver_id, email_id, object_id, create_time, creator
+    from email_receiver
+  </select>
+
+</mapper>

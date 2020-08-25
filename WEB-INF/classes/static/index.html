@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:v-bind="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>企卫后台管理系统</title>
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+    <link rel="stylesheet" href="css/pagination.css">
+    <link rel="stylesheet" href="css/ace.min.css"/>
+    <link rel="stylesheet" href="css/ace-rtl.min.css"/>
+    <link rel="stylesheet" href="css/ace-skins.min.css"/>
+    <link rel="stylesheet" href="css/font-awesome.min.css"/>
+    <!--[if lte IE 8]>
+    <link rel="stylesheet" href="css/ace-ie.min.css"/>
+    <![endif]-->
+    <link rel="stylesheet" href="css/center.css"/>
+
+    <script src="js/jquery1.11.3.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/vue.js"></script>
+    <script src="js/vue-resource1.3.4.js"></script>
+    <script src="js/config.js"></script>
+    <script src="js/ace-extra.min.js"></script>
+    <script src="js/ace.min.js"></script>
+    <script src="js/tab.js"></script>
+
+    <link rel="stylesheet" href="plugins/confirm/jquery-confirm.css">
+    <script src="plugins/confirm/jquery-confirm.js"></script>
+
+    <!--easyUI-->
+
+    <!--<link rel="stylesheet" type="text/css" href="js/easyui/themes/icon.css">-->
+    <!--<link rel="stylesheet" type="text/css" href="js/easyui/demo.css">-->
+    <!--<script type="text/javascript" src="js/easyui/jquery.min.js"></script>-->
+    <script type="text/javascript" src="easyui/jquery.easyui.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="easyui/themes/default/easyui.css">
+
+</head>
+<body>
+<div class="navbar navbar-default" id="navbar" style="background: #157cf8">
+    <script type="text/javascript">
+        /*$(function () {
+            openTab('statisticalIndex','statisticalIndex.html','平台统计');
+            document.getElementById("statisticalIndex").style.display = 'none';
+        });*/
+        try {
+            ace.settings.check('navbar', 'fixed')
+        } catch (e) {
+        }
+    </script>
+
+    <div class="navbar-container" id="navbar-container">
+        <div class="navbar-header pull-left">
+            <a href="#" class="navbar-brand">
+                <nobr><img style="width: 35px;height: 35px" src="image/icon.png">企卫后台管理系统</nobr>
+            </a><!-- /.brand -->
+        </div><!-- /.navbar-header -->
+
+        <div class="navbar-header pull-right" role="navigation" id="userMsg">
+            <ul class="nav ace-nav">
+                <li class="green">
+                    <a data-toggle="dropdown" class="dropdown-toggle" href="#"
+                       onclick="openTab('myMessageIndex','personal/message.html','我的消息');">
+                        <i class="icon-envelope icon-animated-vertical"></i>
+                        <span class="badge badge-success"></span>我的消息
+                    </a>
+                </li>
+                <li class="red">
+                    <a data-toggle="dropdown" class="dropdown-toggle" href="#"
+                       onclick="openTab('versionIndex','version/index.html','版本信息');">
+                        <i class=" icon-info-sign"></i>
+                        <span class="badge badge-success"></span>版本信息
+                    </a>
+                </li>
+
+                <li>
+                    <a data-toggle="dropdown" href="#" class="dropdown-toggle" style="background-color: #1595f8">
+                        <img class="nav-user-photo" src="image/user.png" alt="头像" id="userIcon" style="height: 32px"/>
+                        <span class="user-info">
+									<small id="userName">欢迎,</small>
+                                    {{userName}}
+								</span>
+
+                        <i class="icon-caret-down"></i>
+                    </a>
+
+                    <ul class="user-menu pull-right dropdown-menu dropdown-yellow dropdown-caret dropdown-close">
+                        <li>
+                            <a href="#" onclick="reset()">
+                                <i class="icon-cog"></i>
+                                修改密码
+                            </a>
+                        </li>
+
+                        <li>
+                            <a href="#" onclick="openTab('personalIndex','personal/personal.html','个人信息');">
+                                <i class="icon-user"></i>
+                                我的信息
+                            </a>
+                        </li>
+
+                        <li class="divider"></li>
+
+                        <li>
+                            <a href="#" onclick="logout()" id="logout">
+                                <i class="icon-off"></i>
+                                退出登录
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+            </ul><!-- /.ace-nav -->
+        </div><!-- /.navbar-header -->
+    </div><!-- /.container -->
+</div>
+
+<div class="main-container" id="main-container">
+    <script type="text/javascript">
+        try {
+            ace.settings.check('main-container', 'fixed')
+        } catch (e) {
+        }
+    </script>
+    <div class="main-container-inner">
+        <a class="menu-toggler" id="menu-toggler" href="#">
+            <span class="menu-text"></span>
+        </a>
+
+        <div class="sidebar" id="sidebar">
+            <script type="text/javascript">
+                try {
+                    ace.settings.check('sidebar', 'fixed')
+                } catch (e) {
+                }
+            </script>
+
+            <div class="sidebar-shortcuts" id="sidebar-shortcuts">
+                <div class="sidebar-shortcuts-large" id="sidebar-shortcuts-large">
+
+                </div>
+
+                <div class="sidebar-shortcuts-mini" id="sidebar-shortcuts-mini">
+                    <span class="btn btn-success"></span>
+
+                    <span class="btn btn-info"></span>
+
+                    <span class="btn btn-warning"></span>
+
+                    <span class="btn btn-danger"></span>
+                </div>
+            </div><!-- #sidebar-shortcuts -->
+
+            <div class="tree well" id="menuTree">
+                <ul class="nav nav-list">
+
+                    <li v-for="parent in parents" class="parent-node">
+                        <a href="#" onclick="getChildes(this);" :data-id="parent.menuId">
+                            <span class="menu-text"> {{parent.menuName}} </span>
+                            <b class="arrow icon-angle-down"></b>
+                        </a>
+                        <ul v-bind:id="parent.menuId" class="submenu second"></ul>
+                    </li>
+
+                </ul><!-- /.nav-list -->
+            </div>
+
+            <div class="sidebar-collapse" id="sidebar-collapse">
+                <i class="icon-double-angle-left" data-icon1="icon-double-angle-left"
+                   data-icon2="icon-double-angle-right"></i>
+            </div>
+
+            <script type="text/javascript">
+                try {
+                    ace.settings.check('sidebar', 'collapsed')
+                } catch (e) {
+                }
+            </script>
+        </div>
+
+        <div class="main-content">
+            <div class="breadcrumbs" id="breadcrumbs">
+                <script type="text/javascript">
+                    try {
+                        ace.settings.check('breadcrumbs', 'fixed')
+                    } catch (e) {
+                    }
+                </script>
+
+                <ul class="breadcrumb">
+                    <li>
+                        <a href="#" id="crumb"></a>
+                    </li>
+                    <li class="active"></li>
+                    <li class="active"></li>
+                </ul><!-- .breadcrumb -->
+                <span id="company" hidden>
+                    公司账户余额：
+                    <span style="color: red" id="companyAmount"></span>
+                    <input type="text" width="60px;" id="txtBalance" style="display: none;">
+                    <button type="button" id="btnEdit" class="btn btn-xs btn-primary"
+                            onclick="editBalance();">修改余额</button>
+                    <button type="button" id="btnSave" class="btn btn-xs btn-primary" onclick="save();"
+                            style="display: none;">保存</button>
+                    <!--&nbsp;&nbsp;&nbsp;
+                    公司待缴税款：
+                    <span style="color: red" id="companyTax"></span>
+                    <input type="text" width="60px;"  id="txtTax" style="display: none;">-->
+                </span>
+
+
+            </div>
+
+            <div>
+                <ul  id="tabsx" class="nav nav-tabs" role="tablist" style="height: 35px; border-bottom: 2px solid #ffffff;">　
+                    <li role="presentation" class="active" style="border-bottom: 2px solid #ffffff;">
+                        <a href="#profile" aria-controls="profile" role="tab" data-toggle="tab">首页</a>
+                    </li>
+                </ul>
+                    <div class="tab-content" style="margin-top:-1px;">
+                        <div role="tabpanel" class="tab-pane active" id="profile">
+                            <div class="easyui-tabs">
+                                <div title="概览" style="padding:10px">
+                                    <iframe scrolling="auto" frameborder="0" src="main.html"
+                                            onload="changeSize(this)"
+                                            border="0" marginwidth="0" marginheight="0" allowtransparency="yes"
+                                            style="height: 665px; width: 1015px;overflow-x:hidden;"></iframe>
+                                </div>
+                                <div title="用户" style="padding:10px">
+                                    <iframe scrolling="hidden" frameborder="0" src="userStatistical.html"
+                                            onload="changeSize(this)"
+                                            border="0" marginwidth="0" marginheight="0" allowtransparency="yes"
+                                            style="height: 665px; width: 1015px;overflow-x:hidden;"></iframe>
+                                </div>
+                                <div title="线索" style="padding:10px">
+                                    <iframe scrolling="hidden" frameborder="0" src="clueStatistical.html"
+                                            onload="changeSize(this)"
+                                            border="0" marginwidth="0" marginheight="0" allowtransparency="yes"
+                                            style="height: 665px; width: 1015px;overflow-x:hidden;"></iframe>
+                                </div>
+                                <div title="资金" style="padding:10px">
+                                    <iframe scrolling="auto" frameborder="0" src="amountStatistical.html"
+                                            onload="changeSize(this)"
+                                            border="0" marginwidth="0" marginheight="0" allowtransparency="yes"
+                                            style="height: 665px; width: 1015px;overflow-x:hidden;"></iframe>
+                                </div>
+                        </div>
+                        </div>
+                </div>
+                </div>
+            </div>
+        </div><!-- /.main-content -->
+    </div><!-- /.main-container-inner -->
+
+    <!--<a href="#" id="btn-scroll-up" class="btn-scroll-up btn btn-sm btn-inverse">-->
+    <!--<i class="icon-double-angle-up icon-only bigger-110"></i>-->
+    <!--</a>-->
+</div>
+
+<!-- 模态框（Modal）
+<div class="modal fade" id="updatePassword" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog"  style="width: 450px">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+                    &times;
+                </button>
+                <h4 class="modal-title" id="myModalLabel">
+                    修改密码
+                </h4>
+            </div>
+            <div class="modal-body">
+                <form class="form-horizontal">
+                    <div class="form-group">
+                        <label class="col-sm-3 control-label">新&ensp;密&ensp;码</label>
+                        <div class="col-sm-9">
+                            <input type="password" class="form-control" id="txtPassword" placeholder="新密码">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="col-sm-3 control-label">再次输入</label>
+                        <div class="col-sm-9">
+                            <input type="password" class="form-control" id="txtRepassword" placeholder="再次输入新密码">
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default editClose" data-dismiss="modal">取消
+                </button>
+                <button type="button" class="btn btn-primary" onclick="resetPassword()">
+                    修改
+                </button
+            </div>
+        </div>&lt;!&ndash; /.modal-content &ndash;&gt;
+    </div>&lt;!&ndash; /.modal &ndash;&gt;
+</div>-->
+</body>
+<script src="js/index.js"></script>
+</html>

@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>法律服务</title>
+    <link rel="stylesheet" href="../css/bootstrap.min.css">
+    <link rel="stylesheet" href="../css/dialog.css">
+    <script src="../js/jquery1.11.3.min.js"></script>
+    <script src="../js/bootstrap.min.js"></script>
+    <script src="../js/vue.js"></script>
+    <script src="../js/vue-resource1.3.4.js"></script>
+    <script src="../js/config.js"></script>
+
+</head>
+<body>
+<div id="legalIndex">
+    <div class="form-inline">
+        <div class="form-group">
+            <label class="sr-only">姓名</label>
+            <input v-model="search.name" class="form-control" type="text" placeholder="姓名" style="width: 135px"/>
+        </div>
+        <div class="form-group">
+            <label class="sr-only">手机号</label>
+            <input v-model="search.phone" style="width:135px" class="form-control" type="text"
+                   placeholder="手机号"/>
+        </div>
+        <div class="form-group">
+            <div class="col-sm-6">
+                <select v-model="search.validate" class="form-control">
+                    <option value="-1" selected="selected">审核状态</option>
+                    <option value="0">待审核</option>
+                    <option value="1">已通过</option>
+                    <option value="2">未通过</option>
+                </select>
+            </div>
+        </div>
+        <button id="btnSearch" type="button" @click="getLegals" class="btn btn-primary">搜索</button>
+        <input id="txtSearch" type="hidden" @click="getLegals('msg')"/>
+        <input id="hidLegalId" type="hidden"/>
+    </div>
+
+    <div class="table-responsive">
+        <table class="table table-striped" id="main">
+            <thead>
+            <tr>
+                <th style="text-align:center;vertical-align:middle;">序号</th>
+                <th style="text-align:center;vertical-align:middle;">姓名</th>
+                <th style="text-align:center;vertical-align:middle;">电话</th>
+                <th style="text-align:center;vertical-align:middle;">类别</th>
+                <th style="text-align:center;vertical-align:middle;">类型</th>
+                <th style="text-align:center;vertical-align:middle;">现有资料</th>
+                <th style="text-align:center;vertical-align:middle;">详情</th>
+                <th style="text-align:center;vertical-align:middle;">状态</th>
+                <th style="text-align:center;vertical-align:middle;">时间</th>
+                <th style="text-align:center;vertical-align:middle;">操作</th>
+            </tr>
+            </thead>
+            <tbody>
+
+            <template>
+                <tr v-for="(legal,index) in legals">
+                    <td style="text-align:center;vertical-align:middle;">{{beginIndex + 1 + index}}</td>
+                    <td style="text-align:center;vertical-align:middle;">{{legal.name}}</td>
+                    <td style="text-align:center;vertical-align:middle;">{{legal.phone}}</td>
+                    <td style="text-align:center;vertical-align:middle;">{{legal.categoryDisplay}}</td>
+                    <td style="text-align:center;vertical-align:middle;">{{legal.typeDisplay}}</td>
+                    <td style="text-align:center;vertical-align:middle;">{{legal.data}}</td>
+                    <td style="text-align:center;vertical-align:middle;">{{legal.detail}}</td>
+                    <td style="text-align:center;vertical-align:middle;">{{legal.statusDisplay}}</td>
+                    <td style="text-align:center;vertical-align:middle;">{{legal.createTime}}</td>
+                    <td style="text-align:center;vertical-align:middle;">
+                        <div v-if="legal.validate == 0">
+                            <a class="btn btn-xs btn-info" href="show.html" data-target="#dialog"
+                               data-toggle="modal" onclick="setLegalId(this.id);" :id="legal.legalId">查看/审核</a>
+                        </div>
+                        <div v-else>
+                            <a class="btn btn-xs btn-info" href="show.html" data-target="#dialog"
+                               data-toggle="modal" onclick="setLegalId(this.id);" :id="legal.legalId">查看</a>
+                        </div>
+                        <div>
+                            <a class="btn btn-xs btn-info" href="#"
+                               onclick="parent.openTab(this.id,'/legal/apply.html?id='+this.id, this.name)"
+                               :id="legal.legalId" :name="legal.typeDisplay">应征{{legal.legalApplyCount}}条</a>
+                        </div>
+                    </td>
+                </tr>
+            </template>
+            </tbody>
+        </table>
+    </div>
+
+    <div id="baseDialog">
+        <script>getDialog('baseDialog', '../basedialog.html');</script>
+    </div>
+
+</div>
+
+<div id="page">
+    <script>getPaging();</script>
+</div>
+<script src="js/index.js"></script>
+
+</body>
+</html>

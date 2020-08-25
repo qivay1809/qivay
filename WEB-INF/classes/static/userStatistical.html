@@ -1,0 +1,282 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no, width=device-width">
+    <title>用户分布</title>
+    <link rel="stylesheet" href="https://a.amap.com/jsapi_demos/static/demo-center/css/demo-center.css"/>
+    <script src="js/jquery1.11.3.min.js"></script>
+
+    <link rel="stylesheet" type="text/css" href="easyui/themes/default/easyui.css">
+    <link rel="stylesheet" type="text/css" href="easyui/themes/icon.css">
+    <script type="text/javascript" src="easyui/jquery.easyui.min.js"></script>
+
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+    <script src="js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="js/echarts.js"></script>
+
+    <style>
+        #container {
+            height: 100%;
+            width: 100%;
+        }
+        html, body{
+            height: 100%;
+            width: 100%;
+        }
+
+        .input-card {
+            width: 25rem;
+        }
+
+        .input-card .btn {
+            width: 7rem;
+            margin-left: .7rem;
+            text-align: left
+        }
+
+        .input-card .btn:last-child {
+            margin-left: 0;
+        }
+    </style>
+</head>
+<body>
+
+<div class="easyui-panel" style="width: 100%;height: 100%; padding: 0px;margin: 0px;overflow:hidden">
+    <div class="easyui-layout" data-options="fit:true">
+        <div data-options="region:'east',split:true" style="width:350px;overflow:hidden">
+            <div>
+                <div id="chartmain1" style="width:350px;height: 220px"></div>
+            </div>
+            <br>
+            <div>
+                <div id="chartmain2" style="width:350px;height: 220px"></div>
+            </div>
+            <br>
+            <div>
+                <div id="chartmain3" style="width:350px;height: 220px"></div>
+            </div>
+        </div>
+        <div data-options="region:'center'" style="padding: 0px">
+            <div id="container" class="map" tabindex="0"></div>
+            <div class="input-card" style="left: 1rem;">
+                <h3 style="font-weight: bold;color: red"></h3>
+                <div class="input-item">
+                    <input type="button" class="btn" value="默认样式" id="add0" onclick='addCluster(0)'/>
+                    <input type="button" class="btn" value="样式一" id="add1" onclick='addCluster(1)'/>
+                    <input type="button" class="btn" value="样式二" id="add2" onclick='addCluster(2)'/>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="//a.amap.com/jsapi_demos/static/china.js"></script>
+<script type="text/javascript"
+        src="https://webapi.amap.com/maps?v=1.4.15&key=138aba94961d35dda9e34e3b708afad8&plugin=AMap.MarkerClusterer,AMap.Autocomplete,AMap.PlaceSearch"></script>
+<script type="text/javascript">
+    //地图
+    var cluster, markers = [];
+    var map = new AMap.Map("container", {
+        resizeEnable: true,
+        center: [105, 34],
+        zoom: 4
+    });
+    var markerStr = [];
+    $.ajax({
+        method: "GET",
+        url: "/statistical/getCardXy",
+        async: false,
+        success: function (res) {
+            markerStr = res.obj;
+            $('h3').html("总数：" + markerStr.length);
+        }
+    });
+
+    for (var i = 0; i < markerStr.length; i++) {
+        markers.push(new AMap.Marker({
+            position: markerStr[i],
+            content: '<div style="background-color: hsla(180, 100%, 50%, 0.7); height: 24px; width: 24px; border: 1px solid hsl(180, 100%, 40%); border-radius: 12px; box-shadow: hsl(180, 100%, 50%) 0px 0px 1px;"></div>',
+            offset: new AMap.Pixel(-15, -15)
+        }))
+    }
+
+    var count = markers.length;
+    var _renderClusterMarker = function (context) {
+        var factor = Math.pow(context.count / count, 1 / 18);
+        var div = document.createElement('div');
+        var Hue = 180 - factor * 180;
+        var bgColor = 'hsla(' + Hue + ',100%,50%,0.7)';
+        var fontColor = 'hsla(' + Hue + ',100%,20%,1)';
+        var borderColor = 'hsla(' + Hue + ',100%,40%,1)';
+        var shadowColor = 'hsla(' + Hue + ',100%,50%,1)';
+        div.style.backgroundColor = bgColor;
+        var size = Math.round(30 + Math.pow(context.count / count, 1 / 5) * 20);
+        div.style.width = div.style.height = size + 'px';
+        div.style.border = 'solid 1px ' + borderColor;
+        div.style.borderRadius = size / 2 + 'px';
+        div.style.boxShadow = '0 0 1px ' + shadowColor;
+        div.innerHTML = context.count;
+        div.style.lineHeight = size + 'px';
+        div.style.color = fontColor;
+        div.style.fontSize = '14px';
+        div.style.textAlign = 'center';
+        context.marker.setOffset(new AMap.Pixel(-size / 2, -size / 2));
+        context.marker.setContent(div)
+    };
+
+    addCluster(0);
+
+    function addCluster(tag) {
+        if (cluster) {
+            cluster.setMap(null);
+        }
+        if (tag == 2) {//完全自定义
+            cluster = new AMap.MarkerClusterer(map, markers, {
+                gridSize: 80,
+                renderClusterMarker: _renderClusterMarker
+            });
+        } else if (tag == 1) {//自定义图标
+            var sts = [{
+                url: "https://a.amap.com/jsapi_demos/static/images/blue.png",
+                size: new AMap.Size(32, 32),
+                offset: new AMap.Pixel(-16, -16)
+            }, {
+                url: "https://a.amap.com/jsapi_demos/static/images/green.png",
+                size: new AMap.Size(32, 32),
+                offset: new AMap.Pixel(-16, -16)
+            }, {
+                url: "https://a.amap.com/jsapi_demos/static/images/orange.png",
+                size: new AMap.Size(36, 36),
+                offset: new AMap.Pixel(-18, -18)
+            }, {
+                url: "https://a.amap.com/jsapi_demos/static/images/red.png",
+                size: new AMap.Size(48, 48),
+                offset: new AMap.Pixel(-24, -24)
+            }, {
+                url: "https://a.amap.com/jsapi_demos/static/images/darkRed.png",
+                size: new AMap.Size(48, 48),
+                offset: new AMap.Pixel(-24, -24)
+            }];
+            cluster = new AMap.MarkerClusterer(map, markers, {
+                styles: sts,
+                gridSize: 80
+            });
+        } else {//默认样式
+            cluster = new AMap.MarkerClusterer(map, markers, {gridSize: 80});
+        }
+    }
+
+
+
+    /*data数据请求*/
+    var state,gender,age = [];
+    $.ajax({
+        method: "GET",
+        url: "/statistical/countUserInfo",
+        async: false,
+        success: function (res) {
+            var data = res.obj;
+            state = data.state;
+            age = data.age;
+            gender = data.gender;
+        }
+    });
+
+    //饼图
+        var option1 = {
+            title : {
+                text: '用户验证情况',
+                x:'center'
+            },
+            tooltip : {
+                trigger: 'item',
+                formatter: "{a} <br/>{b} : {c} ({d}%)"
+            },
+            series : [
+                {
+                    name: '人数',
+                    type: 'pie',
+                    radius : '55%',
+                    center: ['50%', '60%'],
+                    data: state,
+                    itemStyle: {
+                        emphasis: {
+                            shadowBlur: 10,
+                            shadowOffsetX: 0,
+                            shadowColor: 'rgba(0, 0, 0, 0.5)'
+                        }
+                    }
+                }
+            ]
+        };
+        var myChart1 = echarts.init(document.getElementById('chartmain1'));
+        myChart1.setOption(option1);
+
+        var option2 = {
+            title : {
+                text: '用户年龄段',
+                x:'center'
+            },
+            tooltip : {
+                trigger: 'item',
+                formatter: "{a} <br/>{b} : {c} ({d}%)"
+            },
+            series : [
+                {
+                    name: '人数',
+                    type: 'pie',
+                    radius : '55%',
+                    center: ['50%', '60%'],
+                    data: age,
+                    itemStyle: {
+                        emphasis: {
+                            shadowBlur: 10,
+                            shadowOffsetX: 0,
+                            shadowColor: 'rgba(0, 0, 0, 0.5)'
+                        }
+                    }
+                }
+            ]
+        };
+        var myChart2 = echarts.init(document.getElementById('chartmain2'));
+        myChart2.setOption(option2);
+
+        var option3 = {
+            title : {
+                text: '用户性别比例',
+                x:'center'
+            },
+            tooltip : {
+                trigger: 'item',
+                formatter: "{a} <br/>{b} : {c} ({d}%)"
+            },
+            series : [
+                {
+                    name: '人数',
+                    type: 'pie',
+                    radius : '55%',
+                    center: ['50%', '60%'],
+                    data: gender,
+                    itemStyle: {
+                        emphasis: {
+                            shadowBlur: 10,
+                            shadowOffsetX: 0,
+                            shadowColor: 'rgba(0, 0, 0, 0.5)'
+                        }
+                    }
+                }
+            ]
+        };
+        var myChart3 = echarts.init(document.getElementById('chartmain3'));
+        myChart3.setOption(option3);
+
+        window.onresize = function(){
+            myChart1.resize();
+            myChart2.resize();
+            myChart3.resize();
+        };
+</script>
+</body>
+</html>

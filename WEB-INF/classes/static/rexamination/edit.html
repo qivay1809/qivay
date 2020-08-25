@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:v-bind="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title>送检审核</title>
+    <link rel="stylesheet" href="../css/bootstrap.min.css">
+    <link rel="stylesheet" href="../css/bootstrap-theme.min.css"/>
+    <link rel="stylesheet" href="../plugins/fileinput/css/fileinput.css"/>
+    <script src="../js/jquery1.11.3.min.js"></script>
+    <script src="../js/bootstrap.min.js"></script>
+    <script src="../js/vue.js"></script>
+    <script src="../js/vue-resource1.3.4.js"></script>
+    <script src="../js/config.js"></script>
+    <link rel="stylesheet" href="../plugins/confirm/jquery-confirm.css">
+    <script src="../plugins/confirm/jquery-confirm.js"></script>
+
+</head>
+<body>
+<div id="editExamination">
+<div class="modal-header">
+    <button type="button" class="close editClose" data-dismiss="modal" aria-label="Close"><span
+            aria-hidden="true">&times;</span></button>
+    <h4 class="modal-title">送检审核</h4>
+</div>
+<div class="modal-body">
+    <form class="form-horizontal">
+
+        <div class="form-group">
+            <label class="col-sm-2 control-label">产&ensp;品&ensp;名</label>
+            <div class="col-sm-9">
+                <input type="text" class="form-control" id="txtProductName" placeholder="产品名"  v-model="productName" readonly>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="col-sm-2 control-label">品&ensp;牌&ensp;名</label>
+            <div class="col-sm-9">
+                <input type="text" class="form-control" id="txtBrandName"  v-model="brandName" readonly>
+            </div>
+            <div class="col-sm-1">
+                <h4 style="color: red">*</h4>&nbsp;
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="col-sm-2 control-label">数&emsp;&emsp;量</label>
+            <div class="col-sm-9">
+                <input type="text" class="form-control" id="txtQuantity"  v-model="quantity" readonly>
+            </div>
+            <div class="col-sm-1">
+                <h4 style="color: red">*</h4>&nbsp;
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="col-sm-2 control-label">金&emsp;&emsp;额</label>
+            <div class="col-sm-9">
+                <input type="text" class="form-control" id="txtAmount"  v-model="amount" readonly>
+            </div>
+            <div class="col-sm-1">
+                <h4 style="color: red">*</h4>&nbsp;
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="col-sm-2 control-label">地&emsp;&emsp;址</label>
+            <div class="col-sm-9">
+                <input type="text" class="form-control" id="txtAddress"  v-model="address" readonly>
+            </div>
+            <div class="col-sm-1">
+                <h4 style="color: red">*</h4>&nbsp;
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="col-sm-2 control-label">商店类型</label>
+            <div class="col-sm-9">
+                <input type="text" class="form-control" id="txtShopTypeDisplay"  v-model="shopTypeDisplay" readonly>
+            </div>
+            <div class="col-sm-1">
+                <h4 style="color: red">*</h4>&nbsp;
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="col-sm-2 control-label">商&ensp;店&ensp;名</label>
+            <div class="col-sm-9">
+                <input type="text" class="form-control" id="txtShopName"  v-model="shopName" readonly>
+            </div>
+            <div class="col-sm-1">
+                <h4 style="color: red">*</h4>&nbsp;
+            </div>
+        </div>
+
+        <div class="form-group" v-if="cellphone != null && cellphone != ''">
+            <label class="col-sm-2 control-label">电&emsp;&emsp;话</label>
+            <div class="col-sm-9">
+                <input type="text" class="form-control" id="txtCellphone"  v-model="cellphone" readonly>
+            </div>
+            <div class="col-sm-1">
+                <h4 style="color: red">*</h4>&nbsp;
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="col-sm-2 control-label">购买时间</label>
+            <div class="col-sm-9">
+                <input type="text" class="form-control" id="txtFindTimeDisplay"  v-model="findTimeDisplay" readonly>
+            </div>
+            <div class="col-sm-1">
+                <h4 style="color: red">*</h4>&nbsp;
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="col-sm-2 control-label">创建时间</label>
+            <div class="col-sm-9">
+                <input type="text" class="form-control" id="txtCreateTimeDisplay"  v-model="createTimeDisplay" readonly>
+            </div>
+            <div class="col-sm-1">
+                <h4 style="color: red">*</h4>&nbsp;
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="col-sm-2 control-label">审核状态</label>
+            <div class="col-sm-9">
+                <input type="text" class="form-control" id="txtStatusDisplay"  v-model="statusDisplay" readonly>
+            </div>
+            <div class="col-sm-1">
+                <h4 style="color: red">*</h4>&nbsp;
+            </div>
+        </div>
+
+        <div class="form-group" v-if="other != null && other != ''">
+            <label class="col-sm-2 control-label">其&emsp;&emsp;他</label>
+            <div class="col-sm-9">
+                <input type="text" class="form-control" id="txtOther"  v-model="other" readonly>
+            </div>
+            <div class="col-sm-1">
+                <h4 style="color: red">*</h4>&nbsp;
+            </div>
+        </div>
+
+        <div v-if="status >= 3">
+            <div class="form-group">
+                <label class="col-sm-2 control-label">快递公司</label>
+                <div class="col-sm-9">
+                    <input type="text" class="form-control" id="txtCompany"  v-model="company" readonly>
+                </div>
+                <div class="col-sm-1">
+                    <h4 style="color: red">*</h4>&nbsp;
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="col-sm-2 control-label">快递单号</label>
+                <div class="col-sm-9">
+                    <input type="text" class="form-control" id="txtSheetNo"  v-model="sheetNo" readonly>
+                </div>
+                <div class="col-sm-1">
+                    <h4 style="color: red">*</h4>&nbsp;
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="col-sm-2 control-label">相关图片</label>
+                <div class="col-sm-10">
+                    <img v-bind:src="deliveryImage" width="200px"/>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-2 control-label">返还金额</label>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" id="txtReAmount"  v-model="reAmount">
+                </div>
+            </div>
+        </div>
+
+    </form>
+</div>
+<div class="modal-footer">
+    <div v-if="hasReturn == 0">
+        <button type="button" class="btn btn-default" @click="returnExamination()">返还</button>
+    </div>
+    <div v-else>
+        <button id="btnClose" type="button" class="btn btn-default editClose" data-dismiss="modal">关闭</button>
+    </div>
+</div>
+</div>
+
+<script src="../js/reexamination/edit.js"></script>
+
+</body>
+</html>

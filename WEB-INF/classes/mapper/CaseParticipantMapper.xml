@@ -1,0 +1,172 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.qivay.mapper.CaseParticipantMapper" >
+  <resultMap id="BaseResultMap" type="com.qivay.domain.CaseParticipant" >
+    <id column="case_participant_id" property="caseParticipantId"/>
+    <result column="case_id" property="caseId"/>
+    <result column="name" property="userId"/>
+    <result column="case_title" property="caseTitle"/>
+    <result column="cellphone" property="cellphone"/>
+    <result column="progress" property="progress"/>
+    <result column="pay" property="pay"/>
+    <result column="end_time" property="endTime"/>
+  </resultMap>
+  <resultMap id="ExcelResultMap" type="com.qivay.vo.ExcelCaseParticipant" >
+    <id column="case_participant_id" property="caseParticipantId"/>
+    <result column="case_id" property="caseIn"/>
+    <result column="name" property="user"/>
+    <result column="case_title" property="caseTitle"/>
+    <result column="cellphone" property="cellphone"/>
+    <result column="progress" property="progress"/>
+    <result column="pay" property="pay"/>
+    <result column="end_time" property="endTime"/>
+  </resultMap>
+  <resultMap id="ShowResultMap" type="com.qivay.domain.CaseParticipant" >
+    <id column="case_participant_id" property="caseParticipantId"/>
+    <result column="case_id" property="caseId"/>
+    <result column="case_title" property="caseTitle"/>
+    <result column="user_id" property="userId"/>
+    <result column="cellphone" property="cellphone"/>
+    <result column="progress" property="progress"/>
+    <result column="pay" property="pay"/>
+    <result column="end_time" property="endTime"/>
+  </resultMap>
+
+  <insert id="insert">
+    insert into case_participant (case_participant_id, case_id, user_id, 
+      progress, pay)
+    values (#{caseParticipantId}, #{caseId}, #{userId},
+      #{progress}, #{pay})
+  </insert>
+
+  <update id="auditCase">
+    update case_participant
+    set progress = 3
+    where case_participant_id = #{caseParticipantId}
+  </update>
+
+  <select id="getParticipant" resultMap="ShowResultMap">
+    select cp.case_participant_id, cp.case_id, cp.user_id, cp.progress, cp.pay,ci.case_title
+    from case_participant cp
+    join case_info ci on cp.case_id = ci.case_id
+    where cp.case_participant_id = #{caseParticipantId}
+  </select>
+
+  <sql id="base_conditions">
+    <where>
+      <if test="caseId != null and caseId != ''">
+        c.case_id = #{caseId}
+      </if>
+      <if test="caseTitle != null and caseTitle != ''">
+        and ci.case_title like concat('%',#{caseTitle},'%')
+      </if>
+      <if test="userName != null and userName != ''">
+        and u.name like concat('%',#{userName},'%')
+      </if>
+      <if test="cellphone != null and cellphone != ''">
+        and u.cellphone like concat('%',#{cellphone},'%')
+      </if>
+      <if test="progress != -1">
+        and c.progress = #{progress}
+      </if>
+      <if test="beginDate != null">
+        and c.end_time >= #{beginDate}
+      </if>
+      <if test="endDate != null">
+        and c.end_time &lt;= #{endDate}
+      </if>
+    </where>
+  </sql>
+  <sql id="audit_conditions">
+    <where>
+      (c.progress = 2 or c.progress = 3)
+      <if test="caseId != null and caseId != ''">
+        and c.case_id like concat('%',#{caseId},'%')
+      </if>
+      <if test="userName != null and userName != ''">
+        and u.name like concat('%',#{userName},'%')
+      </if>
+      <if test="cellphone != null and cellphone != ''">
+        and u.cellphone like concat('%',#{cellphone},'%')
+      </if>
+      <if test="progress != -1">
+        and c.progress = #{progress}
+      </if>
+      <if test="caseTitle != null and caseTitle != ''">
+        and ci.case_title like concat('%',#{caseTitle},'%')
+      </if>
+      <if test="beginDate != null">
+        and c.end_time >= #{beginDate}
+      </if>
+      <if test="endDate != null">
+        and c.end_time &lt;= #{endDate}
+      </if>
+    </where>
+  </sql>
+
+  <select id="getCount" resultType="int">
+    select count(c.case_participant_id)
+    from case_participant c
+    join user u on c.user_id = u.user_id
+    join case_info ci on c.case_id = ci.case_id
+    <include refid="base_conditions"/>
+  </select>
+
+  <select id="getParticipants" resultMap="BaseResultMap">
+    select c.case_participant_id,c.case_id,c.progress,c.pay,u.name,u.cellphone,c.end_time,ci.case_title
+    from case_participant c
+    join user u on c.user_id = u.user_id
+    join case_info ci on c.case_id = ci.case_id
+    <include refid="base_conditions"/>
+    order by field(c.progress,1,3,0,2),c.end_time desc,ci.create_time desc
+    limit #{startIndex},#{pageSize}
+  </select>
+
+  <select id="getExcelCasePaticipants" resultMap="ExcelResultMap">
+    select c.case_participant_id,c.case_id,c.progress,c.pay,u.name,u.cellphone,c.end_time,ci.case_title
+    from case_participant c
+    join user u on c.user_id = u.user_id
+    join case_info ci on c.case_id = ci.case_id
+    <include refid="base_conditions"/>
+    order by field(c.progress,1,3,0,2),c.end_time desc,ci.create_time desc
+  </select>
+
+  <select id="getAuditCount" resultType="int">
+    select count(c.case_participant_id)
+    from case_participant c
+    join user u on c.user_id = u.user_id
+    join case_info ci on c.case_id = ci.case_id
+    <include refid="audit_conditions"/>
+  </select>
+
+  <select id="getAuditParticipants" resultMap="BaseResultMap">
+    select c.case_participant_id,c.case_id,c.progress,c.pay,u.name,u.cellphone,c.end_time,ci.case_title,c.end_time
+    from case_participant c
+    join user u on c.user_id = u.user_id
+    join case_info ci on c.case_id = ci.case_id
+    <include refid="audit_conditions"/>
+    order by field(c.progress,3,2),c.end_time desc
+    limit #{startIndex},#{pageSize}
+  </select>
+
+  <update id="updateParticipantProgress">
+    update case_participant
+    set progress = #{progress},
+    end_time = #{endDate}
+    where case_participant_id = #{caseParticipantId}
+  </update>
+
+  <select id="checkParticipant" resultType="string">
+    select case_participant_id from case_participant
+    where case_id = #{caseId} and user_id = #{userId}
+  </select>
+
+  <select id="getProgress" resultType="int">
+    select progress from case_participant where case_participant_id = #{caseParticipantId}
+  </select>
+
+  <delete id="deleteUser">
+    delete from case_participant  where case_id = #{caseId}
+  </delete>
+
+</mapper>

@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.qivay.mapper.CaseSurveyMapper">
+
+    <resultMap id="caseSurveyMap" type="com.qivay.domain.CaseSurvey">
+        <id property="caseSurveyId" column="case_survey_id"/>
+        <result property="investigator" column="investigator"/>
+        <result property="agency" column="agency"/>
+        <result property="surveyTime" column="survey_time"/>
+        <result property="punishTime" column="punish_time"/>
+        <result property="caseId" column="case_id"/>
+        <result property="check" column="check"/>
+    </resultMap>
+
+
+    <sql id="columns">
+        case_survey_id, investigator, agency, survey_time, punish_time, case_id,`check`
+    </sql>
+
+    <select id="findById" resultMap="caseSurveyMap">
+        select
+        <include refid="columns"/>
+        from case_survey
+        where case_survey_id = #{caseSurveyId}
+    </select>
+
+    <select id="getCaseSurveyByCaseId" resultMap="caseSurveyMap">
+        SELECT
+        <include refid="columns"/>
+        FROM case_survey
+        where case_id = #{caseId}
+    </select>
+
+    <insert id="insertSurvey" parameterType="com.qivay.domain.CaseSurvey">
+        INSERT INTO
+        case_survey
+        (<include refid="columns"/>)
+        VALUES
+        (#{caseSurveyId},#{investigator},#{agency}, #{surveyTime},#{punishTime},#{caseId},#{check})
+    </insert>
+
+    <update id="update"  parameterType="com.qivay.domain.CaseSurvey">
+        update case_survey
+        set investigator = #{investigator},
+        agency = #{agency},
+        survey_time = #{surveyTime},
+        punish_time = #{punishTime},
+        `check` = #{check}
+        where case_survey_id = #{caseSurveyId}
+    </update>
+
+
+    <!--确认案件跟进信息的状态-->
+    <update id="updateCheck">
+        update case_survey
+        set `check` = #{check}
+        where case_survey_id = #{caseSurveyId}
+    </update>
+</mapper>

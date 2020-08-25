@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>添加奖金</title>
+    <link rel="stylesheet" href="../css/bootstrap.min.css">
+    <script src="../js/jquery1.11.3.min.js"></script>
+    <script src="../js/bootstrap.min.js"></script>
+    <script src="../js/vue.js"></script>
+    <script src="../js/vue-resource1.3.4.js"></script>
+    <script src="../js/config.js"></script>
+</head>
+<body>
+<div id="editBalance">
+    <div class="modal-header">
+        <button type="button" class="close editClose" data-dismiss="modal" aria-label="Close"><span
+                aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title">添加奖金</h4>
+    </div>
+    <div class="modal-body">
+        <form class="form-horizontal">
+            <div class="form-group">
+                <label class="col-sm-2 control-label">奖金类型</label>
+                <div class="col-sm-6">
+                    <select id="validate" v-model="accountType" class="form-control">
+                       <!-- <option value="-1" selected="selected">请选择</option>-->
+                        <option value="3">账户余额</option>
+                        <option value="4">活动红包</option>
+                        <option value="5">案件奖金</option>
+                    </select>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-2 control-label">奖金金额</label>
+                <div class="col-sm-9">
+                    <input type="text" class="form-control"  placeholder="奖金金额"  v-model="reward">
+                </div>
+                <div class="col-sm-1">
+                    <h4 style="color: red">*</h4>&nbsp;
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-2 control-label">奖金备注</label>
+                <div class="col-sm-9">
+                    <textarea class="form-control" rows="3" v-model="remark"></textarea>
+                </div>
+                <div class="col-sm-1">
+                    <h4 style="color: red">*</h4>&nbsp;
+                </div>
+            </div>
+        </form>
+    </div>
+    <div class="modal-footer">
+        <button id="btnClose" type="button" class="btn btn-default editClose" data-dismiss="modal">关闭</button>
+        <button type="button" class="btn btn-primary" @click="addReward">保存</button>
+    </div>
+</div>
+
+<script src="../js/user/editBalance.js"></script>
+
+</body>
+</html>

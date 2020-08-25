@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:v-bind="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title>详情</title>
+    <link rel="stylesheet" href="../css/bootstrap.min.css">
+    <script src="../js/jquery1.11.3.min.js"></script>
+    <script src="../js/bootstrap.min.js"></script>
+    <script src="../js/vue.js"></script>
+    <script src="../js/vue-resource1.3.4.js"></script>
+</head>
+<script>
+    $(function () {
+        $('#myTab li a').bind('click', function () {
+        });
+    });
+</script>
+<body>
+<div id="editExamination">
+    <div class="modal-header">
+        <button type="button" class="close editClose" data-dismiss="modal" aria-label="Close"><span
+                aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title">详情</h4>
+    </div>
+    <div class="tab">
+        <ul id="myTab" class="nav nav-tabs">
+            <li class="active"><a href="#tab1" data-toggle="tab">送检详情</a></li>
+            <li><a href="#tab2" data-toggle="tab">快递详情</a></li>
+        </ul>
+        <div id="myTabContent" class="tab-content">
+            <div class="tab-pane fade in active" id="tab1">
+                <div class="modal-body">
+                    <form class="form-horizontal">
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">产&ensp;品&ensp;名</label>
+                            <div class="col-sm-9">
+                                <input type="text" class="form-control" id="txtProductName" placeholder="产品名" v-model="product"
+                                       readonly>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">品&ensp;牌&ensp;名</label>
+                            <div class="col-sm-9">
+                                <input type="text" class="form-control" id="txtBrandName" v-model="brand" readonly>
+                            </div>
+                            <div class="col-sm-1">
+                                <h4 style="color: red">*</h4>&nbsp;
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">审核状态</label>
+                            <div class="col-sm-9">
+                                <input type="text" class="form-control" id="txtStatusDisplay" v-model="statusString" readonly>
+                            </div>
+                            <div class="col-sm-1">
+                                <h4 style="color: red">*</h4>&nbsp;
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">创建时间</label>
+                            <div class="col-sm-9">
+                                <input type="text" class="form-control" id="txtCreateTimeDisplay" v-model="createTime" readonly>
+                            </div>
+                            <div class="col-sm-1">
+                                <h4 style="color: red">*</h4>&nbsp;
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">商品图片</label>
+                            <div class="col-sm-10">
+                                <div style="float: left" v-for="(image1,index) in examinationImages">
+                                    <img v-bind:src="image1" width="150px" height="150px" data-index="index"
+                                         onclick="openDialog(this,true);" style="cursor:pointer;">
+                                    <input v-bind:value="index" hidden/>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">鉴定结果</label>
+                            <div class="col-sm-10">
+                                <img v-bind:src="Attachment" width="150px" height="150px" data-index="index"
+                                     onclick="openDialog(this,true);" style="cursor:pointer;">
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            <div class="tab-pane fade" id="tab2">
+                <div class="modal-body">
+                    <div class="table-responsive">
+                        <table class="table table-striped" id="main">
+                            <thead>
+                            <tr>
+                                <th style="text-align:center;vertical-align:middle;">订单号</th>
+                                <th style="text-align:center;vertical-align:middle;">运单号</th>
+                                <th style="text-align:center;vertical-align:middle;">寄件人姓名</th>
+                                <th style="text-align:center;vertical-align:middle;">寄件人电话</th>
+                                <th style="text-align:center;vertical-align:middle;">寄件人详细地址</th>
+                                <th style="text-align:center;vertical-align:middle;">收件人姓名</th>
+                                <th style="text-align:center;vertical-align:middle;">收件人电话</th>
+                                <th style="text-align:center;vertical-align:middle;">收件人详细地址</th>
+                                <th style="text-align:center;vertical-align:middle;">上门时间</th>
+                                <th style="text-align:center;vertical-align:middle;">寄件类型</th>
+                                <th style="text-align:center;vertical-align:middle;">创建时间</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+
+                            <template>
+                                <tr v-for="(express,index) in expresss">
+                                    <td style="text-align:center;vertical-align:middle;">{{express.sendorder}}</td>
+                                    <td style="text-align:center;vertical-align:middle;">{{express.hzorder}}</td>
+                                    <td style="text-align:center;vertical-align:middle;">{{express.sendName}}</td>
+                                    <td style="text-align:center;vertical-align:middle;">{{express.sendMobile}}</td>
+                                    <td style="text-align:center;vertical-align:middle;">{{express.sendDetailAddress}}</td>
+                                    <td style="text-align:center;vertical-align:middle;">{{express.receiveName}}</td>
+                                    <td style="text-align:center;vertical-align:middle;">{{express.receiveMobile}}</td>
+                                    <td style="text-align:center;vertical-align:middle;">{{express.receiveDetailAdress}}</td>
+                                    <td style="text-align:center;vertical-align:middle;">{{express.cometime}}</td>
+                                    <td style="text-align:center;vertical-align:middle;">
+                                        <span v-if="express.sort == 1" style="color:green;">寄往企卫</span>
+                                        <span v-else-if="express.sort == 2"  style="color:red">寄往用户</span>
+                                    </td>
+                                    <td style="text-align:center;vertical-align:middle;">{{express.createTime}}</td>
+                                </tr>
+                            </template>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal-footer">
+        <div>
+            <button id="btnClose" type="button" class="btn btn-default editClose" data-dismiss="modal">关闭</button>
+        </div>
+    </div>
+    <a data-toggle="modal" href="#example2" class="btn-large" id="imageDialog" hidden></a>
+</div>
+
+<script src="../js/examination/show.js"></script>
+</body>
+</html>

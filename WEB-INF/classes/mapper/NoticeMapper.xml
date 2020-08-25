@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.qivay.mapper.NoticeMapper" >
+  <resultMap id="BaseResultMap" type="com.qivay.domain.Notice" >
+    <id column="notice_id" property="noticeId"/>
+    <result column="notice_content" property="noticeContent"/>
+    <result column="notice_title" property="noticeTitle"/>
+    <result column="notice_desc" property="noticeDesc"/>
+    <result column="notice_order" property="noticeOrder"/>
+    <result column="user_id" property="creator"/>
+    <result column="name" property="userName"/>
+    <result column="create_time" property="createTime"/>
+    <result column="notice_show" property="noticeShow"/>
+  </resultMap>
+
+  <insert id="insert">
+    insert into notice (notice_id, notice_content, notice_order, 
+      creator, create_time,notice_title,notice_desc,notice_show)
+    values (#{noticeId}, #{noticeContent}, #{noticeOrder},
+      #{creator}, #{createTime},#{noticeTitle},#{noticeDesc},#{noticeShow})
+  </insert>
+  <update id="updateByPrimaryKey">
+    update notice
+    set notice_content = #{noticeContent},
+      notice_order = #{noticeOrder},
+      notice_title = #{noticeTitle},
+      notice_desc = #{noticeDesc},
+      notice_show = #{noticeShow}
+    where notice_id = #{noticeId}
+  </update>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap">
+    select notice_id, notice_content, notice_order, creator, create_time,notice_title,notice_desc,notice_show
+    from notice
+    where notice_id = #{noticeId}
+  </select>
+
+  <sql id="base_conditions">
+    <where>
+      <if test="noticeTitle != null">
+        and n.notice_title like concat('%',#{noticeTitle},'%')
+      </if>
+      <if test="creator != null">
+        and u.name like concat('%',#{creator},'%')
+      </if>
+      <if test="beginDateDisplay != null">
+        and n.create_time >= #{beginDateDisplay}
+      </if>
+      <if test="endDateDisplay != null">
+        and n.create_time &lt;= #{endDateDisplay}
+      </if>
+      <if test="noticeShow != -1">
+        and n.notice_show = #{noticeShow}
+      </if>
+    </where>
+  </sql>
+
+  <select id="getNotices" resultMap="BaseResultMap">
+    select n.notice_id,n.notice_title,n.notice_desc,n.notice_order,u.user_id,u.name,n.create_time,n.notice_show
+    from notice n join user u on n.creator = u.user_id
+    <include refid="base_conditions"/>
+    order by n.create_time desc
+    limit #{startIndex},#{pageSize}
+  </select>
+
+  <select id="getCount" resultType="int">
+    select count(n.notice_id)
+    from notice n join user u on n.creator = u.user_id
+    <include refid="base_conditions"/>
+  </select>
+
+
+</mapper>

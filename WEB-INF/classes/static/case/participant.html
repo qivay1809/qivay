@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:v-bind="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title>参与人列表</title>
+    <link rel="stylesheet" href="../css/bootstrap.min.css">
+    <link rel="stylesheet" href="../css/dialog.css">
+    <link rel="stylesheet" href="../css/pagination.css">
+    <link rel="stylesheet" href="../plugins/confirm/jquery-confirm.css">
+    <script src="../js/jquery1.11.3.min.js"></script>
+    <script src="../js/bootstrap.min.js"></script>
+    <script src="../js/vue.js"></script>
+    <script src="../js/vue-resource1.3.4.js"></script>
+    <script src="../js/config.js"></script>
+    <script src="../plugins/My97DatePicker/WdatePicker.js"></script>
+    <script src="../plugins/confirm/jquery-confirm.js"></script>
+
+</head>
+<body>
+<div class="modal-header">
+    <button type="button" class="close editClose" data-dismiss="modal" aria-label="Close"><span
+            aria-hidden="true">&times;</span></button>
+    <h4 class="modal-title">参与人列表</h4>
+</div>
+<div id="participantIndex" class="modal-body">
+    <div class="form-inline">
+        <div class="form-group">
+            <label class="sr-only">案件ID</label>
+            <input id="txtCaseId" v-model="search.caseId" style="width:135px" class="form-control" type="text"
+                   placeholder="请输入案件ID"/>
+        </div>
+        <div class="form-group">
+            <label class="sr-only">案件标题</label>
+            <input id="txtCaseTitle" v-model="search.caseTitle" style="width:130px" class="form-control" type="text"
+                   placeholder="请输入案件标题"/>
+        </div>
+        <div class="form-group">
+            <label class="sr-only">参与人</label>
+            <input id="txtUserName" v-model="search.userName" style="width:135px" class="form-control" type="text"
+                   placeholder="请输入参与人名"/>
+        </div>
+        <div class="form-group">
+            <label class="sr-only">参与人电话</label>
+            <input id="txtCellphone" v-model="search.cellphone" style="width:140px" class="form-control" type="text"
+                   placeholder="请输入参与人电话"/>
+        </div>
+
+        <div class="form-group">
+            完结时间：
+            <label class="sr-only">完结开始时间</label>
+            <input id="txtBeginDate2" class="form-control" type="text" placeholder="请输入完结开始时间"/>
+            ---
+            <label class="sr-only">完结结束时间</label>
+            <input id="txtEndDate2" class="form-control" type="text" placeholder="请输入完结结束时间"/>
+        </div>
+
+        <div class="form-group">
+            <div class="col-sm-6">
+                <select id="selProgress" v-model="search.progress" class="form-control">
+                    <option value="-1" selected="selected">进度</option>
+                    <option value="0">未开始</option>
+                    <option value="1">进行中</option>
+                    <option value="2">已完结</option>
+                    <option value="3">财务审核</option>
+                </select>
+            </div>
+        </div>
+
+        <button id="btnSearch2" type="button" @click="getParticipants" class="btn btn-primary">搜索</button>
+
+        <a class="btn btn-primary" :href="exportParticipantUrl">导出</a>
+
+        <input id="txtSearch2" type="hidden" @click="getParticipants('msg')"/>
+    </div>
+
+    <div class="table-responsive">
+        <table class="table table-striped" id="main">
+            <thead>
+            <tr>
+                <th style="text-align:center;vertical-align:middle;">编号</th>
+                <th style="text-align:center;vertical-align:middle;">案件ID</th>
+                <th style="text-align:center;vertical-align:middle;">案件标题</th>
+                <th style="text-align:center;vertical-align:middle;">参与人</th>
+                <th style="text-align:center;vertical-align:middle;">参与人电话</th>
+                <th style="text-align:center;vertical-align:middle;">报酬</th>
+                <th style="text-align:center;vertical-align:middle;">进度</th>
+                <th style="text-align:center;vertical-align:middle;">完结时间</th>
+                <th style="text-align:center;vertical-align:middle;">操作</th>
+            </tr>
+            </thead>
+            <tbody>
+
+            <template>
+                <tr v-for="(participant,index) in participants">
+                    <td style="text-align:center;vertical-align:middle;">{{beginIndex + 1 + index}}</td>
+                    <td style="text-align:center;vertical-align:middle;">{{participant.caseId}}</td>
+                    <td style="text-align:center;vertical-align:middle;">{{participant.caseTitle}}</td>
+                    <td style="text-align:center;vertical-align:middle;">{{participant.userId}}</td>
+                    <td style="text-align:center;vertical-align:middle;">{{participant.cellphone}}</td>
+                    <td style="text-align:center;vertical-align:middle;">{{participant.pay}}</td>
+                    <td style="text-align:center;vertical-align:middle;">{{participant.progressDisplay}}</td>
+                    <td style="text-align:center;vertical-align:middle;">{{participant.endTimeDisplay}}</td>
+                    <td style="text-align:center;vertical-align:middle;">
+                        <div v-if="participant.progress == 1">
+                            <a class="btn btn-xs btn-success" href="#" onclick="auditCase(this.id);" :id="participant.caseParticipantId">财务审核</a>
+                        </div>
+                    </td>
+                </tr>
+            </template>
+
+            </tbody>
+        </table>
+    </div>
+
+
+</div>
+<div id="participantPaging">
+    <div class="page" v-show="show">
+        <div class="pagelist">
+            <span class="jump" :class="{disabled:pstart}" @click="jumpPage(--current_page)">上一页</span>
+            <span v-show="estart" class="jump" @click="jumpPage(1)">1</span>
+            <span class="ellipsis" v-show="efont">...</span>
+            <span class="jump" v-for="num in indexs" :class="{bgprimary:current_page==num}" @click="jumpPage(num)">{{num}}</span>
+            <span class="ellipsis" v-show="ebehind">...</span>
+
+            <span :class="{disabled:pend}" class="jump" @click="jumpPage(++current_page)">下一页</span>
+            <span v-show="eend" class="jump" @click="jumpPage(pages)">{{pages}}</span>
+
+            <span class="jumppoint">跳转到：</span>
+            <span class="jumpinp"><input type="text" v-model="changePage"></span>
+            <span class="jump gobtn" @click="jumpPage(changePage)">GO</span>
+        </div>
+    </div>
+</div>
+<script>
+    var participantPageVM = new Vue({
+        el: '#participantPaging',
+        data: {
+            current_page: 1, //当前页
+            pages: 1, //总页数
+            changePage: '',//跳转页
+            nowIndex: 0
+        },
+        computed: {
+            show: function () {
+                return this.pages && this.pages != 1
+            },
+            pstart: function () {
+                return this.current_page == 1;
+            },
+            pend: function () {
+                return this.current_page == this.pages;
+            },
+            estart: function () {
+                return this.current_page>5 && this.pages>7;
+            },
+            eend: function () {
+                return this.current_page<this.pages-4 && this.pages>7;
+            },
+            efont: function () {
+                if (this.pages <= 7) return false;
+                return this.current_page > 5
+            },
+            ebehind: function () {
+                if (this.pages <= 7) return false;
+                var nowAy = this.indexs;
+                return nowAy[nowAy.length - 1] != this.pages;
+            },
+            indexs: function () {
+
+                var left = 1,
+                    right = this.pages,
+                    ar = [];
+                if (this.pages >= 7) {
+                    if (this.current_page > 5 && this.current_page < this.pages - 4) {
+                        left = Number(this.current_page) - 3;
+                        right = Number(this.current_page) + 3;
+                    } else {
+                        if (this.current_page <= 5) {
+                            left = 1;
+                            right = 7;
+                        } else {
+                            right = this.pages;
+
+                            left = this.pages - 6;
+                        }
+                    }
+                }
+                while (left <= right) {
+                    ar.push(left);
+                    left++;
+                }
+                return ar;
+            }
+        },
+        methods: {
+            jumpPage: function (id) {
+                this.current_page = id;
+                $("#txtSearch2").click();
+            }
+        }
+
+    });
+</script>
+<div class="modal-footer">
+    <button id="btnClose" type="button" class="btn btn-default editClose" data-dismiss="modal">关闭</button>
+</div>
+<script src="../js/case/participant.js"></script>
+
+</body>
+</html>

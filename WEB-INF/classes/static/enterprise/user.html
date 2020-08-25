@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:v-bind="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title>企业账号列表</title>
+
+    <link rel="stylesheet" href="../css/bootstrap.min.css">
+    <link rel="stylesheet" href="../css/dialog.css">
+    <script src="../js/jquery1.11.3.min.js"></script>
+    <script src="../js/bootstrap.min.js"></script>
+    <script src="../js/vue.js"></script>
+    <script src="../js/vue-resource1.3.4.js"></script>
+    <script src="../plugins/My97DatePicker/WdatePicker.js"></script>
+
+    <script src="../js/config.js"></script>
+
+    <link rel="stylesheet" href="../plugins/confirm/jquery-confirm.css">
+    <script src="../plugins/confirm/jquery-confirm.js"></script>
+
+</head>
+<body>
+<div id="userIndex">
+    <div class="form-inline">
+        <div class="form-group">
+            <label class="sr-only">姓名</label>
+            <input id="txtName" v-model="search.name" style="width:135px" class="form-control" type="text"
+                   placeholder="请输入姓名"/>
+        </div>
+        <!--<div class="form-group">
+            <label class="sr-only">手机号</label>
+            <input id="txtCellphone" v-model="search.cellphone" class="form-control" type="text" placeholder="请输入手机号" style="width:135px"/>
+        </div>-->
+        <div class="form-group">
+            <label class="sr-only">邮箱</label>
+            <input id="txtCellphone" v-model="search.email" class="form-control" type="text" placeholder="请输入邮箱" style="width:135px"/>
+        </div>
+        <div class="form-group">
+            <label class="sr-only">部门</label>
+            <input id="txtDepartment" v-model="search.department" style="width:135px" class="form-control" type="text"
+                   placeholder="请输入部门"/>
+        </div>
+        <div class="form-group">
+            <label class="sr-only">职位</label>
+            <input id="txtPosition" v-model="search.position" style="width:135px" class="form-control" type="text"
+                   placeholder="请输入职位"/>
+        </div>
+
+        <div class="form-group">
+            创建时间：
+            <label class="sr-only">创建开始时间</label>
+            <input id="txtBeginDate" class="form-control" type="text" placeholder="请输入创建开始时间"/>
+            ---
+            <label class="sr-only">创建结束时间</label>
+            <input id="txtEndDate" class="form-control" type="text" placeholder="请输入创建结束时间"/>
+        </div>
+
+
+        <button id="btnSearch" type="button" @click="getEnterpriseUsers" class="btn btn-primary">搜索</button>
+
+        <a class="btn btn-primary" :href="'editUser.html?id='+enterpriseId+'&type='+enterpriseType" data-target="#dialog" data-toggle="modal">添加账号</a>
+
+
+        <input id="txtSearch" type="hidden" @click="getEnterpriseUsers('msg')"/>
+        <input id="hidUserId" type="hidden"/>
+    </div>
+
+    <div class="table-responsive">
+        <table class="table table-striped" id="main">
+            <thead>
+            <tr>
+                <th style="text-align:center;vertical-align:middle;">编号</th>
+                <th style="text-align:center;vertical-align:middle;">姓名</th>
+                <th style="text-align:center;vertical-align:middle;">部门</th>
+                <th style="text-align:center;vertical-align:middle;">职位</th>
+                <th style="text-align:center;vertical-align:middle;">性别</th>
+                <th style="text-align:center;vertical-align:middle;">邮箱</th>
+                <th style="text-align:center;vertical-align:middle;">创建时间</th>
+                <th style="text-align:center;vertical-align:middle;">状态</th>
+                <th style="text-align:center;vertical-align:middle;">编辑</th>
+            </tr>
+            </thead>
+            <tbody>
+
+            <template>
+                <tr v-for="(user,index) in users">
+                    <td style="text-align:center;vertical-align:middle;">{{beginIndex + 1 + index}}</td>
+                    <td style="text-align:center;vertical-align:middle;">{{user.name}}</td>
+                    <td style="text-align:center;vertical-align:middle;">{{user.department}}</td>
+                    <td style="text-align:center;vertical-align:middle;">{{user.position}}</td>
+                    <td style="text-align:center;vertical-align:middle;">{{user.genderDisplay}}</td>
+                    <td style="text-align:center;vertical-align:middle;">{{user.email}}</td>
+                    <td style="text-align:center;vertical-align:middle;">{{user.createTimeDisplay}}</td>
+                    <td style="text-align:center;vertical-align:middle;">{{user.activatedDisplay}}</td>
+                    <td style="text-align:center;vertical-align:middle;">
+                        <div>
+                            <a class="btn btn-xs btn-info" href="editUser.html" data-target="#dialog"
+                               data-toggle="modal" onclick="setUserId(this.id);" :id="user.userId">编辑</a>
+                            <!--<button class="btn btn-xs btn-success" onclick="setActivated(this.id,1);" :id="user.userId">
+                                激活
+                            </button>
+                            <button class="btn btn-xs btn-success" onclick="setActivated(this.id,2);" :id="user.userId">
+                                停用
+                            </button>-->
+                        </div>
+
+                    </td>
+                </tr>
+            </template>
+
+            </tbody>
+        </table>
+    </div>
+
+    <div id="baseDialog">
+        <script>getDialog('baseDialog', '../basedialog.html');</script>
+    </div>
+
+
+</div>
+
+<div id="page">
+    <script>getPaging();</script>
+</div>
+<script src="../js/enterprise/user.js"></script>
+
+</body>
+</html>

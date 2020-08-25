@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.qivay.mapper.BonusApplyMapper" >
+  <resultMap id="BaseResultMap" type="com.qivay.domain.BonusApply" >
+    <id column="bonus_apply_id" property="bonusApplyId" />
+    <result column="before_amount" property="beforeAmount" />
+    <result column="amount" property="amount" />
+    <result column="after_amount" property="afterAmount" />
+    <result column="bonus_type" property="bonusType"/>
+    <result column="user_id" property="userId" />
+    <result column="validate" property="validate"/>
+    <result column="create_time" property="createTime"/>
+    <result column="real_amount" property="realAmount"/>
+    <result column="tax" property="tax"/>
+    <result column="name" property="name"/>
+    <result column="message_content" property="messageContent"/>
+  </resultMap>
+
+  <sql id="base_columns">
+    bonus_bonus_apply_id, before_amount, amount, after_amount, bonus_type, user_id, validate, create_time, real_amount, tax
+  </sql>
+
+  <sql id="base_conditions">
+    <where>
+      <if test="bonusType != -1">
+        and ba.bonus_type = #{bonusType}
+      </if>
+      <if test="validate == -1">
+        and ba.validate = 0
+      </if>
+      <if test="validate != -1">
+        and ba.validate = #{validate}
+      </if>
+      <if test="name != null and name != ''">
+        and u.name = #{name}
+      </if>
+      <if test="cellphone != null and cellphone != ''">
+        and u.cellphone = #{cellphone}
+      </if>
+      <if test="amount != null and amount != ''">
+        and ba.amount &lt; #{amount}
+      </if>
+    </where>
+  </sql>
+
+  <select id="findById" resultType="com.qivay.domain.BonusApply">
+    select * from bonus_apply where bonus_bonus_apply_id = #{bonusApplyId}
+  </select>
+
+  <update id="validate">
+    update bonus_apply set validate = #{validate} where bonus_apply_id = #{bonusApplyId}
+  </update>
+
+  <select id="getCount" resultType="int">
+    select count(ba.bonus_apply_id) from bonus_apply ba
+    LEFT JOIN `user` u ON ba.user_id = u.user_id
+    <include refid="base_conditions"/>
+  </select>
+
+  <select id="getBonusApplys" resultMap="BaseResultMap">
+    SELECT ba.*,u.name,m.message_content FROM `bonus_apply` ba
+    LEFT JOIN `user` u ON ba.user_id = u.user_id
+    left join message m on ba.bonus_apply_id = m.object_id
+    <include refid="base_conditions"/>
+    order by ba.create_time ASC
+    limit #{startIndex},#{pageSize}
+  </select>
+
+  <select id="bonusCount" resultType="String">
+    select
+     sum(amount)
+    from
+    bonus_apply
+    where validate = 0
+  </select>
+</mapper>

@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.qivay.mapper.MoneyApplyMapper" >
+  <resultMap id="BaseResultMap" type="com.qivay.domain.MoneyApply" >
+    <id column="apply_id" property="applyId" jdbcType="VARCHAR" />
+    <result column="before_amount" property="beforeAmount" />
+    <result column="amount" property="amount" />
+    <result column="after_amount" property="afterAmount" />
+    <result column="account_type" property="accountType"/>
+    <result column="account" property="account"/>
+    <result column="user_id" property="userId" jdbcType="VARCHAR" />
+    <result column="ip" property="ip"/>
+    <result column="validate" property="validate"/>
+    <result column="create_time" property="createTime"/>
+
+    <result column="name" property="name"/>
+
+    <result column="real_amount" property="realAmount"/>
+    <result column="fee" property="fee"/>
+  </resultMap>
+
+  <sql id="base_columns">
+    apply_id, before_amount, amount, after_amount, account_type, account, user_id, ip, validate, create_time
+  </sql>
+
+  <sql id="base_conditions">
+    <where>
+      <if test="accountType != -1">
+        and ma.account_type = #{accountType}
+      </if>
+      <if test="validate == -1">
+        and ma.validate = 0
+      </if>
+      <if test="validate != -1">
+        and ma.validate = #{validate}
+      </if>
+      <if test="name != null and name != ''">
+        and u.name = #{name}
+      </if>
+      <if test="cellphone != null and cellphone != ''">
+        and u.cellphone = #{cellphone}
+      </if>
+      <if test="amount != null and amount != ''">
+        and ma.amount &lt; #{amount}
+      </if>
+    </where>
+  </sql>
+
+  <insert id="insert" parameterType="com.qivay.domain.MoneyApply" useGeneratedKeys="true">
+    insert into money_apply (<include refid="base_columns"/> )
+    values (#{applyId},#{beforeAmount}, #{amount},#{afterAmount}, #{accountType}, #{account}, #{userId}, #{ip}, #{validate}, #{createTime})
+  </insert>
+
+  <select id="findById" resultType="com.qivay.domain.MoneyApply">
+    select * from money_apply where apply_id = #{applyId}
+  </select>
+
+  <update id="validate">
+    update money_apply set validate = #{validate} where apply_id = #{applyId}
+  </update>
+
+  <select id="getCount" resultType="int">
+    select count(ma.apply_id) from money_apply ma LEFT JOIN `user` u ON ma.user_id = u.user_id
+    <include refid="base_conditions"/>
+  </select>
+
+  <select id="getMoneyApplys" resultMap="BaseResultMap">
+    SELECT ma.*,u.name FROM `money_apply` ma LEFT JOIN `user` u ON ma.user_id = u.user_id
+    <include refid="base_conditions"/>
+    order by ma.create_time ASC
+    limit #{startIndex},#{pageSize}
+  </select>
+
+  <select id="moneyCount" resultType="String">
+    select
+     sum(amount)
+    from
+    money_apply
+    where validate = 0
+  </select>
+</mapper>

@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>接口访问统计</title>
+
+    <link rel="stylesheet" href="../css/bootstrap.min.css">
+    <script src="../js/jquery1.11.3.min.js"></script>
+    <script src="../js/bootstrap.min.js"></script>
+    <script src="../js/vue.js"></script>
+    <script src="../js/vue-resource1.3.4.js"></script>
+    <script src="../js/config.js"></script>
+
+</head>
+<body>
+<div id="statIndex">
+    <div class="form-inline">
+        <button id="btnRefresh" type="button" @click="getVisitStats" class="btn btn-primary">刷新</button>
+    </div>
+    <div class="table-responsive">
+    <table class="table table-striped" id="main">
+        <thead>
+        <tr>
+            <th style="text-align:center;vertical-align:middle;">名称</th>
+            <th style="text-align:center;vertical-align:middle;">链接</th>
+            <th style="text-align:center;vertical-align:middle;">访问次数</th>
+
+        </tr>
+        </thead>
+        <tbody>
+
+        <template>
+            <tr v-for="stat in stats">
+                <td style="text-align:center;vertical-align:middle;">{{stat.name}}</td>
+                <td style="text-align:center;vertical-align:middle;">{{stat.url}}</td>
+                <td style="text-align:center;vertical-align:middle;">{{stat.count}}</td>
+
+            </tr>
+        </template>
+
+        </tbody>
+    </table>
+</div>
+</div>
+<script src="../js/stat/index.js"></script>
+</body>
+</html>

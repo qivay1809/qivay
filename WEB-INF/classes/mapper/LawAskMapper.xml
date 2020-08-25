@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.qivay.mapper.LawAskMapper">
+    <resultMap id="lawAskMap" type="com.qivay.domain.LawAsk">
+        <id property="lawAskId" column="law_ask_id"/>
+        <result property="describe" column="describe"/>
+        <result property="status" column="status"/>
+        <result property="userId" column="user_id"/>
+        <result property="lawTypeId" column="law_type_id"/>
+        <result property="pay" column="pay"/>
+        <result property="askRead" column="ask_read"/>
+        <result property="answerRead" column="answer_read"/>
+        <result property="createTime" column="create_time"/>
+
+        <result property="name" column="name"/>
+        <result property="cellphone" column="cellphone"/>
+        <result property="lawType" column="lawType"/>
+    </resultMap>
+
+    <sql id="base_conditions">
+        <where>
+            <if test="name != null and name != ''">
+                and  u.`name` = #{name}
+            </if>
+            <if test="phone != null and phone != ''">
+                and u.cellphone = #{phone}
+            </if>
+        </where>
+    </sql>
+    <!--<select id="findById" resultMap="lawAskMap">
+        select la.*,u.name, u.cellphone,lt.name lawType,bo.status pay  from law_ask la
+        LEFT JOIN `user` u ON la.user_id = u.user_id
+        LEFT JOIN law_type lt ON la.law_type_id = lt.law_type_id
+        JOIN business_order bo ON la.law_ask_id = bo.business_id
+        where la.law_ask_id = #{lawAskId}
+    </select>-->
+
+    <select id="findAskAll" resultMap="lawAskMap">
+        select la.*,u.name, u.cellphone,lt.name lawType,bo.status pay  from law_ask la
+        LEFT JOIN `user` u ON la.user_id = u.user_id
+        LEFT JOIN law_type lt ON la.law_type_id = lt.law_type_id
+        JOIN business_order bo ON la.law_ask_id = bo.business_id
+        <include refid="base_conditions"/>
+        order by la.create_time desc
+        limit #{pageIndex},#{pageSize}
+    </select>
+
+    <select id="findAskCount" resultType="int">
+        select count(la.law_ask_id)  from law_ask la
+        LEFT JOIN `user` u ON la.user_id = u.user_id
+        LEFT JOIN law_type lt ON la.law_type_id = lt.law_type_id
+        <include refid="base_conditions"/>
+    </select>
+
+    <select id="findById" resultMap="lawAskMap">
+        select
+          ask.*,
+          bo.status pay
+        from
+          law_ask ask
+        JOIN business_order bo ON ask.law_ask_id = bo.business_id
+        where ask.law_ask_id = #{lawAskId}
+    </select>
+
+</mapper>

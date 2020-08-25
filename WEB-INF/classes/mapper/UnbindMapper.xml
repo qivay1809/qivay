@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.qivay.mapper.UnbindMapper" >
+  <resultMap id="BaseResultMap" type="com.qivay.domain.UserUnbind" >
+    <id column="unbind_id" property="unbindId"/>
+    <result column="account_type" property="accountType"/>
+    <result column="phone" property="phone"/>
+    <result column="name" property="name"/>
+    <result column="id_card" property="idCard"/>
+    <result column="user_id" property="userId"/>
+    <result column="state" property="state"/>
+    <result column="cause" property="cause"/>
+    <result column="create_time" property="createTime"/>
+  </resultMap>
+  <sql id="Base_Column_List" >
+    unbind_id,account_type, `name`, phone, id_card,cause, user_id, state, create_time
+  </sql>
+
+
+
+  <sql id="base_conditions">
+    <where>
+      <if test="name != null and name != ''">
+        and `name` = #{name}
+      </if>
+      <if test="phone != null and phone != ''">
+        and phone = #{phone}
+      </if>
+      <if test="accountType != -1">
+        and account_type = #{accountType}
+      </if>
+      <if test="state != -1">
+        and state = #{state}
+      </if>
+    </where>
+  </sql>
+
+
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from user_unbind
+    where unbind_id = #{unbindId}
+  </select>
+
+
+  <select id="findUnbinds" resultMap="BaseResultMap">
+    select
+      <include refid="Base_Column_List" />
+    from user_unbind
+      <include refid="base_conditions"/>
+    order by create_time desc
+    LIMIT #{startIndex}, #{pageSize}
+  </select>
+
+  <select id="getCount" resultType="int">
+    select
+    count(unbind_id)
+    from user_unbind
+    <include refid="base_conditions"/>
+  </select>
+
+  <update id="updateStatus">
+    update user_unbind
+    set state = #{state}
+    where unbind_id = #{unbindId}
+  </update>
+
+  <delete id="deleteUserAccount">
+    delete from `user_account`
+    where user_id = #{userId} and account_type = #{accountType}
+  </delete>
+</mapper>

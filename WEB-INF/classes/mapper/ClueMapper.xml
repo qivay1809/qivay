@@ -1,0 +1,990 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.qivay.mapper.ClueMapper">
+
+    <resultMap id="clueMap" type="com.qivay.domain.Clue">
+        <id property="clueId" column="clue_id"/>
+        <result property="caseId" column="case_id"/>
+        <result property="taskId" column="task_id"/>
+        <result property="productId" column="product_id"/>
+        <result property="brandId" column="brand_id"/>
+        <result property="amount" column="amount"/>
+        <result property="regionId" column="region_id"/>
+        <result property="addressId" column="address_id"/>
+        <result property="shopId" column="shop_id"/>
+        <result property="findTime" column="find_time"/>
+        <result property="description" column="description"/>
+        <result property="creator" column="creator"/>
+        <result property="createTime" column="create_time"/>
+    </resultMap>
+
+    <resultMap id="showClueMap" type="com.qivay.domain.ShowClue">
+        <id property="clueId" column="clue_id"/>
+        <result property="product" column="product_name"/>
+        <result property="brand" column="brand_name"/>
+        <result property="enterprise" column="enterprise_name"/>
+        <result property="address" column="street"/>
+        <result property="shop" column="shop_name"/>
+        <result property="shopType" column="shop_type"/>
+        <result property="taskId" column="task_id"/>
+        <result property="amount" column="amount"/>
+        <result property="regionId" column="region_id"/>
+        <result property="findTime" column="find_time"/>
+        <result property="description" column="description"/>
+        <result property="creator" column="creator"/>
+        <result property="createTime" column="create_time"/>
+        <result property="userName" column="name"/>
+        <result property="cellphone" column="cellphone"/>
+        <result property="validate" column="validate"/>
+        <result property="taskTitle" column="task_title"/>
+        <result property="reason" column="reason"/>
+        <result property="sendState" column="send_state"/>
+        <result property="serialNumber" column="serial_number"/>
+        <result property="approveUser" column="approve_user"/>
+        <result property="progress" column="progress"/>
+        <result property="caseId" column="case_id"/>
+        <result property="clueAgreementId" column="clue_agreement_id"/>
+        <result property="idCard" column="id_card"/>
+    </resultMap>
+    <resultMap id="historyClueMap" type="com.qivay.domain.ShowClue">
+        <id property="clueHistoryId" column="clue_history_id"/>
+        <id property="clueId" column="clue_id"/>
+        <result property="product" column="product_name"/>
+        <result property="brand" column="brand_name"/>
+        <result property="address" column="street"/>
+        <result property="shop" column="shop_name"/>
+        <result property="shopType" column="shop_type"/>
+        <result property="taskId" column="task_id"/>
+        <result property="amount" column="amount"/>
+        <result property="regionId" column="region_id"/>
+        <result property="findTime" column="find_time"/>
+        <result property="description" column="description"/>
+        <result property="creator" column="creator"/>
+        <result property="createTime" column="update_time"/>
+        <result property="userName" column="name"/>
+        <result property="cellphone" column="cellphone"/>
+        <result property="validate" column="validate"/>
+        <result property="taskTitle" column="task_title"/>
+        <result property="reason" column="reason"/>
+    </resultMap>
+    <resultMap id="showClueProgressMap" type="com.qivay.domain.ShowClueProgress">
+        <id property="clueId" column="clue_id"/>
+        <result property="product" column="product_name"/>
+        <result property="brand" column="brand_name"/>
+        <result property="address" column="street"/>
+        <result property="taskId" column="task_id"/>
+        <!--<result property="rewardId" column="reward_id"/>-->
+        <result property="tipster" column="tipster"/>
+        <result property="regionId" column="region_id"/>
+        <result property="findTime" column="find_time"/>
+        <result property="createTime" column="create_time"/>
+        <result property="validate" column="validate"/>
+        <!--<result property="rewardValidate" column="rv"/>-->
+        <result property="taskTitle" column="task_title"/>
+        <result property="serialNumber" column="serial_number"/>
+
+        <result property="creator" column="creator"/>
+
+        <result property="name" column="name"/>
+        <result property="assignType" column="assign_type"/>
+    </resultMap>
+    <resultMap id="excelClueProgressMap" type="com.qivay.vo.ExcelClueProgress">
+        <id property="clue" column="clue_id"/>
+        <result property="product" column="product_name"/>
+        <result property="brand" column="brand_name"/>
+        <result property="address" column="street"/>
+        <result property="taskId" column="task_id"/>
+        <result property="rewardId" column="reward_id"/>
+
+        <!-- 线人费 映射-->
+        <result property="amount" column="tipster"/>
+        <result property="regionId" column="region_id"/>
+        <result property="createTime" column="create_time"/>
+        <!--<result property="validate" column="validate"/>
+        <result property="rewardValidate" column="rv"/>-->
+        <result property="taskTitle" column="task_title"/>
+        <result property="serialNumber" column="serial_number"/>
+
+        <result property="name" column="name"/>
+        <result property="assignType" column="assign_type"/>
+    </resultMap>
+
+    <resultMap id="excelClueMap" type="com.qivay.vo.ExcelClue">
+        <id property="clue" column="clue_id"/>
+        <result property="product" column="product_name"/>
+        <result property="brand" column="brand_name"/>
+        <result property="address" column="street"/>
+        <result property="shop" column="shop_name"/>
+        <result property="shopType" column="shop_type"/>
+        <result property="amount" column="amount"/>
+        <result property="regionId" column="region_id"/>
+        <result property="findTime" column="find_time"/>
+        <result property="createTime" column="create_time"/>
+        <result property="userName" column="name"/>
+        <result property="cellphone" column="cellphone"/>
+        <result property="validate" column="validate"/>
+        <result property="taskTitle" column="task_title"/>
+        <result property="serialNumber" column="serial_number"/>
+    </resultMap>
+
+    <resultMap id="clueImageMap" type="com.qivay.domain.ClueImage">
+        <id property="clueImageId" column="clue_image_id"/>
+        <result property="clueId" column="clue_id"/>
+        <result property="path" column="path"/>
+        <result property="imageOrder" column="image_order"/>
+    </resultMap>
+    <resultMap id="historyImageMap" type="com.qivay.domain.ClueImage">
+        <id property="clueImageId" column="clue_image_history_id"/>
+        <result property="clueId" column="clue_history_id"/>
+        <result property="path" column="path"/>
+        <result property="imageOrder" column="image_order"/>
+    </resultMap>
+
+    <resultMap id="showEnterpriseClueMap" type="com.qivay.domain.ShowEnterpriseClue">
+        <id property="clueId" column="clue_id"/>
+        <result property="product" column="product_name"/>
+        <result property="brand" column="brand_name"/>
+        <result property="address" column="street"/>
+        <result property="shop" column="shop_name"/>
+        <result property="shopType" column="shop_type"/>
+        <result property="taskId" column="task_id"/>
+        <result property="amount" column="amount"/>
+        <result property="regionId" column="region_id"/>
+        <result property="description" column="description"/>
+        <result property="createTime" column="create_time"/>
+        <result property="findTime" column="find_time"/>
+        <result property="taskTitle" column="task_title"/>
+        <result property="validate" column="validate"/>
+        <result property="reason" column="reason"/>
+        <result property="serialNumber" column="serial_number"/>
+    </resultMap>
+
+    <resultMap id="excelEnterpriseClueMap" type="com.qivay.vo.ExcelEnterpriseClue">
+        <id property="clueId" column="clue_id"/>
+        <result property="product" column="product_name"/>
+        <result property="brand" column="brand_name"/>
+        <result property="address" column="street"/>
+        <result property="shop" column="shop_name"/>
+        <result property="shopType" column="shop_type"/>
+        <result property="taskId" column="task_id"/>
+        <result property="amount" column="amount"/>
+        <result property="regionId" column="region_id"/>
+        <result property="createTime" column="create_time"/>
+        <result property="findTime" column="find_time"/>
+        <result property="taskTitle" column="task_title"/>
+        <result property="validate" column="validate"/>
+        <result property="serialNumber" column="serial_number"/>
+    </resultMap>
+
+    <sql id="columns">
+        clue_id,case_id,task_id,product_id,brand_id,amount,region_id,address_id,shop_id,find_time,description,creator,create_time,validate
+    </sql>
+
+    <sql id="showColumns">
+        c.clue_id,b.brand_name,p.product_name,e.enterprise_name,s.shop_name,s.shop_type,t.task_id,c.amount,c.region_id,a.street,c.find_time,c.description,c.creator,c.create_time,u.name,u.cellphone,u.id_card,c.validate,t.task_title,c.reason,c.serial_number,c.approve_user
+    </sql>
+
+    <sql id="queryFrom">
+        clue c
+        left join brand b on c.brand_id = b.brand_id
+        left JOIN enterprise e ON b.enterprise_id = e.enterprise_id
+        left join product p on c.product_id = p.product_id
+        left join address a on c.address_id = a.address_id
+        left join shop s on c.shop_id = s.shop_id
+        left join user u on c.creator = u.user_id
+        left join task t on c.task_id = t.task_id
+        left join case_info ci on c.clue_id=ci.clue_id
+    </sql>
+
+    <sql id="from">
+        clue c
+        join brand b on c.brand_id = b.brand_id
+        left JOIN enterprise e ON b.enterprise_id = e.enterprise_id
+        join product p on c.product_id = p.product_id
+        join address a on c.address_id = a.address_id
+        join shop s on c.shop_id = s.shop_id
+        join user u on c.creator = u.user_id
+        left join task t on c.task_id = t.task_id
+        left join case_info ci on c.clue_id=ci.clue_id and ci.progress=1
+        left join clue_agreement ca on c.clue_id=ca.clue_id
+        <if test="userType==4">
+            join enterprise_user eu on eu.enterprise_id=b.enterprise_id
+        </if>
+    </sql>
+
+    <sql id="where">
+        c.brand_id=b.brand_id AND c.product_id=p.product_id AND c.address_id=a.address_id AND c.shop_id=s.shop_id AND c.creator = u.user_id
+    </sql>
+
+    <sql id="imageColumns">
+        clue_image_id,clue_id,path,image_order
+    </sql>
+
+
+    <select id="findClueById" resultMap="clueMap">
+        SELECT
+        <include refid="columns"/>
+        FROM clue
+        WHERE clue_id = #{clueId}
+    </select>
+
+    <select id="findShowClueById" resultMap="showClueMap">
+        SELECT
+        <include refid="showColumns"/>,ci.progress
+        FROM
+        <include refid="queryFrom"/>
+
+        WHERE c.clue_id = #{clueId}
+
+    </select>
+
+    <select id="findClueImageByClueId" resultMap="clueImageMap">
+        SELECT
+        <include refid="imageColumns"/>
+        FROM clue_image WHERE clue_id = #{clueId} order by image_order
+    </select>
+
+    <insert id="insertClue" parameterType="com.qivay.domain.Clue">
+        INSERT INTO
+        clue
+        (<include refid="columns"/>)
+        VALUES
+        (#{clueId},#{caseId},#{taskId}, #{productId},#{brandId},#{amount}, #{regionId},#{addressId},#{shopId},
+        #{findTime},#{description},#{creator},
+        #{createTime})
+    </insert>
+
+    <insert id="insertClueImage" parameterType="com.qivay.domain.ClueImage">
+        INSERT INTO
+        clue_image
+        (<include refid="imageColumns"/>)
+        VALUES
+        (#{clueImageId},#{clueId},#{path},#{imageOrder})
+    </insert>
+
+    <!--<update id="updateClue" parameterType="com.qivay.domain.Clue" >-->
+    <!--UPDATE-->
+    <!--clue-->
+    <!--SET-->
+    <!--clue_name = #{clueName}-->
+    <!--WHERE-->
+    <!--clue_id = #{clueId}-->
+    <!--</update>-->
+
+    <select id="getCountByRegionId" resultType="int">
+        select count(clue_id) from clue
+        where region_id = #{id}
+    </select>
+
+    <sql id="base_conditions">
+        <where>
+            1=1
+            <if test="userName != null and userName !=''">
+                and u.name like concat('%',#{userName},'%')
+            </if>
+            <if test="cellphone != null and cellphone != ''">
+                and u.cellphone like concat('%',#{cellphone},'%')
+            </if>
+            <if test="brandName != null and brandName != ''">
+                and b.brand_name like concat('%',#{brandName},'%')
+            </if>
+            <if test="productName != null and productName !=''">
+                and p.product_name like concat('%',#{productName},'%')
+            </if>
+            <if test="hasTask == 0">
+                and t.task_id is null
+            </if>
+            <if test="hasTask == 1">
+                and t.task_id is not null
+            </if>
+            <if test="taskTitle != null and taskTitle !=''">
+                and t.task_title like concat('%',#{taskTitle},'%')
+            </if>
+            <if test="taskId != null and taskId !=''">
+                and t.task_id = #{taskId}
+            </if>
+            <if test="clueId != null and clueId !=''">
+                and c.clue_id = #{clueId}
+            </if>
+            <if test="regionId != null and regionId !=''">
+                and c.region_id like concat(#{regionId},'%')
+            </if>
+            <if test="validate != -1">
+                and c.validate = #{validate}
+            </if>
+            <if test="beginDate != null">
+                and c.create_time >= #{beginDate}
+            </if>
+            <if test="endDate != null">
+                and c.create_time &lt;= #{endDate}
+            </if>
+            <if test="street != null and street !=''">
+                and a.street like concat('%',#{street},'%')
+            </if>
+            <if test="shopType != -1">
+                and s.shop_type = #{shopType}
+            </if>
+            <if test="serialNumber != null and serialNumber != ''">
+                and c.serial_number like concat('%',#{serialNumber},'%')
+            </if>
+            <if test="objectIds != null">
+                and (c.region_id in
+                <foreach collection="objectIds" index="index" item="item" open="(" close=")" separator=",">
+                    #{item}
+                </foreach>
+                <if test="clueIds != null">
+                    or c.clue_id in
+                    <foreach collection="clueIds" index="index" item="item" open="(" close=")" separator=",">
+                        #{item}
+                    </foreach>
+                </if>)
+            </if>
+            <if test="objectIds == null">
+                <if test="clueIds != null">
+                    and c.clue_id in
+                    <foreach collection="clueIds" index="index" item="item" open="(" close=")" separator=",">
+                        #{item}
+                    </foreach>
+                </if>
+            </if>
+            <if test="approved == 0">
+                and (c.validate &lt; 3 or c.validate=4)
+            </if>
+            <if test="approved == 1">
+                and (c.validate > 4 or c.validate=3)
+            </if>
+            <if test="uploaded == 0">
+                and ca.clue_agreement_id is null
+            </if>
+            <if test="uploaded == 1">
+                and ca.clue_agreement_id is not null
+            </if>
+            <if test="published == 0">
+                and ci.case_id is null
+            </if>
+            <if test="published == 1">
+                and ci.case_id is not null
+            </if>
+            <if test="userType == 4">
+                and eu.user_id = #{userId}
+            </if>
+        </where>
+    </sql>
+
+    <sql id="new_conditions">
+        <if test="approved == 0">
+            and (c.validate &lt; 3 or c.validate=4)
+        </if>
+        <if test="approved == 1">
+            and (c.validate > 4 or c.validate=3)
+        </if>
+        <if test="uploaded == 0">
+            and ca.clue_agreement_id is null
+        </if>
+        <if test="uploaded == 1">
+            and ca.clue_agreement_id is not null
+        </if>
+        <if test="published == 0">
+            and ci.case_id is null
+        </if>
+        <if test="published == 1">
+            and ci.case_id is not null
+        </if>
+    </sql>
+
+    <select id="getShowCluesByQo" resultMap="showClueMap">
+        select
+        <include refid="showColumns"/>, ci.case_id,ca.clue_agreement_id
+        from
+        <include refid="from"/>
+        <include refid="base_conditions"/>
+        ORDER BY c.create_time DESC
+        limit #{startIndex},#{pageSize}
+    </select>
+
+    <select id="getExcelClues" resultMap="excelClueMap">
+        select
+        c.clue_id,b.brand_name,p.product_name,s.shop_name,s.shop_type,amount,c.region_id,a.street,find_time,description,c.create_time,u.name,u.cellphone,c.validate,t.task_title,c.serial_number
+        from
+        <include refid="from"/>
+        <include refid="base_conditions"/>
+        ORDER BY c.validate asc,c.create_time DESC
+    </select>
+
+    <select id="getCount" resultType="int">
+        select count(c.clue_id)
+        from
+        <include refid="from"/>
+        <include refid="base_conditions"/>
+    </select>
+
+    <update id="auditClue">
+        update clue set validate = #{validate} where clue_id = #{clueId}
+    </update>
+
+    <sql id="enterprise_conditions">
+        <where>
+            ((t.progress in (1,3) and (c.validate in (1,3,4) or c.validate >4)) or (t.progress = 2 and (c.validate = 3
+            or c.validate >4))) and t.creator = #{userId}
+            <if test="taskTitle != null">
+                and t.task_title like concat('%',#{taskTitle},'%')
+            </if>
+            <if test="brandName != null">
+                and b.brand_name like concat('%',#{brandName},'%')
+            </if>
+            <if test="productName != null">
+                and p.product_name like concat('%',#{productName},'%')
+            </if>
+            <if test="regionId != null">
+                and c.region_id like concat(#{regionId},'%')
+            </if>
+            <if test="street != null">
+                and a.street like concat('%',#{street},'%')
+            </if>
+            <if test="validate != -1 and validate != 3">
+                and c.validate = #{validate}
+            </if>
+            <if test="validate == 3">
+                and (c.validate = 3 or c.validate >4)
+            </if>
+            <if test="beginDate != null">
+                and c.create_time >= #{beginDate}
+            </if>
+            <if test="endDate != null">
+                and c.create_time &lt;= #{endDate}
+            </if>
+            <if test="shopType != -1">
+                and s.shop_type = #{shopType}
+            </if>
+            <if test="serialNumber != null and serialNumber != ''">
+                and c.serial_number like concat('%',#{serialNumber},'%')
+            </if>
+        </where>
+    </sql>
+
+    <select id="getEnterpriseClues" resultMap="showEnterpriseClueMap">
+        select
+        c.clue_id,t.task_id,p.product_name,b.brand_name,c.amount,c.region_id,a.street,s.shop_name,s.shop_type,c.description,t.task_title,c.create_time,c.validate,c.find_time,c.serial_number
+        from clue c
+        join task t on c.task_id = t.task_id
+        join product p on c.product_id = p.product_id
+        join brand b on c.brand_id = b.brand_id
+        join shop s on c.shop_id = s.shop_id
+        join address a on a.address_id = c.address_id
+        <include refid="enterprise_conditions"/>
+        ORDER BY c.validate asc,c.create_time desc
+        limit #{startIndex},#{pageSize}
+    </select>
+
+    <select id="getExcelEnterpriseClues" resultMap="excelEnterpriseClueMap">
+        select
+        c.clue_id,t.task_id,p.product_name,b.brand_name,c.amount,c.region_id,a.street,s.shop_name,s.shop_type,c.description,t.task_title,c.create_time,c.validate,c.find_time,c.serial_number
+        from clue c
+        join task t on c.task_id = t.task_id
+        join product p on c.product_id = p.product_id
+        join brand b on c.brand_id = b.brand_id
+        join shop s on c.shop_id = s.shop_id
+        join address a on a.address_id = c.address_id
+        <include refid="enterprise_conditions"/>
+        ORDER BY c.validate asc,c.create_time desc
+    </select>
+
+    <select id="getEnterpriseCount" resultType="int">
+        select count(c.clue_id)
+        from clue c
+        join task t on c.task_id = t.task_id
+        join product p on c.product_id = p.product_id
+        join brand b on c.brand_id = b.brand_id
+        join shop s on c.shop_id = s.shop_id
+        join address a on a.address_id = c.address_id
+        <include refid="enterprise_conditions"/>
+    </select>
+
+    <select id="getEnterpriseClue" resultMap="showEnterpriseClueMap">
+        select c.clue_id,t.task_id,p.product_name,b.brand_name,c.amount,c.region_id,a.street,s.shop_name,s.shop_type,c.description,t.task_title,c.create_time,c.validate,c.find_time,c.reason,c.serial_number
+        from clue c
+        join task t on c.task_id = t.task_id
+        join product p on c.product_id = p.product_id
+        join brand b on c.brand_id = b.brand_id
+        join shop s on c.shop_id = s.shop_id
+        join address a on a.address_id = c.address_id
+        where c.clue_id = #{clueId}
+    </select>
+
+    <select id="getCountByTaskId" resultType="int">
+        select count(clue_id) from clue
+        where task_id = #{taskId} and validate = #{clueEnterpriseAdopt}
+    </select>
+
+    <select id="getClueIdsByTime" resultType="string">
+        select clue_id from clue order by create_time asc
+    </select>
+
+    <!-- ((t.task_id is null and (c.validate = 1 || c.validate >4)) || (t.task_id is not null and (c.validate = 3 ||
+            c.validate >4))) -->
+    <sql id="progress_conditions">
+        <where>
+            ((c.validate = 1 || c.validate >4) || (c.validate = 3 || c.validate >4))
+            <if test="brandName != null and brandName != ''">
+                and b.brand_name like concat('%',#{brandName},'%')
+            </if>
+            <if test="productName != null and productName !=''">
+                and p.product_name like concat('%',#{productName},'%')
+            </if>
+            <if test="hasTask == 0">
+                and t.task_id is null
+            </if>
+            <if test="hasTask == 1">
+                and t.task_id is not null
+            </if>
+            <if test="taskTitle != null and taskTitle !=''">
+                and t.task_title like concat('%',#{taskTitle},'%')
+            </if>
+            <if test="clueId != null and clueId !=''">
+                and c.clue_id = #{clueId}
+            </if>
+            <if test="regionId != null and regionId !=''">
+                and c.region_id like concat(#{regionId},'%')
+            </if>
+            <if test="validate == 3">
+                and c.validate in (1,3)
+            </if>
+            <if test="validate != -1 and validate != 3">
+                and c.validate = #{validate}
+            </if>
+            <if test="beginDate != null">
+                and c.create_time >= #{beginDate}
+            </if>
+            <if test="endDate != null">
+                and c.create_time &lt;= #{endDate}
+            </if>
+            <if test="street != null and street !=''">
+                and a.street like concat('%',#{street},'%')
+            </if>
+            <if test="serialNumber != null and serialNumber != ''">
+                and c.serial_number like concat('%',#{serialNumber},'%')
+            </if>
+        </where>
+    </sql>
+
+    <sql id="progress_from">
+        <!-- clue c
+        join brand b on c.brand_id = b.brand_id
+        join product p on c.product_id = p.product_id
+        join address a on c.address_id = a.address_id
+        left join task t on c.task_id = t.task_id
+        left join reward r on c.clue_id = r.clue_id -->
+
+        	clue c
+        JOIN brand b ON c.brand_id = b.brand_id
+        JOIN product p ON c.product_id = p.product_id
+        JOIN address a ON c.address_id = a.address_id
+        LEFT JOIN task t ON c.task_id = t.task_id
+
+        LEFT JOIN clue_assign ca ON c.clue_id = ca.clue_id
+        LEFT JOIN `user` u on ca.user_id = u.user_id
+
+        LEFT JOIN (SELECT SUM(tipster) tipster, clue_id FROM reward where validate=1
+        GROUP BY clue_id) x ON c.clue_id = x.clue_id
+    </sql>
+
+    <select id="getClueProgressCount" resultType="int">
+        select count(c.clue_id)
+        from
+        <include refid="progress_from"/>
+        <include refid="progress_conditions"/>
+    </select>
+
+    <select id="getClueProgresses" resultMap="showClueProgressMap">
+        select
+            c.clue_id,
+            b.brand_name,
+            p.product_name,
+            t.task_id,
+            c.region_id,
+            a.street,
+            find_time,
+            c.creator,
+            c.create_time,
+            c.validate,
+            t.task_title,
+            x.tipster,
+            c.serial_number,
+            u.name,
+            ca.assign_type
+        from
+        <include refid="progress_from"/>
+        <include refid="progress_conditions"/>
+        ORDER BY c.create_time DESC, c.validate ASC
+        limit #{startIndex},#{pageSize}
+    </select>
+    <select id="getExcelClueProgresses" resultMap="excelClueProgressMap">
+        select
+            c.clue_id,
+            b.brand_name,
+            p.product_name,
+            t.task_id,
+            c.region_id,
+            a.street,
+            find_time,
+            c.creator,
+            c.create_time,
+            c.validate,
+            t.task_title,
+            x.tipster,
+            c.serial_number,
+            u.name,
+            ca.assign_type
+        from
+        <include refid="progress_from"/>
+        <include refid="progress_conditions"/>
+        ORDER BY c.create_time DESC, c.validate ASC
+    </select>
+
+    <update id="updateValidate">
+        update clue set validate = #{validate}
+        where clue_id = #{clueId}
+    </update>
+
+    <select id="getShowClueProgressById" resultMap="showClueProgressMap">
+        select c.clue_id,c.validate,c.creator,t.task_id from clue c
+        left join task t on c.task_id = t.task_id
+        where c.clue_id = #{clueId}
+    </select>
+
+    <select id="getUserByClueId" resultType="map">
+        SELECT DISTINCT IFNULL(u.`name`,'未实名') payee, IFNULL(u.id_card,'未认证') idCard FROM `reward` r
+        LEFT JOIN `user` u ON r.payee = u.user_id where r.clue_id = #{clueId};
+    </select>
+
+    <select id="getValidateCount" resultType="int">
+        select count(clue_id) from clue where creator = #{userId}  and create_time >= #{beginDate} and create_time &lt;= #{endDate} and validate != 2 and validate >= 1
+    </select>
+
+    <sql id="history_conditions">
+        <where>
+            <if test="userName != null and userName !=''">
+                and u.name like concat('%',#{userName},'%')
+            </if>
+            <if test="cellphone != null and cellphone != ''">
+                and u.cellphone like concat('%',#{cellphone},'%')
+            </if>
+            <if test="brandName != null and brandName != ''">
+                and b.brand_name like concat('%',#{brandName},'%')
+            </if>
+            <if test="productName != null and productName !=''">
+                and p.product_name like concat('%',#{productName},'%')
+            </if>
+            <if test="hasTask == 0">
+                and t.task_id is null
+            </if>
+            <if test="hasTask == 1">
+                and t.task_id is not null
+            </if>
+            <if test="taskTitle != null and taskTitle !=''">
+                and t.task_title like concat('%',#{taskTitle},'%')
+            </if>
+            <if test="taskId != null and taskId !=''">
+                and t.task_id = #{taskId}
+            </if>
+            <if test="clueId != null and clueId !=''">
+                and c.clue_id = #{clueId}
+            </if>
+            <if test="regionId != null and regionId !=''">
+                and c.region_id like concat(#{regionId},'%')
+            </if>
+            <if test="beginDate != null">
+                and c.update_time >= #{beginDate}
+            </if>
+            <if test="endDate != null">
+                and c.update_time &lt;= #{endDate}
+            </if>
+            <if test="street != null and street !=''">
+                and a.street like concat('%',#{street},'%')
+            </if>
+            <if test="shopType != -1">
+                and s.shop_type = #{shopType}
+            </if>
+        </where>
+    </sql>
+
+    <sql id="history_from">
+        clue_history c
+        join brand b on c.brand_id = b.brand_id
+        join product p on c.product_id = p.product_id
+        join address a on c.address_id = a.address_id
+        join shop s on c.shop_id = s.shop_id
+        join user u on c.creator = u.user_id
+        left join task t on c.task_id = t.task_id
+    </sql>
+
+    <select id="getHistoryCount" resultType="int">
+        select count(c.clue_history_id)
+        from
+        <include refid="history_from"/>
+        <include refid="history_conditions"/>
+    </select>
+
+    <sql id="history_params">
+        c.clue_history_id,c.clue_id,b.brand_name,p.product_name,s.shop_name,s.shop_type,t.task_id,amount,c.region_id,a.street,find_time,description,c.creator,c.update_time,u.name,u.cellphone,c.validate,t.task_title,c.reason
+    </sql>
+
+    <select id="getClueHistories" resultMap="historyClueMap">
+        select
+        <include refid="history_params"/>
+        from
+        <include refid="history_from"/>
+        <include refid="history_conditions"/>
+        ORDER BY c.update_time DESC
+        limit #{startIndex},#{pageSize}
+    </select>
+
+    <select id="getClueHistory" resultMap="historyClueMap">
+        select
+        <include refid="history_params"/>
+        from
+        <include refid="history_from"/>
+        where c.clue_history_id = #{clueHistoryId}
+    </select>
+
+    <select id="getClueHistoryImages" resultMap="historyImageMap">
+        SELECT
+        clue_image_history_id,clue_history_id,path,image_order
+        FROM clue_image_history WHERE clue_history_id = #{clueHistoryId} order by image_order
+    </select>
+
+    <update id="updateProgressClueSendState">
+        update clue set send_state = 2 where send_state = 0 and validate > 4
+    </update>
+
+    <update id="updateSendStateByBrands">
+        update clue set send_state = 2 where create_time >= #{today} and send_state = 0 and (task_id is not null or
+        (validate = 1 and task_id is null and brand_id in(
+        select brand_id from brand where brand_name in
+        <foreach collection="brands" item="item" index="index"
+                 open="(" separator="," close=")">#{item}
+        </foreach>
+        )))
+    </update>
+
+    <sql id="send_conditions">
+        <where>
+            (c.validate = 1 and c.send_state != 2 or c.validate > 4 and c.send_state = 1) and c.task_id is null
+            <if test="userName != null and userName !=''">
+                and u.name like concat('%',#{userName},'%')
+            </if>
+            <if test="cellphone != null and cellphone != ''">
+                and u.cellphone like concat('%',#{cellphone},'%')
+            </if>
+            <if test="brandName != null and brandName != ''">
+                and b.brand_name like concat('%',#{brandName},'%')
+            </if>
+            <if test="productName != null and productName !=''">
+                and p.product_name like concat('%',#{productName},'%')
+            </if>
+            <if test="clueId != null and clueId !=''">
+                and c.clue_id = #{clueId}
+            </if>
+            <if test="regionId != null and regionId !=''">
+                and c.region_id like concat(#{regionId},'%')
+            </if>
+            <if test="beginDate != null">
+                and c.create_time >= #{beginDate}
+            </if>
+            <if test="endDate != null">
+                and c.create_time &lt;= #{endDate}
+            </if>
+            <if test="street != null and street !=''">
+                and a.street like concat('%',#{street},'%')
+            </if>
+            <if test="shopType != -1">
+                and s.shop_type = #{shopType}
+            </if>
+            <if test="sendState != -1">
+                and c.send_state = #{sendState}
+            </if>
+        </where>
+    </sql>
+
+    <sql id="send_from">
+        clue c
+        join brand b on c.brand_id = b.brand_id
+        join product p on c.product_id = p.product_id
+        join address a on c.address_id = a.address_id
+        join shop s on c.shop_id = s.shop_id
+        join user u on c.creator = u.user_id
+    </sql>
+
+    <select id="getSendClueCount" resultType="int">
+        select count(c.clue_id)
+        from
+        <include refid="send_from"/>
+        <include refid="send_conditions"/>
+    </select>
+
+    <select id="getSendClues" resultMap="showClueMap">
+        select
+        c.clue_id,b.brand_name,p.product_name,s.shop_name,s.shop_type,amount,c.region_id,a.street,find_time,description,c.creator,c.create_time,u.name,u.cellphone,c.validate,c.reason,c.send_state
+        from
+        <include refid="send_from"/>
+        <include refid="send_conditions"/>
+        ORDER BY c.send_state,c.create_time desc
+        limit #{startIndex},#{pageSize}
+    </select>
+
+    <update id="updateSendState">
+        update clue set send_state = 1 where clue_id in
+        <foreach collection="clueIds" item="item" index="index"
+                 open="(" separator="," close=")">#{item}
+        </foreach>
+    </update>
+
+    <select id="getCluesByIds" resultMap="showClueMap">
+        select
+        c.clue_id,b.brand_name,p.product_name,s.shop_name,s.shop_type,amount,c.region_id,a.street,find_time,description,c.creator,c.create_time,u.name,u.cellphone,c.validate,c.reason,c.send_state
+        from
+        <include refid="send_from"/>
+        where c.clue_id in
+        <foreach collection="clueIds" item="item" index="index"
+                 open="(" separator="," close=")">#{item}
+        </foreach>
+    </select>
+
+    <select id="getClueIdsByRole" resultType="string">
+        select object_id from role_permission where role_id = #{roleId} and data_type = #{dataType}
+    </select>
+
+    <sql id="role_conditions">
+        <where>
+            <if test="userName != null and userName !=''">
+                and u.name like concat('%',#{userName},'%')
+            </if>
+            <if test="cellphone != null and cellphone != ''">
+                and u.cellphone like concat('%',#{cellphone},'%')
+            </if>
+            <if test="brandName != null and brandName != ''">
+                and b.brand_name like concat('%',#{brandName},'%')
+            </if>
+            <if test="productName != null and productName !=''">
+                and p.product_name like concat('%',#{productName},'%')
+            </if>
+            <if test="clueId != null and clueId !=''">
+                and c.clue_id = #{clueId}
+            </if>
+            <if test="regionId != null and regionId !=''">
+                and c.region_id like concat(#{regionId},'%')
+            </if>
+            <if test="beginDate != null">
+                and c.create_time >= #{beginDate}
+            </if>
+            <if test="endDate != null">
+                and c.create_time &lt;= #{endDate}
+            </if>
+            <if test="street != null and street !=''">
+                and a.street like concat('%',#{street},'%')
+            </if>
+            <if test="shopType != -1">
+                and s.shop_type = #{shopType}
+            </if>
+            <if test="sendState != -1">
+                and c.send_state = #{sendState}
+            </if>
+            <if test="objectIds != null and objectIds.length > 1">
+            and c.clue_id not in <foreach collection="objectIds" item="item" index="index"
+                                             open="(" separator="," close=")">#{item}
+                                    </foreach>
+            </if>
+        </where>
+    </sql>
+
+    <select id="getRoleClueCount" resultType="int">
+        select count(c.clue_id)
+        from
+        <include refid="send_from"/>
+        <include refid="role_conditions"/>
+    </select>
+
+    <select id="getRoleClues" resultMap="showClueMap">
+        select
+        c.clue_id,b.brand_name,p.product_name,s.shop_name,s.shop_type,amount,c.region_id,a.street,find_time,description,c.creator,c.create_time,u.name,u.cellphone,c.validate,c.reason,c.send_state
+        from
+        <include refid="send_from"/>
+        <include refid="role_conditions"/>
+        ORDER BY c.send_state,c.create_time desc
+        limit #{startIndex},#{pageSize}
+    </select>
+
+    <select id="getClueIdsByCreateTime" resultType="string">
+        select clue_id from clue order by create_time asc
+    </select>
+
+    <update id="updateClueSerialNumber">
+        update clue set serial_number = #{serialNumber} where clue_id = #{clueId}
+    </update>
+
+    <update id="approveClue">
+        update clue set validate = 3,approve_user=#{userId} where clue_id = #{clueId}
+    </update>
+
+
+    <delete id="delete">
+      DELETE FROM clue WHERE clue_id = #{clueId}
+    </delete>
+
+    <select id="getSerialNum" resultType="map">
+        select serial_number serialNumber,creator from clue WHERE clue_id = #{clueId}
+    </select>
+
+
+
+    <!--分期奖金发放功能-->
+
+    <resultMap id="Bonuses" type="com.qivay.domain.Bonuses">
+        <result property="clueId" column="clue_id"/>
+        <result property="serialNumber" column="serial_number"/>
+        <result property="clueValidate" column="clue_validate"/>
+        <result property="tipster" column="tipster"/>
+        <result property="rewardValidate" column="rewardValidate"/>
+        <result property="rewardId" column="reward_id"/>
+        <result property="isPlatform" column="is_platform"/>
+        <result property="remark" column="remark"/>
+    </resultMap>
+
+    <select id="getBonuses" resultMap="Bonuses">
+        SELECT
+            c.clue_id,
+            c.serial_number,
+            r.clue_validate,
+            r.reward_id,
+            r.tipster,
+            r.remark,
+            r.validate rewardValidate,
+            r.is_platform
+        FROM
+            clue c
+        JOIN reward r ON c.clue_id = r.clue_id
+        <where>
+            <if test="clueId != null and clueId !=''">
+                c.clue_id = #{clueId}
+            </if>
+            <if test="serialNumber != null and serialNumber !=''">
+                c.serial_number = #{serialNumber}
+            </if>
+            <if test="rewardId != null and rewardId !=''">
+                r.reward_id = #{rewardId}
+            </if>
+        </where>
+    </select>
+    <!--验证是否可以发放奖金-->
+    <select id="isBonuse" resultType="int">
+        SELECT validate FROM reward WHERE validate in(0,2) AND clue_id = #{clueId}
+    </select>
+    <!--获取奖金记录的线索状态-->
+    <select id="clueValidate" resultType="int">
+        SELECT clue_validate FROM reward WHERE clue_id = #{clueId}
+    </select>
+    <!--获取当前线索的跟进状态-->
+    <select id="nowClueValidate" resultType="int">
+        SELECT validate FROM clue where clue_id = #{clueId}
+    </select>
+</mapper>

@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>合作加盟</title>
+    <link rel="stylesheet" href="../css/bootstrap.min.css">
+    <link rel="stylesheet" href="../css/dialog.css">
+    <script src="../js/jquery1.11.3.min.js"></script>
+    <script src="../js/bootstrap.min.js"></script>
+    <script src="../js/vue.js"></script>
+    <script src="../js/vue-resource1.3.4.js"></script>
+    <script src="../js/config.js"></script>
+
+</head>
+<body>
+<div id="joinIndex">
+    <div class="form-inline">
+        <div class="form-group">
+            <label class="sr-only">姓名</label>
+            <input v-model="search.name" class="form-control" type="text" placeholder="姓名" style="width: 135px"/>
+        </div>
+        <div class="form-group">
+            <label class="sr-only">手机号</label>
+            <input v-model="search.telephone" style="width:135px" class="form-control" type="text"
+                   placeholder="手机号"/>
+        </div>
+        <div class="form-group">
+            <label class="sr-only">企业名称</label>
+            <input v-model="search.company" style="width:135px" class="form-control" type="text"
+                   placeholder="企业名称"/>
+        </div>
+
+
+        <button id="btnSearch" type="button" @click="getJoins" class="btn btn-primary">搜索</button>
+        <input id="txtSearch" type="hidden" @click="getJoins('msg')"/>
+        <input id="hidJoinId" type="hidden"/>
+    </div>
+
+    <div class="table-responsive">
+        <table class="table table-striped" id="main">
+            <thead>
+            <tr>
+                <th style="text-align:center;vertical-align:middle;">序号</th>
+                <th style="text-align:center;vertical-align:middle;">姓名</th>
+                <th style="text-align:center;vertical-align:middle;">电话</th>
+                <th style="text-align:center;vertical-align:middle;">邮箱</th>
+                <th style="text-align:center;vertical-align:middle;">加盟编号</th>
+                <th style="text-align:center;vertical-align:middle;">企业</th>
+                <th style="text-align:center;vertical-align:middle;">类别</th>
+                <th style="text-align:center;vertical-align:middle;">创建时间</th>
+                <th style="text-align:center;vertical-align:middle;">操作</th>
+            </tr>
+            </thead>
+            <tbody>
+
+            <template>
+                <tr v-for="(join,index) in joins">
+                    <td style="text-align:center;vertical-align:middle;">{{beginIndex + 1 + index}}</td>
+                    <td style="text-align:center;vertical-align:middle;">{{join.name}}</td>
+                    <td style="text-align:center;vertical-align:middle;">{{join.telephone}}</td>
+                    <td style="text-align:center;vertical-align:middle;">{{join.email}}</td>
+                    <td style="text-align:center;vertical-align:middle;">{{join.joinNum}}</td>
+                    <td style="text-align:center;vertical-align:middle;">{{join.company}}</td>
+                    <td style="text-align:center;vertical-align:middle;">{{join.typeDisplay}}</td>
+                    <td style="text-align:center;vertical-align:middle;">{{join.createTime}}</td>
+                    <td style="text-align:center;vertical-align:middle;">
+                    <td style="text-align:center;vertical-align:middle;">
+                        <a class="btn btn-xs btn-info" href="edit.html" data-target="#dialog"
+                           data-toggle="modal" onclick="setJoinId(this.id);" :id="join.joinId">查看</a>
+                    </td>
+                </tr>
+            </template>
+            </tbody>
+        </table>
+    </div>
+
+    <div id="baseDialog">
+        <script>getDialog('baseDialog', '../basedialog.html');</script>
+    </div>
+
+</div>
+
+<div id="page">
+    <script>getPaging();</script>
+</div>
+<script src="js/index.js"></script>
+
+</body>
+</html>

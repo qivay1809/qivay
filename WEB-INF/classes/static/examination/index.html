@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:v-bind="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title>送检列表</title>
+    <link rel="stylesheet" href="../css/bootstrap.min.css">
+    <link rel="stylesheet" href="../css/dialog.css">
+    <script src="../js/jquery1.11.3.min.js"></script>
+    <script src="../js/bootstrap.min.js"></script>
+    <script src="../js/vue.js"></script>
+    <script src="../js/vue-resource1.3.4.js"></script>
+    <script src="../js/config.js"></script>
+    <script src="../plugins/My97DatePicker/WdatePicker.js"></script>
+
+</head>
+<body>
+<div id="examinationIndex">
+    <div class="form-inline">
+        <div class="form-group">
+            <label class="sr-only">产品名</label>
+            <input id="txtProductName" v-model="search.productName" style="width:135px" class="form-control" type="text"
+                   placeholder="请输入产品名"/>
+        </div>
+        <div class="form-group">
+            <label class="sr-only">品牌名</label>
+            <input id="txtBrandName" v-model="search.brandName" style="width:135px" class="form-control" type="text"
+                   placeholder="请输入品牌名"/>
+        </div>
+
+        <div class="form-group">
+            <label class="sr-only">创建人名</label>
+            <input id="txtName" v-model="search.name" style="width:135px" class="form-control" type="text"
+                   placeholder="请输入创建人名"/>
+        </div>
+
+        <div class="form-group">
+            <div class="col-sm-6">
+                <select id="selStatus" v-model="search.status" class="form-control">
+                    <option value="-1" selected="selected">送检状态</option>
+                    <option value="0">未审核</option>
+                    <option value="1">审核通过</option>
+                    <option value="2">审核不通过</option>
+                    <option value="3">等待收货</option>
+                    <option value="4">已支付</option>
+                    <option value="5">检查中</option>
+                    <option value="6">正品</option>
+                    <option value="7">假货</option>
+                </select>
+            </div>
+        </div>
+        <button id="btnSearch" type="button" @click="getExaminations" class="btn btn-primary">搜索</button>
+
+        <input id="txtSearch" type="hidden" @click="getExaminations('msg')"/>
+        <input id="hidExaminationId" type="hidden"/>
+    </div>
+
+    <div class="table-responsive">
+        <table class="table table-striped" id="main">
+            <thead>
+            <tr>
+                <th style="text-align:center;vertical-align:middle;">编号</th>
+                <th style="text-align:center;vertical-align:middle;">ID</th>
+                <th style="text-align:center;vertical-align:middle;">产品名</th>
+                <th style="text-align:center;vertical-align:middle;">品牌名</th>
+                <th style="text-align:center;vertical-align:middle;">类别名</th>
+                <th style="text-align:center;vertical-align:middle;">创建人</th>
+                <th style="text-align:center;vertical-align:middle;">电话</th>
+                <th style="text-align:center;vertical-align:middle;">状态</th>
+                <th style="text-align:center;vertical-align:middle;">鉴定结果</th>
+                <th style="text-align:center;vertical-align:middle;">创建时间</th>
+                <th style="text-align:center;vertical-align:middle;">操作</th>
+            </tr>
+            </thead>
+            <tbody>
+
+            <template>
+                <tr v-for="(examination,index) in examinations">
+                    <td style="text-align:center;vertical-align:middle;">{{beginIndex + 1 + index}}</td>
+                    <td style="text-align:center;vertical-align:middle;">{{examination.examinationId}}</td>
+                    <td style="text-align:center;vertical-align:middle;">{{examination.product}}</td>
+                    <td style="text-align:center;vertical-align:middle;">{{examination.brand}}</td>
+                    <td style="text-align:center;vertical-align:middle;">{{examination.productCategoryName}}</td>
+                    <td style="text-align:center;vertical-align:middle;">{{examination.creator}}</td>
+                    <td style="text-align:center;vertical-align:middle;">{{examination.cellphone}}</td>
+                    <td style="text-align:center;vertical-align:middle;">
+                        <span v-if="examination.status == 1" style="color:green;">{{examination.statusString}}</span>
+                        <span v-else-if="examination.status == 2"  style="color:red">{{examination.statusString}}</span>
+                        <span v-else-if="examination.status == -8"  style="color:#ff8a1b">{{examination.statusString}}</span>
+                        <span v-else>{{examination.statusString}}</span>
+                    </td>
+                    <td style="text-align:center;vertical-align:middle;">
+                        <span v-if="examination.result == 1" style="color:green;">{{examination.resultString}}</span>
+                        <span v-else-if="examination.result == 2"  style="color:red">{{examination.resultString}}</span>
+                        <span v-else>{{examination.resultString}}</span>
+                    </td>
+
+                    <td style="text-align:center;vertical-align:middle;">{{examination.createTime}}</td>
+                    <td style="text-align:center;vertical-align:middle;">
+                        <div v-if="examination.status == 0">
+                            <a class="btn btn-xs btn-info" href="edit.html" data-target="#dialog"
+                               data-toggle="modal" onclick="setExaminationId(this.id);" :id="examination.examinationId">审核</a>
+                            <a class="btn btn-xs btn-info" href="show.html" data-target="#dialog"
+                               data-toggle="modal" onclick="setExaminationId(this.id);" :id="examination.examinationId">查看</a>
+                        </div>
+                        <div v-else-if="examination.status == 5">
+                            <a class="btn btn-xs btn-info" href="edit.html" data-target="#dialog"
+                               data-toggle="modal" onclick="setExaminationId(this.id);" :id="examination.examinationId">开始检测</a>
+                            <a class="btn btn-xs btn-info" href="show.html" data-target="#dialog"
+                               data-toggle="modal" onclick="setExaminationId(this.id);" :id="examination.examinationId">查看</a>
+                        </div>
+                        <div v-else-if="examination.status == 6">
+                            <a class="btn btn-xs btn-info" href="edit.html" data-target="#dialog"
+                               data-toggle="modal" onclick="setExaminationId(this.id);" :id="examination.examinationId">鉴定完成</a>
+                            <a class="btn btn-xs btn-info" href="show.html" data-target="#dialog"
+                               data-toggle="modal" onclick="setExaminationId(this.id);" :id="examination.examinationId">查看</a>
+                        </div>
+                        <div v-else>
+                            <a class="btn btn-xs btn-info" href="show.html" data-target="#dialog"
+                               data-toggle="modal" onclick="setExaminationId(this.id);" :id="examination.examinationId">查看</a>
+                        </div>
+
+                    </td>
+                </tr>
+            </template>
+
+            </tbody>
+        </table>
+    </div>
+
+    <!--<div id="baseDialog"><script>getDialog('baseDialog','../basedialog.html');</script></div>-->
+    <div class="modal fade" id="dialog" role="basic" aria-hidden="true">
+        <div class="modal-dialog" style="width:1024px;height:500px;">
+            <div class="modal-content">
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<!--<div id="secondDialog">
+    <script>getDialog('secondDialog', '../seconddialog.html');</script>
+</div>-->
+<div id="page"><script>getPaging();</script></div>
+<script src="../js/examination/index.js"></script>
+
+</body>
+</html>

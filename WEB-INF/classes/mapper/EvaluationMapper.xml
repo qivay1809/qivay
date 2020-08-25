@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.qivay.mapper.EvaluationMapper" >
+  <resultMap id="BaseResultMap" type="com.qivay.domain.Evaluation" >
+    <id column="evaluation_id" property="evaluationId"/>
+    <result column="content" property="content"/>
+    <result column="creator" property="creator"/>
+    <result column="create_time" property="createTime"/>
+    <result column="status" property="status"/>
+    <result column="description" property="description"/>
+    <result column="likes" property="likes"/>
+    <result column="anonymous" property="anonymous"/>
+  </resultMap>
+  <resultMap id="QueryResultMap" type="com.qivay.domain.Evaluation" >
+    <id column="evaluation_id" property="evaluationId"/>
+    <result column="content" property="content"/>
+    <result column="name" property="creator"/>
+    <result column="create_time" property="createTime"/>
+    <result column="status" property="status"/>
+    <result column="description" property="description"/>
+    <result column="likes" property="likes"/>
+    <result column="anonymous" property="anonymous"/>
+  </resultMap>
+
+  <insert id="insert">
+    insert into evaluation (evaluation_id, content, creator, 
+      create_time, status, description, 
+      likes, anonymous)
+    values (#{evaluationId}, #{content}, #{creator},
+      #{createTime}, #{status}, #{description},
+      #{likes}, #{anonymous})
+  </insert>
+
+  <update id="updateByPrimaryKey">
+    update evaluation
+    set content = #{content},
+      creator = #{creator},
+      create_time = #{createTime},
+      status = #{status},
+      description = #{description},
+      likes = #{likes},
+      anonymous = #{anonymous}
+    where evaluation_id = #{evaluationId}
+  </update>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap">
+    select e.evaluation_id, e.content, e.create_time, e.status, e.description, e.likes,
+    e.anonymous, e.creator
+    from evaluation e
+    where e.evaluation_id = #{evaluationId}
+  </select>
+
+  <sql id="base_conditions">
+    <where>
+      <if test="content != null and content != ''">
+        e.content like concat('%',#{content},'%')
+      </if>
+      <if test="status != -1">
+        and e.status = #{status}
+      </if>
+      <if test="creator != null and creator != ''">
+        and u.name like concat('%',#{creator},'%')
+      </if>
+      <if test="anonymous != -1">
+        and e.anonymous = #{anonymous}
+      </if>
+      <if test="minLikes != -1">
+        and e.likes >= #{minLikes}
+      </if>
+      <if test="maxLikes != -1">
+        and e.likes &lt;= #{maxLikes}
+      </if>
+      <if test="beginDateDisplay != null">
+        and e.create_time >= #{beginDateDisplay}
+      </if>
+      <if test="endDateDisplay != null">
+        and e.create_time &lt;= #{endDateDisplay}
+      </if>
+    </where>
+  </sql>
+
+  <select id="getCount" resultType="int">
+    select count(e.evaluation_id) from evaluation e
+    join user u on u.user_id = e.creator
+    <include refid="base_conditions"/>
+  </select>
+
+  <select id="getEvaluations" resultMap="QueryResultMap">
+    select e.evaluation_id, e.content, e.create_time, e.status, e.description, e.likes,
+    e.anonymous, u.name
+    from evaluation e
+    join user u on u.user_id = e.creator
+    <include refid="base_conditions"/>
+    order by e.status,e.create_time desc
+    limit #{startIndex},#{pageSize}
+  </select>
+
+  <select id="getImagesById" resultType="string">
+    select url from evaluation_image where evaluation_id = #{evaluationId} order by image_order asc
+  </select>
+
+  <update id="updateStatus">
+    update evaluation
+    set status = #{status},description = #{description}
+    where evaluation_id = #{evaluationId}
+  </update>
+
+  <select id="getStatus" resultType="int">
+    select status from evaluation where evaluation_id = #{evaluationId}
+  </select>
+
+</mapper>

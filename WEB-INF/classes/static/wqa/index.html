@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:v-bind="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title>微信问答列表</title>
+    <link rel="stylesheet" href="../css/bootstrap.min.css">
+    <link rel="stylesheet" href="../css/dialog.css">
+    <script src="../js/jquery1.11.3.min.js"></script>
+    <script src="../js/bootstrap.min.js"></script>
+    <script src="../js/vue.js"></script>
+    <script src="../js/vue-resource1.3.4.js"></script>
+    <script src="../js/config.js"></script>
+    <script src="../plugins/My97DatePicker/WdatePicker.js"></script>
+
+</head>
+<body>
+<div id="weiXinQaIndex">
+    <div class="form-inline">
+        <div class="form-group">
+            <label class="sr-only">问题内容</label>
+            <input id="txtQuestion" v-model="search.question" style="width:135px" class="form-control" type="text"
+                   placeholder="请输入问题内容"/>
+        </div>
+        <div class="form-group">
+            <label class="sr-only">回答内容</label>
+            <input id="txtAnswer" v-model="search.answer" style="width:135px" class="form-control" type="text"
+                   placeholder="请输入回答内容"/>
+        </div>
+        <div class="form-group">
+            <label class="sr-only">问题创建者</label>
+            <input id="txtCreator" v-model="search.creator" style="width:135px" class="form-control" type="text"
+                   placeholder="请输入创建人"/>
+        </div>
+        <div class="form-group">
+            创建时间：
+            <label class="sr-only">创建开始时间</label>
+            <input id="txtBeginDate" class="form-control" type="text" placeholder="请输入创建开始时间"/>
+            ---
+            <label class="sr-only">创建结束时间</label>
+            <input id="txtEndDate" class="form-control" type="text" placeholder="请输入创建结束时间"/>
+        </div>
+
+        <div class="form-group">
+            <div class="col-sm-6">
+                <select id="selWeiXinQaShow" v-model="search.weiXinQaShow" class="form-control">
+                    <option value="-1" selected="selected">显示情况</option>
+                    <option value="1">显示</option>
+                    <option value="0">不显示</option>
+                </select>
+            </div>
+        </div>
+
+        <button id="btnSearch" type="button" @click="getWeiXinQas" class="btn btn-primary">搜索</button>
+        <a class="btn btn-primary" href="edit.html" data-target="#dialog" data-toggle="modal">添加问题</a>
+
+        <input id="txtSearch" type="hidden" @click="getWeiXinQas('msg')"/>
+        <input id="hidWeiXinQaId" type="hidden" />
+    </div>
+
+    <div class="table-responsive">
+        <table class="table table-striped" id="main">
+            <thead>
+            <tr>
+                <th style="text-align:center;vertical-align:middle;">问题</th>
+                <th style="text-align:center;vertical-align:middle;">回答</th>
+                <th style="text-align:center;vertical-align:middle;">创建人</th>
+                <th style="text-align:center;vertical-align:middle;">创建时间</th>
+                <th style="text-align:center;vertical-align:middle;">问答排序</th>
+                <th style="text-align:center;vertical-align:middle;">是否显示</th>
+                <th style="text-align:center;vertical-align:middle;">操作</th>
+            </tr>
+            </thead>
+            <tbody>
+
+            <template>
+                <tr v-for="weiXinQa in weiXinQas">
+                    <td style="text-align:center;vertical-align:middle;">{{weiXinQa.question}}</td>
+                    <td style="text-align:center;vertical-align:middle;width: 42%" v-html="weiXinQa.answer"></td>
+                    <td style="text-align:center;vertical-align:middle;">{{weiXinQa.creator}}</td>
+                    <td style="text-align:center;vertical-align:middle;">{{weiXinQa.createTimeDisplay}}</td>
+                    <td style="text-align:center;vertical-align:middle;">{{weiXinQa.qaOrder}}</td>
+                    <td style="text-align:center;vertical-align:middle;">{{weiXinQa.qaShowDisplay}}</td>
+                    <td style="text-align:center;vertical-align:middle;">
+                            <a class="btn btn-xs btn-info" href="edit.html" data-target="#dialog"
+                               data-toggle="modal" onclick="setWeiXinQaId(this.id);" :id="weiXinQa.qaId">编辑</a>
+                    </td>
+                </tr>
+            </template>
+
+            </tbody>
+        </table>
+    </div>
+
+
+    <div class="modal fade" id="dialog" role="basic" aria-hidden="true">
+        <div class="modal-dialog" style="width:1024px;height:500px;">
+            <div class="modal-content">
+
+            </div>
+        </div>
+    </div>
+
+
+</div>
+
+<div id="page"><script>getPaging();</script></div>
+<script src="../js/wqa/index.js"></script>
+
+</body>
+</html>
